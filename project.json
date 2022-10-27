@@ -1,0 +1,30 @@
+{
+  "cli": {
+    "fmtVersion": 3
+  },
+  "name": "du-render",
+  "description": "RenderScript Framework",
+  "sourcePath": "src",
+  "outputPath": "out",
+  "libs": [],
+  "builds": {
+    "main": {
+      "name": "main",
+      "type": "screen",
+      "slots": {}
+    }
+  },
+  "targets": {
+    "development": {
+      "name": "development",
+      "minify": false,
+      "handleErrors": false
+    }
+  },
+  "internalPaths": [
+    "autoconf/",
+    "cpml/",
+    "pl/",
+    "utils/event"
+  ]
+}

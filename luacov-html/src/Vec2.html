@@ -1,0 +1,1646 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Code coverage report for Vec2</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../style/reset.css">
+    <link rel="stylesheet" href="../style/style.css">
+  </head>
+  <body>
+   <div id="page-container">
+      <header>
+        <nav>
+          
+<ul class="inline-list">
+    <li>
+      <a href="../index.html">All Files</a> /
+    </li>
+    <li>
+      <a href="./index.html">src</a> /
+    </li>
+
+  <li>Vec2.lua</li>
+</ul>
+
+        </nav>
+      </header>
+
+      <main>
+        <header class="hit-miss-statistics">
+          
+<ul class="inline-list">
+  <li>
+    <span class="strong">62.02%</span>
+    <span class="quiet">Rate</span>
+  </li>
+  <li>
+    <span class="strong">80</span>
+    <span class="quiet">Hits</span>
+  </li>
+  <li>
+    <span class="strong">49</span>
+    <span class="quiet">Missed</span>
+  </li>
+</ul>
+
+<div class="hit-percentage-status hit-percentage-status-medium"></div>
+
+        </header>
+        <section id="content">
+          
+  <section class="file-coverage">
+
+    <ul class="line-numbers undecorated">
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+        <li>4</li>
+        <li>5</li>
+        <li>6</li>
+        <li>7</li>
+        <li>8</li>
+        <li>9</li>
+        <li>10</li>
+        <li>11</li>
+        <li>12</li>
+        <li>13</li>
+        <li>14</li>
+        <li>15</li>
+        <li>16</li>
+        <li>17</li>
+        <li>18</li>
+        <li>19</li>
+        <li>20</li>
+        <li>21</li>
+        <li>22</li>
+        <li>23</li>
+        <li>24</li>
+        <li>25</li>
+        <li>26</li>
+        <li>27</li>
+        <li>28</li>
+        <li>29</li>
+        <li>30</li>
+        <li>31</li>
+        <li>32</li>
+        <li>33</li>
+        <li>34</li>
+        <li>35</li>
+        <li>36</li>
+        <li>37</li>
+        <li>38</li>
+        <li>39</li>
+        <li>40</li>
+        <li>41</li>
+        <li>42</li>
+        <li>43</li>
+        <li>44</li>
+        <li>45</li>
+        <li>46</li>
+        <li>47</li>
+        <li>48</li>
+        <li>49</li>
+        <li>50</li>
+        <li>51</li>
+        <li>52</li>
+        <li>53</li>
+        <li>54</li>
+        <li>55</li>
+        <li>56</li>
+        <li>57</li>
+        <li>58</li>
+        <li>59</li>
+        <li>60</li>
+        <li>61</li>
+        <li>62</li>
+        <li>63</li>
+        <li>64</li>
+        <li>65</li>
+        <li>66</li>
+        <li>67</li>
+        <li>68</li>
+        <li>69</li>
+        <li>70</li>
+        <li>71</li>
+        <li>72</li>
+        <li>73</li>
+        <li>74</li>
+        <li>75</li>
+        <li>76</li>
+        <li>77</li>
+        <li>78</li>
+        <li>79</li>
+        <li>80</li>
+        <li>81</li>
+        <li>82</li>
+        <li>83</li>
+        <li>84</li>
+        <li>85</li>
+        <li>86</li>
+        <li>87</li>
+        <li>88</li>
+        <li>89</li>
+        <li>90</li>
+        <li>91</li>
+        <li>92</li>
+        <li>93</li>
+        <li>94</li>
+        <li>95</li>
+        <li>96</li>
+        <li>97</li>
+        <li>98</li>
+        <li>99</li>
+        <li>100</li>
+        <li>101</li>
+        <li>102</li>
+        <li>103</li>
+        <li>104</li>
+        <li>105</li>
+        <li>106</li>
+        <li>107</li>
+        <li>108</li>
+        <li>109</li>
+        <li>110</li>
+        <li>111</li>
+        <li>112</li>
+        <li>113</li>
+        <li>114</li>
+        <li>115</li>
+        <li>116</li>
+        <li>117</li>
+        <li>118</li>
+        <li>119</li>
+        <li>120</li>
+        <li>121</li>
+        <li>122</li>
+        <li>123</li>
+        <li>124</li>
+        <li>125</li>
+        <li>126</li>
+        <li>127</li>
+        <li>128</li>
+        <li>129</li>
+        <li>130</li>
+        <li>131</li>
+        <li>132</li>
+        <li>133</li>
+        <li>134</li>
+        <li>135</li>
+        <li>136</li>
+        <li>137</li>
+        <li>138</li>
+        <li>139</li>
+        <li>140</li>
+        <li>141</li>
+        <li>142</li>
+        <li>143</li>
+        <li>144</li>
+        <li>145</li>
+        <li>146</li>
+        <li>147</li>
+        <li>148</li>
+        <li>149</li>
+        <li>150</li>
+        <li>151</li>
+        <li>152</li>
+        <li>153</li>
+        <li>154</li>
+        <li>155</li>
+        <li>156</li>
+        <li>157</li>
+        <li>158</li>
+        <li>159</li>
+        <li>160</li>
+        <li>161</li>
+        <li>162</li>
+        <li>163</li>
+        <li>164</li>
+        <li>165</li>
+        <li>166</li>
+        <li>167</li>
+        <li>168</li>
+        <li>169</li>
+        <li>170</li>
+        <li>171</li>
+        <li>172</li>
+        <li>173</li>
+        <li>174</li>
+        <li>175</li>
+        <li>176</li>
+        <li>177</li>
+        <li>178</li>
+        <li>179</li>
+        <li>180</li>
+        <li>181</li>
+        <li>182</li>
+        <li>183</li>
+        <li>184</li>
+        <li>185</li>
+        <li>186</li>
+        <li>187</li>
+        <li>188</li>
+        <li>189</li>
+        <li>190</li>
+        <li>191</li>
+        <li>192</li>
+        <li>193</li>
+        <li>194</li>
+        <li>195</li>
+        <li>196</li>
+        <li>197</li>
+        <li>198</li>
+        <li>199</li>
+        <li>200</li>
+        <li>201</li>
+        <li>202</li>
+        <li>203</li>
+        <li>204</li>
+        <li>205</li>
+        <li>206</li>
+        <li>207</li>
+        <li>208</li>
+        <li>209</li>
+        <li>210</li>
+        <li>211</li>
+        <li>212</li>
+        <li>213</li>
+        <li>214</li>
+        <li>215</li>
+        <li>216</li>
+        <li>217</li>
+        <li>218</li>
+        <li>219</li>
+        <li>220</li>
+        <li>221</li>
+        <li>222</li>
+        <li>223</li>
+        <li>224</li>
+        <li>225</li>
+        <li>226</li>
+        <li>227</li>
+        <li>228</li>
+        <li>229</li>
+        <li>230</li>
+        <li>231</li>
+        <li>232</li>
+        <li>233</li>
+        <li>234</li>
+        <li>235</li>
+        <li>236</li>
+        <li>237</li>
+        <li>238</li>
+        <li>239</li>
+        <li>240</li>
+        <li>241</li>
+        <li>242</li>
+        <li>243</li>
+        <li>244</li>
+        <li>245</li>
+        <li>246</li>
+        <li>247</li>
+        <li>248</li>
+        <li>249</li>
+        <li>250</li>
+        <li>251</li>
+        <li>252</li>
+        <li>253</li>
+        <li>254</li>
+        <li>255</li>
+        <li>256</li>
+        <li>257</li>
+        <li>258</li>
+        <li>259</li>
+        <li>260</li>
+        <li>261</li>
+        <li>262</li>
+        <li>263</li>
+        <li>264</li>
+        <li>265</li>
+        <li>266</li>
+        <li>267</li>
+        <li>268</li>
+        <li>269</li>
+        <li>270</li>
+        <li>271</li>
+        <li>272</li>
+        <li>273</li>
+        <li>274</li>
+        <li>275</li>
+        <li>276</li>
+        <li>277</li>
+        <li>278</li>
+        <li>279</li>
+        <li>280</li>
+        <li>281</li>
+        <li>282</li>
+        <li>283</li>
+        <li>284</li>
+        <li>285</li>
+        <li>286</li>
+        <li>287</li>
+        <li>288</li>
+        <li>289</li>
+        <li>290</li>
+        <li>291</li>
+        <li>292</li>
+        <li>293</li>
+        <li>294</li>
+        <li>295</li>
+        <li>296</li>
+        <li>297</li>
+        <li>298</li>
+        <li>299</li>
+        <li>300</li>
+        <li>301</li>
+        <li>302</li>
+        <li>303</li>
+        <li>304</li>
+        <li>305</li>
+        <li>306</li>
+        <li>307</li>
+        <li>308</li>
+        <li>309</li>
+        <li>310</li>
+        <li>311</li>
+        <li>312</li>
+        <li>313</li>
+        <li>314</li>
+        <li>315</li>
+        <li>316</li>
+        <li>317</li>
+        <li>318</li>
+        <li>319</li>
+        <li>320</li>
+        <li>321</li>
+        <li>322</li>
+        <li>323</li>
+        <li>324</li>
+        <li>325</li>
+        <li>326</li>
+        <li>327</li>
+        <li>328</li>
+        <li>329</li>
+        <li>330</li>
+        <li>331</li>
+        <li>332</li>
+        <li>333</li>
+        <li>334</li>
+        <li>335</li>
+        <li>336</li>
+        <li>337</li>
+        <li>338</li>
+        <li>339</li>
+        <li>340</li>
+        <li>341</li>
+        <li>342</li>
+        <li>343</li>
+        <li>344</li>
+        <li>345</li>
+        <li>346</li>
+        <li>347</li>
+        <li>348</li>
+        <li>349</li>
+        <li>350</li>
+        <li>351</li>
+        <li>352</li>
+        <li>353</li>
+        <li>354</li>
+        <li>355</li>
+        <li>356</li>
+        <li>357</li>
+        <li>358</li>
+        <li>359</li>
+        <li>360</li>
+        <li>361</li>
+        <li>362</li>
+        <li>363</li>
+        <li>364</li>
+        <li>365</li>
+        <li>366</li>
+        <li>367</li>
+        <li>368</li>
+        <li>369</li>
+        <li>370</li>
+        <li>371</li>
+        <li>372</li>
+        <li>373</li>
+        <li>374</li>
+        <li>375</li>
+        <li>376</li>
+        <li>377</li>
+        <li>378</li>
+        <li>379</li>
+        <li>380</li>
+        <li>381</li>
+        <li>382</li>
+        <li>383</li>
+        <li>384</li>
+        <li>385</li>
+        <li>386</li>
+        <li>387</li>
+        <li>388</li>
+        <li>389</li>
+        <li>390</li>
+        <li>391</li>
+        <li>392</li>
+        <li>393</li>
+        <li>394</li>
+        <li>395</li>
+        <li>396</li>
+        <li>397</li>
+        <li>398</li>
+        <li>399</li>
+        <li>400</li>
+        <li>401</li>
+        <li>402</li>
+    </ul>
+
+    <ul class="line-coverages undecorated">
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-hit">1x</li>
+        <li class="line-hit">1x</li>
+        <li class="line-hit">1x</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-hit">1x</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-hit">25x</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">25x</li>
+        <li class="line-hit">23x</li>
+        <li class="line-hit">23x</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">2x</li>
+        <li class="line-hit">2x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">25x</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-hit">1x</li>
+        <li class="line-hit">1x</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-hit">2x</li>
+        <li class="line-hit">1x</li>
+        <li class="line-hit">1x</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-hit">2x</li>
+        <li class="line-hit">1x</li>
+        <li class="line-hit">1x</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-hit">2x</li>
+        <li class="line-hit">1x</li>
+        <li class="line-hit">1x</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-hit">2x</li>
+        <li class="line-hit">1x</li>
+        <li class="line-hit">1x</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-hit">8x</li>
+        <li class="line-hit">4x</li>
+        <li class="line-hit">4x</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-hit">8x</li>
+        <li class="line-hit">4x</li>
+        <li class="line-hit">8x</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-hit">1x</li>
+        <li class="line-miss">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-hit">1x</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-hit">1x</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-hit">3x</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">2x</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-hit">3x</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">2x</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">1x</li>
+    </ul>
+
+    <ul class="code undecorated">
+        <li class="line-empty">--- A 2 component vector based on cpml&#47;Vec2</li>
+        <li class="line-empty">--- https:&#47;&#47;github.com&#47;excessive&#47;cpml&#47;blob&#47;master&#47;modules&#47;Vec2.lua</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">local atan2 = math.atan</li>
+        <li class="line-hit">local sqrt  = math.sqrt</li>
+        <li class="line-hit">local cos   = math.cos</li>
+        <li class="line-hit">local sin   = math.sin</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">---@class Vec2</li>
+        <li class="line-empty">---@field x number</li>
+        <li class="line-empty">---@field y number</li>
+        <li class="line-empty">---@field New fun(x:number|{x:number,y:number}|number[], y:number|nil):Vec2</li>
+        <li class="line-empty">---@field unit_x Vec2 X axis of rotation</li>
+        <li class="line-empty">---@field unit_y Vec2 Y axis of rotation</li>
+        <li class="line-empty">---@field zero Vec2 Empty vector</li>
+        <li class="line-empty">---@field FromCartesian fun(radius:number, theta:number):Vec2</li>
+        <li class="line-empty">---@field Clone fun(v:Vec2):Vec2</li>
+        <li class="line-empty">---@field Add fun(a:Vec2, b:Vec2):Vec2 Add two vectors.</li>
+        <li class="line-empty">---@field Sub fun(a:Vec2, b:Vec2):Vec2 Subtract two vectors.</li>
+        <li class="line-empty">---@field Mul fun(a:Vec2, b:Vec2):Vec2 Multiply two vectors.</li>
+        <li class="line-empty">---@field Div fun(a:Vec2, b:Vec2):Vec2 Divide two vectors.</li>
+        <li class="line-empty">---@field Normalize fun(a:Vec2):Vec2</li>
+        <li class="line-empty">---@field Trim fun(a:Vec2, len:number):Vec2</li>
+        <li class="line-empty">---@field Cross fun(a:Vec2, b:Vec2):number</li>
+        <li class="line-empty">---@field Dot fun(a:Vec2, b:Vec2):number</li>
+        <li class="line-empty">---@field Len fun(a:Vec2):number</li>
+        <li class="line-empty">---@field Len2 fun(a:Vec2):number</li>
+        <li class="line-empty">---@field Dist fun(a:Vec2, b:Vec2):number</li>
+        <li class="line-empty">---@field Dist2 fun(a:Vec2, b:Vec2):number</li>
+        <li class="line-empty">---@field Scale fun(a:Vec2, b:number):Vec2</li>
+        <li class="line-empty">---@field Rotate fun(a:Vec2, phi:number)</li>
+        <li class="line-empty">---@field Perpendicular fun(a:Vec2):Vec2</li>
+        <li class="line-empty">---@field AngleTo fun(a:Vec2, b:Vec2):number</li>
+        <li class="line-empty">---@field Lerp fun(a:Vec2, b:Vec2, s:number):Vec2</li>
+        <li class="line-empty">---@field Unpack fun(a:Vec2):number, number</li>
+        <li class="line-empty">---@field ComponentMin fun(a:Vec2, b:Vec2):Vec2</li>
+        <li class="line-empty">---@field ComponentMax fun(a:Vec2, b:Vec2):Vec2</li>
+        <li class="line-empty">---@field IsVec2 fun(a:Vec2):boolean</li>
+        <li class="line-empty">---@field IsZero fun(a:Vec2):boolean</li>
+        <li class="line-empty">---@field ToPolar fun(a:Vec2):number, number</li>
+        <li class="line-empty">---@field FlipX fun(a:Vec2):Vec2</li>
+        <li class="line-empty">---@field FlipY fun(a:Vec2):Vec2</li>
+        <li class="line-empty">---@field ToString fun(a:Vec2):string</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">local Vec2 = {}</li>
+        <li class="line-hit">Vec2.__index = Vec2</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">---Create a new Vec2</li>
+        <li class="line-empty">---@param x number|{x:number,y:number}|number[]|nil</li>
+        <li class="line-empty">---@param y number|nil</li>
+        <li class="line-empty">---@return Vec2</li>
+        <li class="line-hit">function Vec2.New(x, y)</li>
+        <li class="line-hit">    local s = {}</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">    if x and y then</li>
+        <li class="line-hit">        s.x = x</li>
+        <li class="line-hit">        s.y = y</li>
+        <li class="line-empty">        -- {x, y} or {x=x, y=y}</li>
+        <li class="line-hit">    elseif type(x) == &quot;table&quot; then</li>
+        <li class="line-hit">        s.x, s.y = x.x or x[1], x.y or x[2]</li>
+        <li class="line-miss">    elseif type(x) == &quot;number&quot; then</li>
+        <li class="line-miss">        s.x = x</li>
+        <li class="line-miss">        s.y = x</li>
+        <li class="line-empty">    else</li>
+        <li class="line-miss">        s.x = 0</li>
+        <li class="line-miss">        s.y = 0</li>
+        <li class="line-empty">    end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">    return setmetatable(s, Vec2)</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">Vec2.unit_x = Vec2.New(1, 0)</li>
+        <li class="line-hit">Vec2.unit_y = Vec2.New(0, 1)</li>
+        <li class="line-hit">Vec2.zero   = Vec2.New(0, 0)</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">---Convert point from polar to cartesian.</li>
+        <li class="line-empty">---@param radius number Radius of the point</li>
+        <li class="line-empty">---@param theta number Angle of the point (in radians)</li>
+        <li class="line-empty">---@return Vec2</li>
+        <li class="line-hit">function Vec2.FromCartesian(radius, theta)</li>
+        <li class="line-miss">    return Vec2.New(radius * cos(theta), radius * sin(theta))</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">---Clone a vector.</li>
+        <li class="line-empty">---@param a Vec2 Vector to be cloned</li>
+        <li class="line-empty">---@return Vec2</li>
+        <li class="line-hit">function Vec2.Clone(a)</li>
+        <li class="line-miss">    return Vec2.New(a.x, a.y)</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">---Add two vectors.</li>
+        <li class="line-empty">---@param a Vec2 Left hand operand</li>
+        <li class="line-empty">---@param b Vec2 Right hand operand</li>
+        <li class="line-empty">---@return Vec2 out</li>
+        <li class="line-hit">function Vec2.Add(a, b)</li>
+        <li class="line-hit">    return Vec2.New(</li>
+        <li class="line-hit">        a.x + b.x,</li>
+        <li class="line-hit">        a.y + b.y</li>
+        <li class="line-empty">    )</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">---Subtract one vector from another.</li>
+        <li class="line-empty">---Order: If a and b are positions, computes the direction and distance from b</li>
+        <li class="line-empty">---to a.</li>
+        <li class="line-empty">---@param a Vec2 Left hand operand</li>
+        <li class="line-empty">---@param b Vec2 Right hand operand</li>
+        <li class="line-empty">---@return Vec2 out</li>
+        <li class="line-hit">function Vec2.Sub(a, b)</li>
+        <li class="line-hit">    return Vec2.New(</li>
+        <li class="line-hit">        a.x - b.x,</li>
+        <li class="line-hit">        a.y - b.y</li>
+        <li class="line-empty">    )</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">--- Multiply a vector by another vector.</li>
+        <li class="line-empty">-- Component-size multiplication not matrix multiplication.</li>
+        <li class="line-empty">---@param a Vec2  Left hand operand</li>
+        <li class="line-empty">---@param b Vec2  Right hand operand</li>
+        <li class="line-empty">---@return Vec2 out</li>
+        <li class="line-hit">function Vec2.Mul(a, b)</li>
+        <li class="line-hit">    return Vec2.New(</li>
+        <li class="line-hit">        a.x * b.x,</li>
+        <li class="line-hit">        a.y * b.y</li>
+        <li class="line-empty">    )</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">--- Divide a vector by another vector.</li>
+        <li class="line-empty">-- Component-size inv multiplication. Like a non-uniform scale().</li>
+        <li class="line-empty">---@param a Vec2  Left hand operand</li>
+        <li class="line-empty">---@param b Vec2  Right hand operand</li>
+        <li class="line-empty">---@return Vec2 out</li>
+        <li class="line-hit">function Vec2.Div(a, b)</li>
+        <li class="line-hit">    return Vec2.New(</li>
+        <li class="line-hit">        a.x &#47; b.x,</li>
+        <li class="line-hit">        a.y &#47; b.y</li>
+        <li class="line-empty">    )</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">--- Get the normal of a vector.</li>
+        <li class="line-empty">---@param a Vec2  Vector to normalize</li>
+        <li class="line-empty">---@return Vec2 out</li>
+        <li class="line-hit">function Vec2.Normalize(a)</li>
+        <li class="line-miss">    if a:IsZero() then</li>
+        <li class="line-miss">        return Vec2.New()</li>
+        <li class="line-empty">    end</li>
+        <li class="line-miss">    return a:Scale(1 &#47; a:Len())</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">--- Trim a vector to a given length.</li>
+        <li class="line-empty">---@param a Vec2  Vector to be trimmed</li>
+        <li class="line-empty">---@param len number Length to trim the vector to</li>
+        <li class="line-empty">---@return Vec2</li>
+        <li class="line-hit">function Vec2.Trim(a, len)</li>
+        <li class="line-miss">    return a:Normalize():Scale(math.min(a:Len(), len))</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">--- Get the cross product of two vectors.</li>
+        <li class="line-empty">-- Order: Positive if a is clockwise from b. Magnitude is the area spanned by</li>
+        <li class="line-empty">-- the parallelograms that a and b span.</li>
+        <li class="line-empty">---@param a Vec2  Left hand operand</li>
+        <li class="line-empty">---@param b Vec2  Right hand operand</li>
+        <li class="line-empty">---@return number</li>
+        <li class="line-hit">function Vec2.Cross(a, b)</li>
+        <li class="line-miss">    return a.x * b.y - a.y * b.x</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">--- Get the dot product of two vectors.</li>
+        <li class="line-empty">---@param a Vec2  Left hand operand</li>
+        <li class="line-empty">---@param b Vec2  Right hand operand</li>
+        <li class="line-empty">---@return number</li>
+        <li class="line-hit">function Vec2.Dot(a, b)</li>
+        <li class="line-miss">    return a.x * b.x + a.y * b.y</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">--- Get the length of a vector.</li>
+        <li class="line-empty">---@param a Vec2  Vector to get the length of</li>
+        <li class="line-empty">---@return number</li>
+        <li class="line-hit">function Vec2.Len(a)</li>
+        <li class="line-miss">    return sqrt(a.x * a.x + a.y * a.y)</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">--- Get the squared length of a vector.</li>
+        <li class="line-empty">---@param a Vec2  Vector to get the squared length of</li>
+        <li class="line-empty">---@return number</li>
+        <li class="line-hit">function Vec2.Len2(a)</li>
+        <li class="line-miss">    return a.x * a.x + a.y * a.y</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">--- Get the distance between two vectors.</li>
+        <li class="line-empty">---@param a Vec2  Left hand operand</li>
+        <li class="line-empty">---@param b Vec2  Right hand operand</li>
+        <li class="line-empty">---@return number</li>
+        <li class="line-hit">function Vec2.Dist(a, b)</li>
+        <li class="line-miss">    local dx = a.x - b.x</li>
+        <li class="line-miss">    local dy = a.y - b.y</li>
+        <li class="line-miss">    return sqrt(dx * dx + dy * dy)</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">--- Get the squared distance between two vectors.</li>
+        <li class="line-empty">---@param a Vec2  Left hand operand</li>
+        <li class="line-empty">---@param b Vec2  Right hand operand</li>
+        <li class="line-empty">---@return number</li>
+        <li class="line-hit">function Vec2.Dist2(a, b)</li>
+        <li class="line-miss">    local dx = a.x - b.x</li>
+        <li class="line-miss">    local dy = a.y - b.y</li>
+        <li class="line-miss">    return dx * dx + dy * dy</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">--- Scale a vector by a scalar.</li>
+        <li class="line-empty">---@param a Vec2  Left hand operand</li>
+        <li class="line-empty">---@param b number Right hand operand</li>
+        <li class="line-empty">---@return Vec2 out</li>
+        <li class="line-hit">function Vec2.Scale(a, b)</li>
+        <li class="line-hit">    return Vec2.New(</li>
+        <li class="line-hit">        a.x * b,</li>
+        <li class="line-hit">        a.y * b</li>
+        <li class="line-empty">    )</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">--- Rotate a vector.</li>
+        <li class="line-empty">---@param a Vec2  Vector to rotate</li>
+        <li class="line-empty">---@param phi number Angle to rotate vector by (in radians)</li>
+        <li class="line-empty">---@return Vec2 out</li>
+        <li class="line-hit">function Vec2.Rotate(a, phi)</li>
+        <li class="line-miss">    local c = cos(phi)</li>
+        <li class="line-miss">    local s = sin(phi)</li>
+        <li class="line-miss">    return Vec2.New(</li>
+        <li class="line-miss">        c * a.x - s * a.y,</li>
+        <li class="line-miss">        s * a.x + c * a.y</li>
+        <li class="line-empty">    )</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">--- Get the perpendicular vector of a vector.</li>
+        <li class="line-empty">---@param a Vec2  Vector to get perpendicular axes from</li>
+        <li class="line-empty">---@return Vec2 out</li>
+        <li class="line-hit">function Vec2.Perpendicular(a)</li>
+        <li class="line-miss">    return Vec2.New(-a.y, a.x)</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">--- Signed angle from one vector to another.</li>
+        <li class="line-empty">-- Rotations from +x to +y are positive.</li>
+        <li class="line-empty">---@param a Vec2  Vector</li>
+        <li class="line-empty">---@param b Vec2  Vector</li>
+        <li class="line-empty">---@return number angle in [-pi, pi]</li>
+        <li class="line-hit">function Vec2.AngleTo(a, b)</li>
+        <li class="line-miss">    if b then</li>
+        <li class="line-miss">        local angle = atan2(b.y, b.x) - atan2(a.y, a.x)</li>
+        <li class="line-empty">        -- convert to (-pi, pi]</li>
+        <li class="line-miss">        if angle &gt; math.pi then</li>
+        <li class="line-miss">            angle = angle - 2 * math.pi</li>
+        <li class="line-miss">        elseif angle &lt;= -math.pi then</li>
+        <li class="line-miss">            angle = angle + 2 * math.pi</li>
+        <li class="line-empty">        end</li>
+        <li class="line-miss">        return angle</li>
+        <li class="line-empty">    end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-miss">    return atan2(a.y, a.x)</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">--- Lerp between two vectors.</li>
+        <li class="line-empty">---@param a Vec2  Left hand operand</li>
+        <li class="line-empty">---@param b Vec2  Right hand operand</li>
+        <li class="line-empty">---@param s number Step value</li>
+        <li class="line-empty">---@return Vec2</li>
+        <li class="line-hit">function Vec2.Lerp(a, b, s)</li>
+        <li class="line-miss">    return a + (b - a) * s</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">--- Unpack a vector into individual components.</li>
+        <li class="line-empty">---@param a Vec2  Vector to unpack</li>
+        <li class="line-empty">---@return number x</li>
+        <li class="line-empty">---@return number y</li>
+        <li class="line-hit">function Vec2.Unpack(a)</li>
+        <li class="line-miss">    return a.x, a.y</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">--- Return the component-wise minimum of two vectors.</li>
+        <li class="line-empty">---@param a Vec2  Left hand operand</li>
+        <li class="line-empty">---@param b Vec2  Right hand operand</li>
+        <li class="line-empty">---@return Vec2 A vector where each component is the lesser value for that component between the two given vectors.</li>
+        <li class="line-hit">function Vec2.ComponentMin(a, b)</li>
+        <li class="line-miss">    return Vec2.New(math.min(a.x, b.x), math.min(a.y, b.y))</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">--- Return the component-wise maximum of two vectors.</li>
+        <li class="line-empty">---@param a Vec2  Left hand operand</li>
+        <li class="line-empty">---@param b Vec2  Right hand operand</li>
+        <li class="line-empty">---@return Vec2 A vector where each component is the lesser value for that component between the two given vectors.</li>
+        <li class="line-hit">function Vec2.ComponentMax(a, b)</li>
+        <li class="line-miss">    return Vec2.New(math.max(a.x, b.x), math.max(a.y, b.y))</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">--- Return a boolean showing if a table is or is not a Vec2.</li>
+        <li class="line-empty">---@param a any  Vector to be tested</li>
+        <li class="line-empty">---@return boolean is_Vec2</li>
+        <li class="line-hit">function Vec2.IsVec2(a)</li>
+        <li class="line-hit">    return type(a) == &quot;table&quot; and</li>
+        <li class="line-hit">        type(a.x) == &quot;number&quot; and</li>
+        <li class="line-hit">        type(a.y) == &quot;number&quot;</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">--- Return a boolean showing if a table is or is not a zero Vec2.</li>
+        <li class="line-empty">---@param a Vec2  Vector to be tested</li>
+        <li class="line-empty">---@return boolean is_zero</li>
+        <li class="line-hit">function Vec2.IsZero(a)</li>
+        <li class="line-miss">    return a.x == 0 and a.y == 0</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">--- Convert point from cartesian to polar.</li>
+        <li class="line-empty">---@param a Vec2  Vector to convert</li>
+        <li class="line-empty">---@return number radius</li>
+        <li class="line-empty">---@return number theta</li>
+        <li class="line-hit">function Vec2.ToPolar(a)</li>
+        <li class="line-miss">    local radius = sqrt(a.x ^ 2 + a.y ^ 2)</li>
+        <li class="line-miss">    local theta  = atan2(a.y, a.x)</li>
+        <li class="line-miss">    theta        = theta &gt; 0 and theta or theta + 2 * math.pi</li>
+        <li class="line-miss">    return radius, theta</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">-- Negate x axis only of vector.</li>
+        <li class="line-empty">---@param a Vec2  Vector to x-flip.</li>
+        <li class="line-empty">---@return Vec2 x-flipped vector</li>
+        <li class="line-hit">function Vec2.FlipX(a)</li>
+        <li class="line-miss">    return Vec2.Vec2.New(-a.x, a.y)</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">-- Negate y axis only of vector.</li>
+        <li class="line-empty">---@param a Vec2  Vector to y-flip.</li>
+        <li class="line-empty">---@return Vec2 y-flipped vector</li>
+        <li class="line-hit">function Vec2.FlipY(a)</li>
+        <li class="line-miss">    return Vec2.Vec2.New(a.x, -a.y)</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">--- Return a formatted string.</li>
+        <li class="line-empty">---@param a Vec2  Vector to be turned into a string</li>
+        <li class="line-empty">---@return string formatted</li>
+        <li class="line-hit">function Vec2.ToString(a)</li>
+        <li class="line-miss">    return string.format(&quot;(%+0.3f,%+0.3f)&quot;, a.x, a.y)</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">---Negation operator</li>
+        <li class="line-empty">---@param a Vec2</li>
+        <li class="line-empty">---@return Vec2</li>
+        <li class="line-hit">function Vec2.__unm(a)</li>
+        <li class="line-miss">    return Vec2.New(-a.x, -a.y)</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">---Equality operator</li>
+        <li class="line-empty">---@param a Vec2|any</li>
+        <li class="line-empty">---@param b Vec2|any</li>
+        <li class="line-empty">---@return boolean</li>
+        <li class="line-hit">function Vec2.__eq(a, b)</li>
+        <li class="line-hit">    if not Vec2.IsVec2(a) or not Vec2.IsVec2(b) then</li>
+        <li class="line-miss">        return false</li>
+        <li class="line-empty">    end</li>
+        <li class="line-hit">    return a.x == b.x and a.y == b.y</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">---Addition operator</li>
+        <li class="line-empty">---@param a Vec2</li>
+        <li class="line-empty">---@param b Vec2</li>
+        <li class="line-empty">---@return Vec2</li>
+        <li class="line-hit">function Vec2.__add(a, b)</li>
+        <li class="line-hit">    return a:Add(b)</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">---Subtraction operator</li>
+        <li class="line-empty">---@param a Vec2</li>
+        <li class="line-empty">---@param b Vec2</li>
+        <li class="line-empty">---@return Vec2</li>
+        <li class="line-hit">function Vec2.__sub(a, b)</li>
+        <li class="line-hit">    return a:Sub(b)</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">---Multiplication operator</li>
+        <li class="line-empty">---@param a Vec2</li>
+        <li class="line-empty">---@param b Vec2|number</li>
+        <li class="line-empty">---@return Vec2</li>
+        <li class="line-hit">function Vec2.__mul(a, b)</li>
+        <li class="line-hit">    if Vec2.IsVec2(b) then</li>
+        <li class="line-empty">        ---@cast b Vec2</li>
+        <li class="line-hit">        return a:Mul(b)</li>
+        <li class="line-empty">    end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">    ---@cast b number</li>
+        <li class="line-hit">    return a:Scale(b)</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-empty">---Division operator</li>
+        <li class="line-empty">---@param a Vec2</li>
+        <li class="line-empty">---@param b Vec2|number</li>
+        <li class="line-empty">---@return Vec2</li>
+        <li class="line-hit">function Vec2.__div(a, b)</li>
+        <li class="line-hit">    if Vec2.IsVec2(b) then</li>
+        <li class="line-empty">        ---@cast b Vec2</li>
+        <li class="line-hit">        return a:Div(b)</li>
+        <li class="line-empty">    end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">    return a:Scale(1 &#47; b)</li>
+        <li class="line-empty">end</li>
+        <li class="line-empty">
+</li>
+        <li class="line-hit">return Vec2</li>
+    </ul>
+
+  </section>
+
+        </section>
+      </main>
+
+      <footer class="quiet">
+        Code coverage generated by <a href="https://keplerproject.github.io/luacov/" target="_blank">LuaCov</a> at 2022-10-27 22:42:58
+      </footer>
+    </div>
+  </body>
+</html>
