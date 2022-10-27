@@ -1,7 +1,4 @@
 local r = require("Render").Instance()
-local Vec2 = require("Vec2")
-
-local v = Vec2.New()
 
 
 -- Gets screen resolution
@@ -15,5 +12,5 @@ local font = r.loadFont('Play', math.min(w, h) * 0.1)
 
 -- Draws "Hello, World!" centered
 r.setNextFillColor(layer, 2, 1, 0, 1)
-r.setNextTextAlign(layer, AlignH_Center, AlignV_Middle)
-r.addText(layer, font, 'Hello, World!', w / 2, h / 2)
+r.setNextTextAlign(layer, AlignHor.Center, AlignVer.Middle)
+r.addText(layer, font, 'Hello, World! Yo!', w / 2, h / 2)

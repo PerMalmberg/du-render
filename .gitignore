@@ -42,3 +42,4 @@ luac.out
 
 util/Codex.lua
 luacov-html/*
+out/*

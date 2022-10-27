@@ -22,3 +22,9 @@ test: clean
 	@LUA_PATH="$(LUA_PATH)" busted .
 	@luacov
 	@$(CLEAN_COV)
+
+dev: test
+	@LUA_PATH="$(LUA_PATH)" du-lua build --copy=development/main
+
+release: test
+	@LUA_PATH="$(LUA_PATH)" du-lua build --copy=release/main
