@@ -62,4 +62,11 @@ describe("Vec2", function()
         assert.is_false(a ~= a)
     end)
 
+    it("Can negate", function()
+        local v = Vec2.New(1, 2)
+        v = -v
+        assert.are_equal(-1, v.x)
+        assert.are_equal(-2, v.y)
+    end)
+
 end)

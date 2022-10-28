@@ -41,6 +41,13 @@ local sin   = math.sin
 ---@field FlipX fun(a:Vec2):Vec2
 ---@field FlipY fun(a:Vec2):Vec2
 ---@field ToString fun(a:Vec2):string
+---@operator add(Vec2):Vec2
+---@operator sub(Vec2):Vec2
+---@operator div(Vec2):Vec2
+---@operator div(number):Vec2
+---@operator mul(Vec2):Vec2
+---@operator mul(number):Vec2
+---@operator unm:Vec2
 
 local Vec2 = {}
 Vec2.__index = Vec2
