@@ -1,7 +1,7 @@
 local Color = require("Color")
 local ColorAndDistance = require("ColorAndDistance")
 local TextAlign = require("TextAlign")
-local RS = require("RenderScript").Instance()
+local rs = require("RenderScript").Instance()
 
 ---@class Props
 ---@field Fill Color The fill color
@@ -40,24 +40,24 @@ function Props.New(color, rotation, shadow, stroke, align)
     ---Applies the propertries to the layer
     ---@param layer integer
     function s.Apply(layer)
-        RS.SetNextFillColor(layer, s.Fill:Unpack())
-        RS.SetNextRotationDegrees(layer, s.Rotation)
-        RS.SetNextShadow(layer, s.Shadow.Distance, s.Shadow.Color:Unpack())
-        RS.SetNextStrokeColor(layer, s.Stroke.Color:Unpack())
-        RS.SetNextStrokeWidth(layer, s.Stroke.Distance)
-        RS.SetNextTextAlign(layer, s.Align.Hor, s.Align.Ver)
+        rs.SetNextFillColor(layer, s.Fill:Unpack())
+        rs.SetNextRotationDegrees(layer, s.Rotation)
+        rs.SetNextShadow(layer, s.Shadow.Distance, s.Shadow.Color:Unpack())
+        rs.SetNextStrokeColor(layer, s.Stroke.Color:Unpack())
+        rs.SetNextStrokeWidth(layer, s.Stroke.Distance)
+        rs.SetNextTextAlign(layer, s.Align.Hor, s.Align.Ver)
     end
 
     ---Applies the propertries as defaults to the layer
     ---@param layer integer
     ---@param shape RSShape
     function s.ApplyDefault(layer, shape)
-        RS.SetDefaultFillColor(layer, shape, s.Fill:Unpack())
-        RS.SetDefaultRotation(layer, shape, s.Rotation)
-        RS.SetDefaultShadow(layer, shape, s.Shadow.Distance, p.Shadow.Color:Unpack())
-        RS.SetDefaultStrokeColor(layer, shape, s.Stroke.Color:Unpack())
-        RS.SetDefaultStrokeWidth(layer, shape, s.Stroke.Distance)
-        RS.SetDefaultTextAlign(layer, s.Align.Hor, s.Align.Ver)
+        rs.SetDefaultFillColor(layer, shape, s.Fill:Unpack())
+        rs.SetDefaultRotation(layer, shape, s.Rotation)
+        rs.SetDefaultShadow(layer, shape, s.Shadow.Distance, p.Shadow.Color:Unpack())
+        rs.SetDefaultStrokeColor(layer, shape, s.Stroke.Color:Unpack())
+        rs.SetDefaultStrokeWidth(layer, shape, s.Stroke.Distance)
+        rs.SetDefaultTextAlign(layer, s.Align.Hor, s.Align.Ver)
     end
 
     return setmetatable(s, Props)

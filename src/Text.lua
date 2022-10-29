@@ -1,4 +1,6 @@
 local rs = require("RenderScript").Instance()
+local Vec2 = require("Vec2")
+
 ---@module "Color"
 ---@module "Font"
 
@@ -36,23 +38,21 @@ function Text.New(text, x, y, layer, font, props)
     }
 
     ---Returns the width and height, in pixels the text occupies.
-    ---@return number, number
+    ---@return Vec2
     function s.Bounds()
-        return rs.GetTextBounds(s.Font, s.Text)
+        return Vec2.New(rs.GetTextBounds(s.Font, s.Text))
     end
 
     ---Width of text
     ---@return number
     function s.Width()
-        local w, _ = rs.GetTextBounds(s.Font, s.Text)
-        return w
+        return s.Bounds().x
     end
 
     ---Width of text
     ---@return number
     function s.Height()
-        local _, h = rs.GetTextBounds(s.Font, s.Text)
-        return h
+        return s.Bounds().y
     end
 
     ---Renders the text

@@ -1,4 +1,4 @@
-local RS = require("RenderScript").Instance()
+local rs = require("RenderScript").Instance()
 
 ---@class Font
 ---@field Size number
@@ -36,7 +36,7 @@ function Font.Get(name, size)
     local f = loaded[key]
 
     if not f then
-        f = RS.LoadFont(name, size)
+        f = rs.LoadFont(name, size)
         loaded[key] = f
     end
 
