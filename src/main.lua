@@ -1,16 +1,23 @@
-local r = require("Render").Instance()
+local RS = require("RenderScript").Instance()
+local Props = require("Props")
+local Color = require("Color")
+local TextAlign = require("TextAlign")
+local Font = require("Font")
+local Screen = require("Screen")
 
+local screen = Screen.Instance()
 
 -- Gets screen resolution
-local w, h = r.getResolution()
+local w, h = RS.GetResolution()
 
--- Creates layer
-local layer = r.createLayer()
+local props = Props.New()
+props.Fill = Color.New(2, 1, 0)
+props.Align = TextAlign.New(RSAlignHor.Center, RSAlignVer.Middle)
 
--- Gets font
-local font = r.loadFont('Play', math.min(w, h) * 0.1)
+local font = Font.Get(FontName.Montserrat, h * 0.05)
 
--- Draws "Hello, World!" centered
-r.setNextFillColor(layer, 2, 1, 0, 1)
-r.setNextTextAlign(layer, AlignHor.Center, AlignVer.Middle)
-r.addText(layer, font, 'Hello, World! Yo!', w / 2, h / 2)
+local hello = screen.Layer(1).Text("Hello cruel world", w / 2, h / 2, font, props)
+screen.Layer(1).Text(string.format("%d/%d", RS.GetRenderCost(), RS.GetRenderCostMax()), w / 2,
+    h / 2 + hello.Height(), font, props)
+
+screen.Render(1)

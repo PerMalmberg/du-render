@@ -69,4 +69,9 @@ describe("Vec2", function()
         assert.are_equal(-2, v.y)
     end)
 
+    it("Can do tostring", function()
+        assert.are_equal("(+1.000,+2.000)", string.format("%s", Vec2.New(1, 2)))
+        assert.are_equal("(-1.000,-2.000)", string.format("%s", Vec2.New(-1, -2)))
+    end)
+
 end)

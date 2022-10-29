@@ -345,6 +345,10 @@ function Vec2.ToString(a)
     return string.format("(%+0.3f,%+0.3f)", a.x, a.y)
 end
 
+function Vec2.__tostring(a)
+    return a:ToString()
+end
+
 ---Negation operator
 ---@param a Vec2
 ---@return Vec2
