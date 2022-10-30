@@ -7,7 +7,8 @@ local Vec2 = require("Vec2")
 local ColorAndDistance = require("ColorAndDistance")
 
 local screen = Screen.Instance()
-local w, h = screen.Bounds():Unpack()
+local screenDim = screen.Bounds()
+local w, h = screenDim:Unpack()
 
 local goldenGlow = Props.New()
 goldenGlow.Fill = Color.New(2, 1, 0)
@@ -23,7 +24,9 @@ background.FillScreen()
 local layer2 = screen.Layer(2)
 layer2.Rotation = -math.deg(math.sin(screen.TimeSinceStart()))
 layer2.Origin = screen.Bounds() / 2
-layer2.Text("Hello cruel world", Vec2.New(w / 2, h / 2), font, goldenGlow)
+layer2.Text("Hello cruel world", screenDim / 2, font, goldenGlow)
+local bezier = layer2.Bezier(Vec2.New(), Vec2.New(screenDim.x, screenDim.y / 3), screenDim)
+bezier.Props.Stroke = ColorAndDistance.New(Color.New(1.5, 1.5, 1.5), 5)
 
 local box = layer.Box(Vec2.New(w / 4, h / 5), Vec2.New(w / 6, h / 6), 5, Props.Default())
 box.Props.Fill = Color.New(1.1, 0, 0)

@@ -31,12 +31,6 @@ function Props.New(color, rotation, shadow, stroke, align)
         Align = align or TextAlign.Default()
     }
 
-    ---Creates a default Props
-    ---@return Props
-    function Props.Default()
-        return Props.New(Color.New(1, 1, 1))
-    end
-
     ---Applies the propertries to the layer
     ---@param layer integer
     function s.Apply(layer)
@@ -61,6 +55,12 @@ function Props.New(color, rotation, shadow, stroke, align)
     end
 
     return setmetatable(s, Props)
+end
+
+---Creates a default Props
+---@return Props
+function Props.Default()
+    return Props.New(Color.New(1, 1, 1))
 end
 
 return Props
