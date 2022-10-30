@@ -57,8 +57,7 @@ function Screen.Instance()
     end
 
     ---Renders the screen content
-    ---@param frames integer
-    function s.Render(frames)
+    function s.Render()
         for i = 1, #layers do
             layers[i].Render()
         end
@@ -66,7 +65,12 @@ function Screen.Instance()
         for i = 1, #components do
             components[i].Render()
         end
+    end
 
+    ---Renders and animates the screen context
+    ---@param frames integer
+    function s.Animate(frames)
+        s.Render()
         rs.RequestAnimationFrame(frames)
     end
 
@@ -74,6 +78,18 @@ function Screen.Instance()
     ---@return number
     function s.Stats()
         return rs.GetRenderCost() / rs.GetRenderCostMax() * 100
+    end
+
+    ---Gets the number of seconds since the screen started
+    ---@return number
+    function s.TimeSinceStart()
+        return rs.GetTime()
+    end
+
+    ---Gets the number of seconds between each frame
+    ---@return number
+    function s.DeltaTime()
+        return rs.GetDeltaTime()
     end
 
     singelton = setmetatable(s, Screen)

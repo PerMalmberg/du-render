@@ -4,6 +4,7 @@ local TextAlign = require("TextAlign")
 local Font = require("Font")
 local Screen = require("Screen")
 local Vec2 = require("Vec2")
+local ColorAndDistance = require("ColorAndDistance")
 
 local screen = Screen.Instance()
 local w, h = screen.Bounds():Unpack()
@@ -19,10 +20,16 @@ local background = layer.Image("assets.prod.novaquark.com/40794/9e363a3f-69d3-46
     Props.Default())
 background.FillScreen()
 
-layer.Text("Hello cruel world", Vec2.New(w / 2, h / 2), font, goldenGlow)
+local layer2 = screen.Layer(2)
+layer2.Rotation = -math.deg(math.sin(screen.TimeSinceStart()))
+layer2.Origin = screen.Bounds() / 2
+layer2.Text("Hello cruel world", Vec2.New(w / 2, h / 2), font, goldenGlow)
 
 local box = layer.Box(Vec2.New(w / 4, h / 5), Vec2.New(w / 6, h / 6), 5, Props.Default())
 box.Props.Fill = Color.New(1.1, 0, 0)
+box.Props.Shadow = ColorAndDistance.New(Color.New(0, 1, 0), 50)
+box.Props.Rotation = math.deg(math.sin(screen.TimeSinceStart()))
+box.Props.Stroke = ColorAndDistance.New(Color.New(0, 0, 1), 25)
 
 
 local greenGlow = Props.New()
@@ -32,4 +39,4 @@ greenGlow.Align = TextAlign.New(RSAlignHor.Left, RSAlignVer.Bottom)
 local cost = layer.Text(string.format("%0.2f%%", screen.Stats()), Vec2.New(), font, greenGlow)
 cost.Pos = Vec2.New(screen.Width() - cost.Width(), cost.Height())
 
-screen.Render(1)
+screen.Animate(1)
