@@ -4,6 +4,7 @@
 local Vec2 = require("Vec2")
 local Text = require("Text")
 local Image = require("Image")
+local Box = require("Box")
 local rs = require("RenderScript").Instance()
 
 ---@class Layer
@@ -12,8 +13,9 @@ local rs = require("RenderScript").Instance()
 ---@field Origin Vec2
 ---@field Rotation number
 ---@field Scale Vec2
----@field Text fun(text:string, x:number, y:number, font:FontHandle, props:Props):Text
----@field Image fun(url:string, x:number, y:number, props:Props):Image
+---@field Text fun(text:string, pos:Vec2, font:FontHandle, props:Props):Text
+---@field Image fun(url:string, pos:Vec2, props:Props):Image
+---@field Box fun(pos:Vec2, dimensions:Vec2, cornerRadius:number, props:Props):Box
 ---@field Render fun()
 
 local Layer = {}
@@ -32,27 +34,37 @@ function Layer.New(screen)
 
     ---Create a new text on the layer
     ---@param text string
-    ---@param x number
-    ---@param y number
+    ---@param pos Vec2
     ---@param font FontHandle
     ---@param props Props
     ---@return Text
-    function s.Text(text, x, y, font, props)
-        local t = Text.New(text, x, y, s, font, props)
+    function s.Text(text, pos, font, props)
+        local t = Text.New(text, pos, s, font, props)
         screen.Add(t)
         return t
     end
 
     ---Adds an image to the layer
     ---@param url string
-    ---@param x number
-    ---@param y number
+    ---@param pos Vec2
     ---@param props Props
     ---@return Image
-    function s.Image(url, x, y, props)
-        local img = Image.New(url, x, y, s, props)
+    function s.Image(url, pos, props)
+        local img = Image.New(url, pos, s, props)
         screen.Add(img)
         return img
+    end
+
+    ---Adds a box to the layer
+    ---@param pos Vec2
+    ---@param dimensions Vec2
+    ---@param cornerRadius number
+    ---@param props Props
+    ---@return Box
+    function s.Box(pos, dimensions, cornerRadius, props)
+        local b = Box.New(s, pos, dimensions, cornerRadius, props)
+        screen.Add(b)
+        return b
     end
 
     function s.Render()

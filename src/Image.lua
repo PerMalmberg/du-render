@@ -7,10 +7,9 @@ local Vec2 = require("Vec2")
 
 ---@class Image
 ---@field Id ImageHandle
----@field X number
----@field Y number
----@field Props Props
+---@field Pos Vec2
 ---@field Dimensions Vec2
+---@field Props Props
 ---@field FillScreen fun()
 ---@field IsLoaded fun():boolean
 ---@field Bounds fun():Vec2
@@ -23,16 +22,14 @@ Image.__index = Image
 
 ---Creates a new Image
 ---@param url string
----@param x number
----@param y number
+---@param pos Vec2
 ---@param layer Layer
 ---@param props Props
 ---@return Image
-function Image.New(url, x, y, layer, props)
+function Image.New(url, pos, layer, props)
     local s = {
         Id = rs.LoadImage(url),
-        X = x,
-        Y = y,
+        Pos = pos,
         Dimensions = Vec2.New(rs.GetResolution()),
         Props = props,
         Layer = layer
@@ -63,8 +60,7 @@ function Image.New(url, x, y, layer, props)
     end
 
     function s.FillScreen()
-        s.X = 0
-        s.Y = 0
+        s.Pos = Vec2.New()
         s.Dimensions = Vec2.New(rs.GetResolution())
     end
 
@@ -72,7 +68,7 @@ function Image.New(url, x, y, layer, props)
     function s.Render()
         local layerId = s.Layer.Id
         s.Props.Apply(layerId)
-        rs.AddImage(s.Layer.Id, s.Id, s.X, s.Y, s.Bounds():Unpack())
+        rs.AddImage(s.Layer.Id, s.Id, s.Pos.x, s.Pos.y, s.Dimensions:Unpack())
     end
 
     return setmetatable(s, Image)

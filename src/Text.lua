@@ -6,8 +6,7 @@ local Vec2 = require("Vec2")
 
 ---@class Text
 ---@field Text string
----@field X number
----@field Y number
+---@field Pos Vec2
 ---@field Font FontHandle
 ---@field Layer Layer
 ---@field Props Props
@@ -21,17 +20,15 @@ Text.__index = Text
 
 ---Creates a new Text
 ---@param text string
----@param x number
----@param y number
+---@param pos Vec2
 ---@param layer Layer
 ---@param font FontHandle
 ---@param props Props
 ---@return Text
-function Text.New(text, x, y, layer, font, props)
+function Text.New(text, pos, layer, font, props)
     local s = {
         Text = text,
-        X = x,
-        Y = y,
+        Pos = pos,
         Font = font,
         Props = props,
         Layer = layer
@@ -59,7 +56,7 @@ function Text.New(text, x, y, layer, font, props)
     function s.Render()
         local layerId = s.Layer.Id
         s.Props.Apply(layerId)
-        rs.AddText(layerId, s.Font, s.Text, s.X, s.Y)
+        rs.AddText(layerId, s.Font, s.Text, s.Pos:Unpack())
     end
 
     return setmetatable(s, Text)
