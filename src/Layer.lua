@@ -3,6 +3,7 @@
 
 local Vec2 = require("Vec2")
 local Text = require("Text")
+local Image = require("Image")
 local rs = require("RenderScript").Instance()
 
 ---@class Layer
@@ -12,6 +13,7 @@ local rs = require("RenderScript").Instance()
 ---@field Rotation number
 ---@field Scale Vec2
 ---@field Text fun(text:string, x:number, y:number, font:FontHandle, props:Props):Text
+---@field Image fun(url:string, x:number, y:number, props:Props):Image
 ---@field Render fun()
 
 local Layer = {}
@@ -39,6 +41,18 @@ function Layer.New(screen)
         local t = Text.New(text, x, y, s, font, props)
         screen.Add(t)
         return t
+    end
+
+    ---Adds an image to the layer
+    ---@param url string
+    ---@param x number
+    ---@param y number
+    ---@param props Props
+    ---@return Image
+    function s.Image(url, x, y, props)
+        local img = Image.New(url, x, y, s, props)
+        screen.Add(img)
+        return img
     end
 
     function s.Render()
