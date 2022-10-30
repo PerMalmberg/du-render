@@ -19,6 +19,11 @@
       "name": "development",
       "minify": false,
       "handleErrors": false
+    },
+    "release": {
+      "name": "release",
+      "minify": true,
+      "handleErrors": false
     }
   },
   "internalPaths": [

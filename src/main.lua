@@ -5,7 +5,7 @@ local Font = require("Font")
 local Screen = require("Screen")
 
 local screen = Screen.Instance()
-local w, h = screen.GetBounds():Unpack()
+local w, h = screen.Bounds():Unpack()
 
 local goldenGlow = Props.New()
 goldenGlow.Fill = Color.New(2, 1, 0)
@@ -23,6 +23,6 @@ local rotatedLayer = screen.Layer(2)
 rotatedLayer.Rotation = 45
 rotatedLayer.Origin = screen.Bounds() / 2
 
-rotatedLayer.Text(string.format("%f", screen.Stats()), w / 2, h / 2, font, greenGlow)
+rotatedLayer.Text(string.format("%0.2f%%", screen.Stats()), w / 2, h / 2, font, greenGlow)
 
 screen.Render(1)
