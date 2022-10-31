@@ -1,11 +1,15 @@
 ---@module "Screen"
 
+local rs = require("RenderScript").Instance()
 local Vec2 = require("Vec2")
 local Text = require("Text")
 local Image = require("Image")
 local Box = require("Box")
 local Bezier = require("Bezier")
-local rs = require("RenderScript").Instance()
+local Circle = require("Circle")
+local Line = require("Line")
+local Triangle = require("Triangle")
+local Quad = require("Quad")
 local Props = require("Props")
 
 ---@class Layer
@@ -18,6 +22,10 @@ local Props = require("Props")
 ---@field Image fun(url:string, pos:Vec2, props:Props):Image
 ---@field Box fun(pos:Vec2, dimensions:Vec2, cornerRadius:number, props:Props?):Box
 ---@field Bezier fun(a:Vec2, b:Vec2, c:Vec2, props:Props?):Bezier
+---@field Line fun(a:Vec2, b:Vec2, props:Props?):Line
+---@field Triangle fun(a:Vec2, b:Vec2, c:Vec2, props:Props?):Triangle
+---@field Circle fun(pos:Vec2, radius:number, props:Props?):Circle
+---@field Quad fun(a:Vec2, b:Vec2, c:Vec2, d:Vec2, props:Props?):Quad
 ---@field Render fun()
 
 local Layer = {}
@@ -79,6 +87,53 @@ function Layer.New(screen)
         local bezier = Bezier.New(s, a, b, c, props or Props.Default())
         screen.Add(bezier)
         return bezier
+    end
+
+    ---Adds a circle to the layer
+    ---@param pos Vec2
+    ---@param radius number
+    ---@param props Props?
+    ---@return Circle
+    function s.Circle(pos, radius, props)
+        local circle = Circle.New(s, pos, radius, props or Props.Default())
+        screen.Add(circle)
+        return circle
+    end
+
+    ---Adds a line to the layer
+    ---@param a Vec2
+    ---@param b Vec2
+    ---@param props Props?
+    ---@return Line
+    function s.Line(a, b, props)
+        local line = Line.New(s, a, b, props or Props.Default())
+        screen.Add(line)
+        return line
+    end
+
+    ---Adds a Quad to the layer
+    ---@param a Vec2
+    ---@param b Vec2
+    ---@param c Vec2
+    ---@param d Vec2
+    ---@param props Props?
+    ---@return Quad
+    function s.Quad(a, b, c, d, props)
+        local quad = Quad.New(s, a, b, c, d, props or Props.Default())
+        screen.Add(quad)
+        return quad
+    end
+
+    ---Adds a Triangle to the layer
+    ---@param a Vec2
+    ---@param b Vec2
+    ---@param c Vec2
+    ---@param props Props?
+    ---@return Triangle
+    function s.Triangle(a, b, c, props)
+        local triangle = Triangle.New(s, a, b, c, props or Props.Default())
+        screen.Add(triangle)
+        return triangle
     end
 
     function s.Render()
