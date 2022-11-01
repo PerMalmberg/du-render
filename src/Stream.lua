@@ -1,5 +1,5 @@
 ---@alias CommQueue { queue:string[], waitingForReply:boolean }
----@alias ScreenLink {setScriptInput:fun(string), getScriptOutput:fun():string, clearScriptOutput:fun()}
+---@alias ScreenLink {setScriptInput:fun(string), clearScriptOutput:fun(), getScriptOutput:fun():string}
 ---@alias Renderer {setOutput:fun(string), getInput:fun():string}
 
 ---@class Stream
@@ -63,9 +63,8 @@ function Stream.New(interface, blockSize, onDataReceived)
     end
 
     ---Assembles the package
-    ---@param count number
     ---@param payload string
-    local function assemblePackage(count, payload)
+    local function assemblePackage(payload)
         local queue = getInput().queue
 
         if #queue == 0 then
@@ -73,11 +72,16 @@ function Stream.New(interface, blockSize, onDataReceived)
         end
 
         queue[#queue] = queue[#queue] .. payload
+    end
 
+    ---Completes a transmission
+    ---@param count number
+    local function completeTransmission(count)
         if count == 0 then
+            local queue = getInput().queue
             onDataReceived(queue[#queue])
             -- Last part, begin new data
-            table.insert(queue, "")
+            queue[1] = ""
         end
     end
 
@@ -103,6 +107,7 @@ function Stream.New(interface, blockSize, onDataReceived)
             r = interface.getInput()
         else
             r = interface.getScriptOutput()
+            interface.clearScriptOutput()
         end
         local count, cmd, payload = r:match("^#(%d+)|(%d+)|(.*)$")
 
@@ -116,35 +121,39 @@ function Stream.New(interface, blockSize, onDataReceived)
 
         if runningInScreen then
             if validPackage then
-                if cmd == Command.Poll then
+                if cmd == Command.Poll and #out.queue > 0 then
                     interface.setOutput(out.queue[1])
-                    table.remove(out.queue)
+                    table.remove(out.queue, 1)
                 elseif cmd == Command.Data then
-                    assemblePackage(count, payload)
+                    assemblePackage(payload)
                     interface.setOutput(createBlock(0, Command.Ack))
+                    completeTransmission(count)
                 elseif cmd == Command.Reset then
                     out.queue = {}
                     out.waitingForReply = false
                     inp.queue = {}
                     inp.waitingForReply = false
+                else
+                    interface.setOutput(createBlock(0, Command.Ack))
                 end
             end
         else
             if validPackage then
                 if cmd == Command.Data then
-                    assemblePackage(count, payload)
+                    assemblePackage(payload)
+                    completeTransmission(count)
                 elseif cmd == Command.Ack then
-                    table.remove(out.queue, 1)
                     out.waitingForReply = false
                 end
             end
 
-            -- When we're the master, we let the output remain until we have received an ACK.
-            if not out.waitingForReply and #out.queue > 0 then
-                interface.setScriptInput(out.queue[1])
+            if #out.queue == 0 or out.waitingForReply then
+                interface.setScriptInput(createBlock(0, Command.Poll))
                 out.waitingForReply = true
-            elseif #out.queue == 0 then
-                interface.setScriptInput("")
+            elseif #out.queue > 0 then
+                interface.setScriptInput(out.queue[1])
+                table.remove(out.queue, 1)
+                out.waitingForReply = true
             end
         end
     end
