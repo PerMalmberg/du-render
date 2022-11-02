@@ -44,29 +44,24 @@ function Stream.New(interface, blockSize, onDataReceived)
 
     local runningInScreen = interface.setScriptInput == nil
 
-    local getInput ---@type fun():CommQueue
-    local getOutput ---@type fun():CommQueue
-    local input = { queue = {}, waitingForReply = false, seq = 0 }
-    local output = { queue = {}, waitingForReply = false, seq = 0 }
+    local input
+    local output
 
     if runningInScreen then
-        -- When running in a screen unit, use _ENV to store data
-        if not _ENV["streamInput"] then
-            _ENV["streamInput"] = { queue = {}, waitingForReply = 0, seq = 0 }
-            _ENV["streamOutput"] = { queue = {}, waitingForReply = 0, seq = 0 }
-        end
-
-        getInput = function() return _ENV["streamInput"] end
-        getOutput = function() return _ENV["streamOutput"] end
+        -- When running in a screen unit, use the element itself to store data.
+        interface.streamInput = { queue = {}, waitingForReply = 0, seq = 0 }
+        interface.streamOutput = { queue = {}, waitingForReply = 0, seq = 0 }
+        output = interface.streamInput
+        input = interface.streamOutput
     else
-        getInput = function() return input end
-        getOutput = function() return output end
+        output = { queue = {}, waitingForReply = false, seq = 0 }
+        input = { queue = {}, waitingForReply = false, seq = 0 }
     end
 
     ---Assembles the package
     ---@param payload string
     local function assemblePackage(payload)
-        local queue = getInput().queue
+        local queue = input.queue
 
         if #queue == 0 then
             table.insert(queue, "")
@@ -78,7 +73,7 @@ function Stream.New(interface, blockSize, onDataReceived)
     ---@param count number
     local function completeTransmission(count)
         if count == 0 then
-            local queue = getInput().queue
+            local queue = input.queue
             onDataReceived(queue[#queue])
             -- Last part, begin new data
             queue[1] = ""
@@ -114,8 +109,6 @@ function Stream.New(interface, blockSize, onDataReceived)
     ---Call this function in OnUpdate
     ---@param currentTime number Current time
     function s.OnUpdate(currentTime)
-        local out = getOutput()
-        local inp = getInput()
 
         local r
         if runningInScreen then
@@ -136,24 +129,24 @@ function Stream.New(interface, blockSize, onDataReceived)
 
         if runningInScreen then
             if validPackage then
-                if sameInput(inp, seq) then
+                if sameInput(input, seq) then
                     return
                 end
 
-                if cmd == Command.Poll and #out.queue > 0 then
-                    interface.setOutput(out.queue[1])
-                    table.remove(out.queue, 1)
+                if cmd == Command.Poll and #output.queue > 0 then
+                    interface.setOutput(output.queue[1])
+                    table.remove(output.queue, 1)
                 elseif cmd == Command.Data then
                     assemblePackage(payload)
-                    interface.setOutput(createBlock(0, out, Command.Ack))
+                    interface.setOutput(createBlock(0, output, Command.Ack))
                     completeTransmission(count)
                 elseif cmd == Command.Reset then
-                    out.queue = {}
-                    out.waitingForReply = false
-                    inp.queue = {}
-                    inp.waitingForReply = false
+                    output.queue = {}
+                    output.waitingForReply = false
+                    input.queue = {}
+                    input.waitingForReply = false
                 else
-                    interface.setOutput(createBlock(0, out, Command.Ack))
+                    interface.setOutput(createBlock(0, output, Command.Ack))
                 end
             end
         else
@@ -161,20 +154,20 @@ function Stream.New(interface, blockSize, onDataReceived)
                 if cmd == Command.Data then
                     assemblePackage(payload)
                     completeTransmission(count)
-                    out.waitingForReply = false
+                    output.waitingForReply = false
                 end
                 -- No need to handle ACK, it's just a trigger to move on.
-                out.waitingForReply = false
+                output.waitingForReply = false
             end
 
-            if not out.waitingForReply then
-                if #out.queue == 0 then
-                    interface.setScriptInput(createBlock(0, out, Command.Poll))
-                    out.waitingForReply = true
-                elseif #out.queue > 0 then
-                    interface.setScriptInput(out.queue[1])
-                    table.remove(out.queue, 1)
-                    out.waitingForReply = true
+            if not output.waitingForReply then
+                if #output.queue == 0 then
+                    interface.setScriptInput(createBlock(0, output, Command.Poll))
+                    output.waitingForReply = true
+                elseif #output.queue > 0 then
+                    interface.setScriptInput(output.queue[1])
+                    table.remove(output.queue, 1)
+                    output.waitingForReply = true
                 end
             end
         end
@@ -184,18 +177,17 @@ function Stream.New(interface, blockSize, onDataReceived)
     ---@param data string
     function s.Write(data)
         data = data or ""
-        local out = getOutput()
         local blockCount = math.ceil(data:len() / blockSize) - 1
 
         while data:len() > blockSize - headerSize do
             local part = data:sub(1, blockSize)
             data = data:sub(blockSize + 1)
-            table.insert(out.queue, createBlock(blockCount, out, Command.Data, part))
+            table.insert(output.queue, createBlock(blockCount, output, Command.Data, part))
             blockCount = blockCount - 1
         end
 
         if data:len() > 0 then
-            table.insert(out.queue, createBlock(blockCount, out, Command.Data, data))
+            table.insert(output.queue, createBlock(blockCount, output, Command.Data, data))
         end
     end
 
