@@ -1,4 +1,4 @@
----@alias CommQueue { queue:string[], waitingForReply:boolean }
+---@alias CommQueue { queue:string[], waitingForReply:boolean, seq:integer }
 ---@alias ScreenLink {setScriptInput:fun(string), clearScriptOutput:fun(), getScriptOutput:fun():string}
 ---@alias Renderer {setOutput:fun(string), getInput:fun():string}
 
@@ -10,10 +10,11 @@
 
 --[[
     Data format:
-    #remaining_chucks|cmd|payload
+    #remaining_chucks|seq|cmd|payload
 
     Where:
     - remaining_chunks is a 2-digit integer indicating how many chunks remains to complete the message. 0 means the last chuck.
+    - seq is a single digit seqence number, used to ensure we don't read the same data twice. It wraps around at 9.
     - cmd is a two digit integer indicating what to do with the data
     - payload is the actual payload, if any
 ]]
@@ -45,14 +46,14 @@ function Stream.New(interface, blockSize, onDataReceived)
 
     local getInput ---@type fun():CommQueue
     local getOutput ---@type fun():CommQueue
-    local input = { queue = {}, waitingForReply = false }
-    local output = { queue = {}, waitingForReply = false }
+    local input = { queue = {}, waitingForReply = false, seq = 0 }
+    local output = { queue = {}, waitingForReply = false, seq = 0 }
 
     if runningInScreen then
         -- When running in a screen unit, use _ENV to store data
         if not _ENV["streamInput"] then
-            _ENV["streamInput"] = { queue = {}, waitingForReply = 0 }
-            _ENV["streamOutput"] = { queue = {}, waitingForReply = 0 }
+            _ENV["streamInput"] = { queue = {}, waitingForReply = 0, seq = 0 }
+            _ENV["streamOutput"] = { queue = {}, waitingForReply = 0, seq = 0 }
         end
 
         getInput = function() return _ENV["streamInput"] end
@@ -70,7 +71,6 @@ function Stream.New(interface, blockSize, onDataReceived)
         if #queue == 0 then
             table.insert(queue, "")
         end
-
         queue[#queue] = queue[#queue] .. payload
     end
 
@@ -85,14 +85,29 @@ function Stream.New(interface, blockSize, onDataReceived)
         end
     end
 
+    local function sameInput(commQueue, seq)
+        if seq == commQueue.seq then
+            return true
+        else
+            commQueue.seq = seq
+            return false
+        end
+    end
+
     ---Creates a block
     ---@param blockCount integer
+    ---@param commQueue CommQueue
     ---@param cmd StreamCommand
     ---@param payload string?
     ---@return string
-    local function createBlock(blockCount, cmd, payload)
+    local function createBlock(blockCount, commQueue, cmd, payload)
+        commQueue.seq = (commQueue.seq + 1)
+        if commQueue.seq > 9 then
+            commQueue.seq = 0
+        end
+
         payload = payload or ""
-        local b = string.format("#%0.2d|%0.2d|%s", blockCount, cmd, payload)
+        local b = string.format("#%0.2d|%0.1d|%0.2d|%s", blockCount, commQueue.seq, cmd, payload)
         return b
     end
 
@@ -109,7 +124,7 @@ function Stream.New(interface, blockSize, onDataReceived)
             r = interface.getScriptOutput()
             interface.clearScriptOutput()
         end
-        local count, cmd, payload = r:match("^#(%d+)|(%d+)|(.*)$")
+        local count, seq, cmd, payload = r:match("^#(%d+)|(%d)|(%d+)|(.*)$")
 
         payload = payload or ""
         local validPackage = count and cmd
@@ -121,12 +136,16 @@ function Stream.New(interface, blockSize, onDataReceived)
 
         if runningInScreen then
             if validPackage then
+                if sameInput(inp, seq) then
+                    return
+                end
+
                 if cmd == Command.Poll and #out.queue > 0 then
                     interface.setOutput(out.queue[1])
                     table.remove(out.queue, 1)
                 elseif cmd == Command.Data then
                     assemblePackage(payload)
-                    interface.setOutput(createBlock(0, Command.Ack))
+                    interface.setOutput(createBlock(0, out, Command.Ack))
                     completeTransmission(count)
                 elseif cmd == Command.Reset then
                     out.queue = {}
@@ -134,7 +153,7 @@ function Stream.New(interface, blockSize, onDataReceived)
                     inp.queue = {}
                     inp.waitingForReply = false
                 else
-                    interface.setOutput(createBlock(0, Command.Ack))
+                    interface.setOutput(createBlock(0, out, Command.Ack))
                 end
             end
         else
@@ -142,18 +161,21 @@ function Stream.New(interface, blockSize, onDataReceived)
                 if cmd == Command.Data then
                     assemblePackage(payload)
                     completeTransmission(count)
-                elseif cmd == Command.Ack then
                     out.waitingForReply = false
                 end
+                -- No need to handle ACK, it's just a trigger to move on.
+                out.waitingForReply = false
             end
 
-            if #out.queue == 0 or out.waitingForReply then
-                interface.setScriptInput(createBlock(0, Command.Poll))
-                out.waitingForReply = true
-            elseif #out.queue > 0 then
-                interface.setScriptInput(out.queue[1])
-                table.remove(out.queue, 1)
-                out.waitingForReply = true
+            if not out.waitingForReply then
+                if #out.queue == 0 then
+                    interface.setScriptInput(createBlock(0, out, Command.Poll))
+                    out.waitingForReply = true
+                elseif #out.queue > 0 then
+                    interface.setScriptInput(out.queue[1])
+                    table.remove(out.queue, 1)
+                    out.waitingForReply = true
+                end
             end
         end
     end
@@ -168,12 +190,12 @@ function Stream.New(interface, blockSize, onDataReceived)
         while data:len() > blockSize - headerSize do
             local part = data:sub(1, blockSize)
             data = data:sub(blockSize + 1)
-            table.insert(out.queue, createBlock(blockCount, Command.Data, part))
+            table.insert(out.queue, createBlock(blockCount, out, Command.Data, part))
             blockCount = blockCount - 1
         end
 
         if data:len() > 0 then
-            table.insert(out.queue, createBlock(blockCount, Command.Data, data))
+            table.insert(out.queue, createBlock(blockCount, out, Command.Data, data))
         end
     end
 
