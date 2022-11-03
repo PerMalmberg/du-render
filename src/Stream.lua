@@ -3,8 +3,8 @@
 ---@alias Renderer {setOutput:fun(string), getInput:fun():string}
 
 ---@class Stream
----@field New fun(interface:ScreenLink|Renderer, onDataReceived:fun(string)):Stream
----@field OnUpdate fun(currentTime:number)
+---@field New fun(interface:ScreenLink|Renderer, onDataReceived:fun(string), timeout:number, onTimeout:fun()):Stream
+---@field OnUpdate fun()
 ---@field Write fun(data:string)
 
 --[[
@@ -36,8 +36,9 @@ Stream.__index = Stream
 ---@param interface ScreenLink|Renderer Either a link to a screen or _ENV when in RenderScript
 ---@param onDataReceived fun(string) Callback for when data is received
 ---@param timeout number The amount of time to wait for a reply before considering the connection broken.
+---@param onTimeout fun() The function to call on a timeout
 ---@return Stream
-function Stream.New(interface, onDataReceived, timeout)
+function Stream.New(interface, onDataReceived, timeout, onTimeout)
     local s = {}
     local blockSize = 1024 - headerSize -- Game allows max 1024 bytes in buffers
 
@@ -58,8 +59,8 @@ function Stream.New(interface, onDataReceived, timeout)
 
     if runningInScreen then
         -- When running in a screen unit, use the element itself to store data.
-        interface.streamInput = { queue = {}, waitingForReply = 0, seq = 0 }
-        interface.streamOutput = { queue = {}, waitingForReply = 0, seq = 0 }
+        interface.streamInput = { queue = {}, waitingForReply = false, seq = 0 }
+        interface.streamOutput = { queue = {}, waitingForReply = false, seq = 0 }
         output = interface.streamInput
         input = interface.streamOutput
     else
@@ -137,6 +138,10 @@ function Stream.New(interface, onDataReceived, timeout)
             validPacket = validPacket and cmd and count
         end
 
+        if not validPacket then
+            return nil, 0, ""
+        end
+
         if runningInScreen then
             -- Since we can't clear the input, we compare the sequence number to the previous packet
             if sameInput(input, seq) then
@@ -152,35 +157,53 @@ function Stream.New(interface, onDataReceived, timeout)
 
         local cmd, count, payload = readData()
 
+        -- Did we get any input?
         if cmd then
+            lastReceived = getTime()
             if runningInScreen then
-                if cmd == Command.Poll and #output.queue > 0 then
-                    interface.setOutput(output.queue[1])
-                    table.remove(output.queue, 1)
-                elseif cmd == Command.Data then
-                    assemblePackage(payload)
-                    interface.setOutput(createBlock(0, output, Command.Ack))
-                    completeTransmission(count)
+                local sendAck = false
+
+                if cmd == Command.Poll or cmd == Command.Data then
+                    if cmd == Command.Data then
+                        assemblePackage(payload)
+                        completeTransmission(count)
+                    end
+
+                    -- Send either ACK or actual data as a reply
+                    if #output.queue > 0 then
+                        interface.setOutput(output.queue[1])
+                        table.remove(output.queue, 1)
+                    else
+                        sendAck = true
+                    end
                 elseif cmd == Command.Reset then
                     output.queue = {}
                     output.waitingForReply = false
                     input.queue = {}
                     input.waitingForReply = false
-                else
+                    sendAck = true
+                end
+
+                if sendAck then
                     interface.setOutput(createBlock(0, output, Command.Ack))
                 end
             else
                 if cmd == Command.Data then
                     assemblePackage(payload)
                     completeTransmission(count)
-                    output.waitingForReply = false
                 end
                 -- No need to handle ACK, it's just a trigger to move on.
                 output.waitingForReply = false
             end
         end
 
-        if not output.waitingForReply then
+        if getTime() - lastReceived > timeout then
+            onTimeout()
+            output.queue = {}
+            output.waitingForReply = false
+        end
+
+        if not runningInScreen and not output.waitingForReply then
             if #output.queue == 0 then
                 interface.setScriptInput(createBlock(0, output, Command.Poll))
                 output.waitingForReply = true
