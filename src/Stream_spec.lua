@@ -1,3 +1,5 @@
+local env = require("environment")
+
 local Stream = require("Stream")
 
 local input = ""
@@ -48,6 +50,7 @@ function DummyRender.New()
 end
 
 describe("Stream", function()
+    env.Prepare()
     it("Can send data to screen", function()
         local screenRec = ""
         local boardRec = ""

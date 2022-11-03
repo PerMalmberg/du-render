@@ -1,0 +1,3 @@
+[submodule "external/du-unit-testing"]
+	path = external/du-unit-testing
+	url = git@github.com:PerMalmberg/du-unit-testing.git

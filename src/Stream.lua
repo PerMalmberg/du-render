@@ -3,7 +3,7 @@
 ---@alias Renderer {setOutput:fun(string), getInput:fun():string}
 
 ---@class Stream
----@field New fun(interface:ScreenLink|Renderer, blockSize:integer, onDataReceived:fun(string)):Stream
+---@field New fun(interface:ScreenLink|Renderer, onDataReceived:fun(string)):Stream
 ---@field OnUpdate fun(currentTime:number)
 ---@field Write fun(data:string)
 
@@ -35,8 +35,9 @@ Stream.__index = Stream
 ---Create a new Stream
 ---@param interface ScreenLink|Renderer Either a link to a screen or _ENV when in RenderScript
 ---@param onDataReceived fun(string) Callback for when data is received
+---@param timeout number The amount of time to wait for a reply before considering the connection broken.
 ---@return Stream
-function Stream.New(interface, onDataReceived)
+function Stream.New(interface, onDataReceived, timeout)
     local s = {}
     local blockSize = 1024 - headerSize -- Game allows max 1024 bytes in buffers
 
@@ -44,6 +45,16 @@ function Stream.New(interface, onDataReceived)
 
     local input
     local output
+
+    local getTime
+
+    if _ENV["getDeltaTime"] then
+        getTime = _ENV.getTime
+    else
+        getTime = _G.system.getUtcTime
+    end
+
+    local lastReceived = getTime()
 
     if runningInScreen then
         -- When running in a screen unit, use the element itself to store data.
@@ -104,10 +115,11 @@ function Stream.New(interface, onDataReceived)
         return b
     end
 
-    ---Call this function in OnUpdate
-    ---@param currentTime number Current time
-    function s.OnUpdate(currentTime)
-
+    ---Reads incoming data
+    ---@return StreamCommand|nil #Command
+    ---@return number #Packet count
+    ---@return string #Payload
+    local function readData()
         local r
         if runningInScreen then
             r = interface.getInput()
@@ -118,19 +130,30 @@ function Stream.New(interface, onDataReceived)
         local count, seq, cmd, payload = r:match("^#(%d+)|(%d)|(%d+)|(.*)$")
 
         payload = payload or ""
-        local validPackage = count and cmd
-        if validPackage then
+        local validPacket = count and cmd
+        if validPacket then
             cmd = tonumber(cmd)
             count = tonumber(count)
-            validPackage = validPackage and cmd and count
+            validPacket = validPacket and cmd and count
         end
 
         if runningInScreen then
-            if validPackage then
-                if sameInput(input, seq) then
-                    return
-                end
+            -- Since we can't clear the input, we compare the sequence number to the previous packet
+            if sameInput(input, seq) then
+                return nil, 0, ""
+            end
+        end
 
+        return cmd, count, payload
+    end
+
+    ---Call this function in OnUpdate
+    function s.OnUpdate()
+
+        local cmd, count, payload = readData()
+
+        if cmd then
+            if runningInScreen then
                 if cmd == Command.Poll and #output.queue > 0 then
                     interface.setOutput(output.queue[1])
                     table.remove(output.queue, 1)
@@ -146,9 +169,7 @@ function Stream.New(interface, onDataReceived)
                 else
                     interface.setOutput(createBlock(0, output, Command.Ack))
                 end
-            end
-        else
-            if validPackage then
+            else
                 if cmd == Command.Data then
                     assemblePackage(payload)
                     completeTransmission(count)
@@ -157,16 +178,16 @@ function Stream.New(interface, onDataReceived)
                 -- No need to handle ACK, it's just a trigger to move on.
                 output.waitingForReply = false
             end
+        end
 
-            if not output.waitingForReply then
-                if #output.queue == 0 then
-                    interface.setScriptInput(createBlock(0, output, Command.Poll))
-                    output.waitingForReply = true
-                elseif #output.queue > 0 then
-                    interface.setScriptInput(output.queue[1])
-                    table.remove(output.queue, 1)
-                    output.waitingForReply = true
-                end
+        if not output.waitingForReply then
+            if #output.queue == 0 then
+                interface.setScriptInput(createBlock(0, output, Command.Poll))
+                output.waitingForReply = true
+            elseif #output.queue > 0 then
+                interface.setScriptInput(output.queue[1])
+                table.remove(output.queue, 1)
+                output.waitingForReply = true
             end
         end
     end
