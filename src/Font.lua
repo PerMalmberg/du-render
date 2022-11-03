@@ -25,22 +25,12 @@ FontName = {
 local Font = {}
 Font.__index = Font
 
-local loaded = {} ---@type table<string,FontHandle>
-
 ---Gets the requested font
 ---@param name FontName
 ---@param size integer
 ---@return FontHandle
 function Font.Get(name, size)
-    local key = string.format("%s%f", name, size)
-    local f = loaded[key]
-
-    if not f then
-        f = rs.LoadFont(name, size)
-        loaded[key] = f
-    end
-
-    return f
+    return rs.LoadFont(name, size)
 end
 
 return Font

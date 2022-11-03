@@ -72,6 +72,9 @@ function Screen.Instance()
     function s.Animate(frames)
         s.Render()
         rs.RequestAnimationFrame(frames)
+        -- Cannot reuse layers between frames.
+        layers = {}
+        components = {}
     end
 
     ---Gets the render cost in percentage

@@ -5,7 +5,6 @@
 ---@class Stream
 ---@field New fun(interface:ScreenLink|Renderer, blockSize:integer, onDataReceived:fun(string)):Stream
 ---@field OnUpdate fun(currentTime:number)
----@field Read fun():string|nil
 ---@field Write fun(data:string)
 
 --[[

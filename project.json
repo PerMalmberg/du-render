@@ -8,9 +8,19 @@
   "outputPath": "out",
   "libs": [],
   "builds": {
-    "main": {
-      "name": "main",
+    "render_example": {
+      "name": "example/render/main",
       "type": "screen",
+      "slots": {}
+    },
+    "stream_example_screen": {
+      "name": "example/stream/screen",
+      "type": "screen",
+      "slots": {}
+    },
+    "stream_example_controller": {
+      "name": "example/stream/board",
+      "type": "control",
       "slots": {}
     }
   },
