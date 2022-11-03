@@ -52,10 +52,10 @@ describe("Stream", function()
         local screenRec = ""
         local boardRec = ""
 
-        local screenStream = Stream.New(DummyRender.New(), 3, function(data)
+        local screenStream = Stream.New(DummyRender.New(), function(data)
             screenRec = data
         end)
-        local boardStream = Stream.New(ScreenLink.New(), 3, function(data)
+        local boardStream = Stream.New(ScreenLink.New(), function(data)
             boardRec = data
         end)
 
@@ -72,10 +72,10 @@ describe("Stream", function()
         local screenRec = ""
         local boardRec = ""
 
-        local screenStream = Stream.New(DummyRender.New(), 3, function(data)
+        local screenStream = Stream.New(DummyRender.New(), function(data)
             screenRec = data
         end)
-        local boardStream = Stream.New(ScreenLink.New(), 3, function(data)
+        local boardStream = Stream.New(ScreenLink.New(), function(data)
             boardRec = data
         end)
 
@@ -99,9 +99,9 @@ describe("Stream", function()
             screenStream.Write(msg)
         end
 
-        screenStream = Stream.New(DummyRender.New(), 30, responseFunc)
+        screenStream = Stream.New(DummyRender.New(), responseFunc)
 
-        local boardStream = Stream.New(ScreenLink.New(), 30, function(data)
+        local boardStream = Stream.New(ScreenLink.New(), function(data)
             boardRec = data
         end)
 
@@ -120,7 +120,10 @@ describe("Stream", function()
     it("Can send and receive data from screen with latency from the screen, reversed update order", function()
         local screenRec = ""
         local boardRec = ""
-        local msg = "a much longer message than just some simple text with some digits 1233131212 and funny characters in it | 432422| # 222. Lets see if it works."
+        local msg = [[a much longer message than just some simple text with some digits 1233131212 and funny characters in it | 432422| # 222.
+                    Lets see if it works? We can surely hope, can't we? What if we add some more funny characters to make it even longer?
+                    )/%(&(%&¤&#¤&&¤/%&(¤(&/¤()&/(%%/((&/¤%/%#/#¤¤&¤&¤))))))) and then even more keyboard bashing. nghengwtangwnihe wnergeioger
+                    gerjlgeraeragegerghearhgrwahgöoegjeargjnelaöighjnaewögerawg  geg ergeag jera jgaerj öae gäae gäaerj gäpear ägajeijg re]]
         local count = 0
 
         local screenStream ---@type Stream
@@ -130,13 +133,13 @@ describe("Stream", function()
             screenStream.Write(msg)
         end
 
-        screenStream = Stream.New(DummyRender.New(), 30, responseFunc)
+        screenStream = Stream.New(DummyRender.New(), responseFunc)
 
-        local boardStream = Stream.New(ScreenLink.New(), 30, function(data)
+        local boardStream = Stream.New(ScreenLink.New(), function(data)
             boardRec = data
         end)
 
-        boardStream.Write("1234567890")
+        boardStream.Write(msg)
         for i = 1, 500, 1 do
             screenStream.OnUpdate(1)
             if i % 2 == 0 then
@@ -144,7 +147,7 @@ describe("Stream", function()
             end
         end
 
-        assert.are_equal("1234567890", screenRec)
+        assert.are_equal(msg, screenRec)
         assert.are_equal(msg, boardRec)
         assert.are_equal(count, 1)
     end)

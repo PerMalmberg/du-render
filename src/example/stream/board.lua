@@ -13,7 +13,7 @@ local function onData(data)
     end
 end
 
-local stream = Stream.New(screen, 30, onData)
+local stream = Stream.New(screen, onData)
 
 local function onUpdate()
     local now = time()

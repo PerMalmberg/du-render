@@ -34,12 +34,11 @@ Stream.__index = Stream
 
 ---Create a new Stream
 ---@param interface ScreenLink|Renderer Either a link to a screen or _ENV when in RenderScript
----@param blockSize integer Max number of characters in a block.
 ---@param onDataReceived fun(string) Callback for when data is received
 ---@return Stream
-function Stream.New(interface, blockSize, onDataReceived)
+function Stream.New(interface, onDataReceived)
     local s = {}
-    blockSize = math.min(math.max(blockSize, headerSize), 1024 - headerSize) -- Game allows max 1024 bytes in buffers
+    local blockSize = 1024 - headerSize -- Game allows max 1024 bytes in buffers
 
     local runningInScreen = interface.setScriptInput == nil
 

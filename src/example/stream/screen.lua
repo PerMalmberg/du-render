@@ -14,7 +14,7 @@ if not stream then
         stream.Write("A")
     end
 
-    stream = Stream.New(_ENV, 100, displayData)
+    stream = Stream.New(_ENV, displayData)
 end
 
 stream.OnUpdate(1)
