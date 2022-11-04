@@ -243,7 +243,7 @@ describe("Stream", function()
         -- Resume comms
         start = system.getUtcTime()
 
-        while system.getUtcTime() - start < 2 do
+        while system.getUtcTime() - start < 1 do
             boardStream.Tick()
             screenStream.Tick()
         end
