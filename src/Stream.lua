@@ -3,8 +3,8 @@
 ---@alias Renderer {setOutput:fun(string), getInput:fun():string}
 
 ---@class Stream
----@field New fun(interface:ScreenLink|Renderer, onDataReceived:fun(string), timeout:number, onTimeout:fun()):Stream
----@field OnUpdate fun()
+---@field New fun(interface:ScreenLink|Renderer, onDataReceived:fun(string), timeout:number, timeoutCallback:fun(isTimedOut:boolean)):Stream
+---@field Tick fun()
 ---@field Write fun(data:string)
 
 --[[
@@ -36,16 +36,16 @@ Stream.__index = Stream
 ---@param interface ScreenLink|Renderer Either a link to a screen or _ENV when in RenderScript
 ---@param onDataReceived fun(string) Callback for when data is received
 ---@param timeout number The amount of time to wait for a reply before considering the connection broken.
----@param onTimeout fun() The function to call on a timeout
+---@param timeoutCallback fun(isTimedOut:boolean) The function to call on a timeout event. The parameter indicates if the comms are timedout or not.
 ---@return Stream
-function Stream.New(interface, onDataReceived, timeout, onTimeout)
+function Stream.New(interface, onDataReceived, timeout, timeoutCallback)
     local s = {}
     local blockSize = 1024 - headerSize -- Game allows max 1024 bytes in buffers
 
     local runningInScreen = interface.setScriptInput == nil
 
-    local input
-    local output
+    local input = { queue = {}, waitingForReply = false, seq = 0 }
+    local output = { queue = {}, waitingForReply = false, seq = 0 }
 
     local getTime
 
@@ -56,17 +56,6 @@ function Stream.New(interface, onDataReceived, timeout, onTimeout)
     end
 
     local lastReceived = getTime()
-
-    if runningInScreen then
-        -- When running in a screen unit, use the element itself to store data.
-        interface.streamInput = { queue = {}, waitingForReply = false, seq = 0 }
-        interface.streamOutput = { queue = {}, waitingForReply = false, seq = 0 }
-        output = interface.streamInput
-        input = interface.streamOutput
-    else
-        output = { queue = {}, waitingForReply = false, seq = 0 }
-        input = { queue = {}, waitingForReply = false, seq = 0 }
-    end
 
     ---Assembles the package
     ---@param payload string
@@ -153,13 +142,14 @@ function Stream.New(interface, onDataReceived, timeout, onTimeout)
     end
 
     ---Call this function in OnUpdate
-    function s.OnUpdate()
-
+    function s.Tick()
         local cmd, count, payload = readData()
 
         -- Did we get any input?
         if cmd then
+            timeoutCallback(false)
             lastReceived = getTime()
+
             if runningInScreen then
                 local sendAck = false
 
@@ -197,8 +187,9 @@ function Stream.New(interface, onDataReceived, timeout, onTimeout)
             end
         end
 
-        if getTime() - lastReceived > timeout then
-            onTimeout()
+        if getTime() - lastReceived >= timeout then
+            timeoutCallback(true)
+            lastReceived = getTime() -- Reset to trigger again
             output.queue = {}
             output.waitingForReply = false
         end
@@ -207,7 +198,7 @@ function Stream.New(interface, onDataReceived, timeout, onTimeout)
             if #output.queue == 0 then
                 interface.setScriptInput(createBlock(0, output, Command.Poll))
                 output.waitingForReply = true
-            elseif #output.queue > 0 then
+            else
                 interface.setScriptInput(output.queue[1])
                 table.remove(output.queue, 1)
                 output.waitingForReply = true

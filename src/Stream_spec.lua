@@ -60,19 +60,19 @@ describe("Stream", function()
 
         local screenStream = Stream.New(DummyRender.New(), function(data)
             screenRec = data
-        end, 1, function()
-            screenTimeout = true
+        end, 1, function(isTimedOut)
+            screenTimeout = isTimedOut
         end)
         local boardStream = Stream.New(ScreenLink.New(), function(data)
             boardRec = data
-        end, 1, function()
-            boardTimeout = true
+        end, 1, function(isTimedOut)
+            boardTimeout = isTimedOut
         end)
 
         boardStream.Write("1234567890")
         for i = 1, 5, 1 do
-            boardStream.OnUpdate()
-            screenStream.OnUpdate()
+            boardStream.Tick()
+            screenStream.Tick()
         end
 
         assert.are_equal("1234567890", screenRec)
@@ -88,19 +88,19 @@ describe("Stream", function()
 
         local screenStream = Stream.New(DummyRender.New(), function(data)
             screenRec = data
-        end, 1, function()
-            screenTimeout = true
+        end, 1, function(isTimedOut)
+            screenTimeout = isTimedOut
         end)
         local boardStream = Stream.New(ScreenLink.New(), function(data)
             boardRec = data
-        end, 1, function()
-            boardTimeout = true
+        end, 1, function(isTimedOut)
+            boardTimeout = isTimedOut
         end)
 
         screenStream.Write("1234567890")
         for i = 1, 5, 1 do
-            boardStream.OnUpdate()
-            screenStream.OnUpdate()
+            boardStream.Tick()
+            screenStream.Tick()
         end
 
         assert.are_equal("1234567890", boardRec)
@@ -122,21 +122,21 @@ describe("Stream", function()
             screenStream.Write(msg)
         end
 
-        screenStream = Stream.New(DummyRender.New(), responseFunc, 1, function()
-            screenTimeout = true
+        screenStream = Stream.New(DummyRender.New(), responseFunc, 1, function(isTimedOut)
+            screenTimeout = isTimedOut
         end)
 
         local boardStream = Stream.New(ScreenLink.New(), function(data)
             boardRec = data
-        end, 1, function()
-            boardTimeout = true
+        end, 1, function(isTimedOut)
+            boardTimeout = isTimedOut
         end)
 
         boardStream.Write("1234567890")
         for i = 1, 500, 1 do
-            boardStream.OnUpdate()
+            boardStream.Tick()
             if i % 2 == 0 then
-                screenStream.OnUpdate()
+                screenStream.Tick()
             end
         end
 
@@ -165,21 +165,21 @@ describe("Stream", function()
             screenStream.Write(msg)
         end
 
-        screenStream = Stream.New(DummyRender.New(), responseFunc, 1, function()
-            screenTimeout = true
+        screenStream = Stream.New(DummyRender.New(), responseFunc, 1, function(isTimedOut)
+            screenTimeout = isTimedOut
         end)
 
         local boardStream = Stream.New(ScreenLink.New(), function(data)
             boardRec = data
-        end, 1, function()
-            boardTimeout = true
+        end, 1, function(isTimedOut)
+            boardTimeout = isTimedOut
         end)
 
         boardStream.Write(msg)
         for i = 1, 500, 1 do
-            screenStream.OnUpdate()
+            screenStream.Tick()
             if i % 2 == 0 then
-                boardStream.OnUpdate()
+                boardStream.Tick()
             end
         end
 
@@ -191,8 +191,6 @@ describe("Stream", function()
     end)
 
     it("Can handle a timeout", function()
-        local screenRec = ""
-        local boardRec = ""
         local screenTimeout = false
         local boardTimeout = false
 
@@ -200,29 +198,57 @@ describe("Stream", function()
 
         local screenStream ---@type Stream
         local responseFunc = function(data)
-            screenRec = data
             screenStream.Write(msg)
         end
 
-        screenStream = Stream.New(DummyRender.New(), responseFunc, 1, function()
-            screenTimeout = true
+        screenStream = Stream.New(DummyRender.New(), responseFunc, 0.5, function(isTimedOut)
+            screenTimeout = isTimedOut
         end)
 
         local boardStream = Stream.New(ScreenLink.New(), function(data)
-            boardRec = data
-        end, 1, function()
-            boardTimeout = true
+        end, 0.5, function(isTimedOut)
+            boardTimeout = isTimedOut
         end)
 
-        for i = 1, 5, 1 do
-            boardStream.Write("A") -- QQQ placing this inside loop brakes it
-            boardStream.OnUpdate()
-            screenStream.OnUpdate()
+        local start = system.getUtcTime()
+
+        -- No timeout while just sending polls
+        while system.getUtcTime() - start < 1 do
+            boardStream.Tick()
+            screenStream.Tick()
         end
 
-        assert.are_not_equal("", screenRec)
-        assert.are_not_equal("", boardRec)
-        --[[     assert.is_true(screenTimeout)
-        assert.is_true(boardTimeout) ]]
+        assert.is_false(boardTimeout)
+        assert.is_false(screenTimeout)
+
+        -- No timeout when sending data
+        start = system.getUtcTime()
+        while system.getUtcTime() - start < 1 do
+            boardStream.Tick()
+            screenStream.Tick()
+        end
+
+        assert.is_false(boardTimeout)
+        assert.is_false(screenTimeout)
+
+        -- Timeout when not receiveing replies
+        start = system.getUtcTime()
+        while system.getUtcTime() - start < 1 do
+            boardStream.Tick()
+        end
+
+        assert.is_true(boardTimeout)
+        assert.is_false(screenTimeout)
+
+        -- Resume comms
+        start = system.getUtcTime()
+
+        while system.getUtcTime() - start < 2 do
+            boardStream.Tick()
+            screenStream.Tick()
+        end
+
+        assert.is_false(boardTimeout)
+        assert.is_false(screenTimeout)
     end)
 end)
