@@ -2,8 +2,8 @@ local rs = require("RenderScript").Instance()
 local Vec2 = require("Vec2")
 local Layer = require("Layer")
 
----@class Screen
----@field Instance fun():Screen
+---@class Screen Represents a screen
+---@field New fun():Screen
 ---@field Layer fun():Layer
 ---@field Add fun(c:table)
 ---@field Render fun(frames:integer)
@@ -12,13 +12,7 @@ local Layer = require("Layer")
 local Screen = {}
 Screen.__index = Screen
 
-local singelton
-
-function Screen.Instance()
-    if singelton then
-        return singelton
-    end
-
+function Screen.New()
     local s = {}
     local layers = {} ---@type Layer[]
     local components = {} ---@type table[]
@@ -72,9 +66,6 @@ function Screen.Instance()
     function s.Animate(frames)
         s.Render()
         rs.RequestAnimationFrame(frames)
-        -- Cannot reuse layers between frames.
-        layers = {}
-        components = {}
     end
 
     ---Gets the render cost in percentage
@@ -95,8 +86,7 @@ function Screen.Instance()
         return rs.GetDeltaTime()
     end
 
-    singelton = setmetatable(s, Screen)
-    return singelton
+    return setmetatable(s, Screen)
 end
 
 return Screen

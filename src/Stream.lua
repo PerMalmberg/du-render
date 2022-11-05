@@ -1,6 +1,7 @@
 ---@alias CommQueue { queue:string[], waitingForReply:boolean, seq:integer }
 ---@alias ScreenLink {setScriptInput:fun(string), clearScriptOutput:fun(), getScriptOutput:fun():string}
 ---@alias Renderer {setOutput:fun(string), getInput:fun():string}
+---@alias StreamData {output:CommQueue, input:CommQueue, lastReceived:number}
 
 ---@class Stream
 ---@field New fun(interface:ScreenLink|Renderer, onDataReceived:fun(string), timeout:number, timeoutCallback:fun(isTimedOut:boolean)):Stream
@@ -44,18 +45,32 @@ function Stream.New(interface, onDataReceived, timeout, timeoutCallback)
 
     local runningInScreen = interface.setScriptInput == nil
 
-    local input = { queue = {}, waitingForReply = false, seq = 0 }
-    local output = { queue = {}, waitingForReply = false, seq = 0 }
-
+    local streamData ---@type StreamData
     local getTime
 
-    if _ENV["getDeltaTime"] then
+    if runningInScreen then
         getTime = _ENV.getTime
+        -- Store data in environment when running in screen
+        if not _ENV.streamData then
+            _ENV.streamData = {
+                input = { queue = {}, waitingForReply = false, seq = 0 },
+                output = { queue = {}, waitingForReply = false, seq = 0 },
+                lastReceived = getTime()
+            }
+        end
+        streamData = _ENV.streamData
+
     else
-        getTime = _G.system.getUtcTime
+        getTime = system.getUtcTime
+        streamData = {
+            input = { queue = {}, waitingForReply = false, seq = 0 },
+            output = { queue = {}, waitingForReply = false, seq = 0 },
+            lastReceived = getTime()
+        }
     end
 
-    local lastReceived = getTime()
+    local input = streamData.input
+    local output = streamData.output
 
     ---Assembles the package
     ---@param payload string
@@ -148,7 +163,7 @@ function Stream.New(interface, onDataReceived, timeout, timeoutCallback)
         -- Did we get any input?
         if cmd then
             timeoutCallback(false)
-            lastReceived = getTime()
+            streamData.lastReceived = getTime()
 
             if runningInScreen then
                 local sendAck = false
@@ -187,9 +202,9 @@ function Stream.New(interface, onDataReceived, timeout, timeoutCallback)
             end
         end
 
-        if getTime() - lastReceived >= timeout then
+        if getTime() - streamData.lastReceived >= timeout then
             timeoutCallback(true)
-            lastReceived = getTime() -- Reset to trigger again
+            streamData.lastReceived = getTime() -- Reset to trigger again
             output.queue = {}
             output.waitingForReply = false
         end

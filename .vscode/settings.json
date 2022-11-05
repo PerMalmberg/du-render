@@ -1,0 +1,10 @@
+{
+    "Lua.runtime.path": [
+        "?.lua",
+        "?/init.lua",
+        "src/?.lua"
+    ],
+    "Lua.workspace.library": [
+        "external/du-libs/"
+    ]
+}

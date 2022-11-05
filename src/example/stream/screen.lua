@@ -1,22 +1,31 @@
-if not stream then
-    Stream = require("Stream")
-    screen = require("Screen").Instance()
-    Font = require("Font")
-    Color = require("Color")
+local Font   = require("Font")
+local Color  = require("Color")
+local Screen = require("Screen")
+local Stream = require("Stream")
+local Vec2   = require("Vec2")
 
-    middle = screen.Bounds() / 2
+local screen = Screen.New()
+local layer = screen.Layer(1)
+local font = Font.Get(FontName.Play, 30)
 
-    local displayData = function(data)
-        local layer = screen.Layer(1)
-        local font = Font.Get(FontName.Play, 30)
-        local t = layer.Text(data, middle, font)
-        t.Props.Fill = Color.New(0, 2, 0)
-        stream.Write("A")
-    end
+local middle = screen.Bounds() / 2
+local t = layer.Text(_ENV.wavingMan or "", middle, font)
+t.Props.Fill = Color.New(0, 2, 0)
 
-    stream = Stream.New(_ENV, displayData)
+layer.Text(string.format("%0.2f%%", screen.Stats()), Vec2.New(), font)
+
+
+
+local onDataReceived = function(data)
+    _ENV.wavingMan = data
 end
 
-stream.OnUpdate(1)
+local timeoutCallback = function(isTimedOut)
 
-screen.Animate(1)
+end
+
+local stream = Stream.New(_ENV, onDataReceived, 1, timeoutCallback)
+
+stream.Tick()
+
+screen.Render()
