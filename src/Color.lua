@@ -32,7 +32,7 @@ function Color.New(red, green, blue, alpha)
     ---Prints the color
     ---@return string
     function Color.ToString()
-        return string.format("r: %0.3f, g: %0.3f, b: %0.3f, a: %0.3f", s.Red, s.Green, s.Blue, s.Alpha)
+        return string.format(Color.FormatString, s.Red, s.Green, s.Blue, s.Alpha)
     end
 
     ---ToString meta function
@@ -50,10 +50,37 @@ function Color.New(red, green, blue, alpha)
     return setmetatable(s, Color)
 end
 
+---@param a Color
+---@param b Color
+---@return boolean
+function Color.__eq(a, b)
+    return a.Red == b.Red
+        and a.Green == b.Green
+        and a.Blue == b.Blue
+        and a.Alpha == b.Alpha
+end
+
 ---Creates a transparent color
 ---@return Color
 function Color.Transparent()
     return Color.New(0, 0, 0, 0)
 end
+
+---Creates a Color from a string
+---@param s string
+---@return Color|nil
+function Color.FromString(s)
+    local r, g, b, a = s:match("^r(%d*%.?%d+),g(%d*%.?%d+),b(%d*%.?%d+),a(%d*%.?%d+)$")
+    r = tonumber(r)
+    g = tonumber(g)
+    b = tonumber(b)
+    a = tonumber(a)
+    if r and g and b and a then
+        return Color.New(r, g, b, a)
+    end
+    return nil
+end
+
+Color.FormatString = "r%0.3f,g%0.3f,b%0.3f,a%0.3f"
 
 return Color

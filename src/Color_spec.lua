@@ -22,11 +22,31 @@ describe("Color", function()
 
     it("Can print as string", function()
         local c = Color.New(.1, .2, .3, .4)
-        assert.are_equal("r: 0.100, g: 0.200, b: 0.300, a: 0.400", tostring(c))
+        assert.are_equal("r0.100,g0.200,b0.300,a0.400", tostring(c))
     end)
 
     it("Can create a transparent color", function()
         local transparent = Color.Transparent()
         assert.are_equal(0, transparent.Alpha)
+    end)
+
+    it("Can create a color from a string", function()
+        local s = "r1.0,g2,b2.2,a0.9"
+        local c = Color.FromString(s)
+        assert.is_not_nil(c)
+        assert.are_equal(1.0, c.Red)
+        assert.are_equal(2.0, c.Green)
+        assert.are_equal(2.2, c.Blue)
+        assert.are_equal(0.9, c.Alpha)
+    end)
+
+    it("Can create a color from another string", function()
+        local s = "r1,g2,b3,a0"
+        local c = Color.FromString(s)
+        assert.is_not_nil(c)
+        assert.are_equal(1, c.Red)
+        assert.are_equal(2, c.Green)
+        assert.are_equal(3, c.Blue)
+        assert.are_equal(0, c.Alpha)
     end)
 end)

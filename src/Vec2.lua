@@ -410,4 +410,17 @@ function Vec2.__div(a, b)
     return a:Scale(1 / b)
 end
 
+---Creates a Vec2 from a string
+---@param s string
+---@return Vec2|nil
+function Vec2.FromString(s)
+    local x, y = s:match("^%(([+-]*%d*%.?%d+),([+-]*%d*%.?%d+)%)$")
+    x = tonumber(x)
+    y = tonumber(y)
+    if x and y then
+        return Vec2.New(x, y)
+    end
+    return nil
+end
+
 return Vec2

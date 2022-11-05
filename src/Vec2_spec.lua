@@ -74,4 +74,11 @@ describe("Vec2", function()
         assert.are_equal("(-1.000,-2.000)", string.format("%s", Vec2.New(-1, -2)))
     end)
 
+    it("Can create a Vec2 from a string", function()
+        local v = Vec2.FromString("(-1,+3)")
+        assert.is_not_nil(v)
+        assert.are_equal(-1, v.x)
+        assert.are_equal(3, v.y)
+    end)
+
 end)
