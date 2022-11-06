@@ -20,7 +20,9 @@ local binder = Binder.New()
 local path = binder.Path("")
 path.Text(t, "Text", "man")
 path.Color(t.Props, "Fill", "color")
-path.Vec2(t, "Pos", "pos")
+--path.Vec2(t, "Pos", "pos")
+t.Pos = screen.CursorPos()
+
 
 
 local onDataReceived = function(data)

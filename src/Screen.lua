@@ -8,6 +8,9 @@ local Layer = require("Layer")
 ---@field Add fun(c:table)
 ---@field Render fun(frames:integer)
 ---@field Stats fun():number
+---@field CursorPos fun():Vec2
+---@field Pressed fun():boolean
+---@field Released fun():boolean
 
 local Screen = {}
 Screen.__index = Screen
@@ -84,6 +87,24 @@ function Screen.New()
     ---@return number
     function s.DeltaTime()
         return rs.GetDeltaTime()
+    end
+
+    ---Gets the cursor position
+    ---@return Vec2
+    function s.CursorPos()
+        return Vec2(rs.GetCursor())
+    end
+
+    ---Returns true if the cursor was pressed since the last frame.
+    ---@return boolean
+    function Pressed()
+        return rs.GetCursorPressed()
+    end
+
+    ---Returns true if the cursor was released since the last frame.
+    ---@return boolean
+    function Released()
+        return rs.GetCursorReleased()
     end
 
     return setmetatable(s, Screen)
