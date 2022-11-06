@@ -5,7 +5,6 @@ local Layer = require("Layer")
 ---@class Screen Represents a screen
 ---@field New fun():Screen
 ---@field Layer fun():Layer
----@field Add fun(c:table)
 ---@field Render fun(frames:integer)
 ---@field Stats fun():number
 ---@field CursorPos fun():Vec2
@@ -18,7 +17,6 @@ Screen.__index = Screen
 function Screen.New()
     local s = {}
     local layers = {} ---@type Layer[]
-    local components = {} ---@type table[]
 
     ---Gets the layer with the given id
     ---@param id integer
@@ -29,10 +27,6 @@ function Screen.New()
         end
 
         return layers[id]
-    end
-
-    function s.Add(comp)
-        table.insert(components, comp)
     end
 
     ---Returns the width and height, in pixels the text occupies.
@@ -57,10 +51,6 @@ function Screen.New()
     function s.Render()
         for i = 1, #layers do
             layers[i].Render()
-        end
-
-        for i = 1, #components do
-            components[i].Render()
         end
     end
 
@@ -92,7 +82,7 @@ function Screen.New()
     ---Gets the cursor position
     ---@return Vec2
     function s.CursorPos()
-        return Vec2(rs.GetCursor())
+        return Vec2.New(rs.GetCursor())
     end
 
     ---Returns true if the cursor was pressed since the last frame.

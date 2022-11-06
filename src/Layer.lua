@@ -39,7 +39,8 @@ function Layer.New(screen)
         Id = rs.CreateLayer(),
         Origin = Vec2.New(),
         Rotation = 0,
-        Scale = Vec2.New(1, 1)
+        Scale = Vec2.New(1, 1),
+        Components = {} ---@type table[]
     }
 
     ---Create a new text on the layer
@@ -50,7 +51,7 @@ function Layer.New(screen)
     ---@return Text
     function s.Text(text, pos, font, props)
         local t = Text.New(text, pos, s, font, props or Props.Default())
-        screen.Add(t)
+        table.insert(s.Components, t)
         return t
     end
 
@@ -61,7 +62,7 @@ function Layer.New(screen)
     ---@return Image
     function s.Image(url, pos, props)
         local img = Image.New(url, pos, s, props or Props.Default())
-        screen.Add(img)
+        table.insert(s.Components, img)
         return img
     end
 
@@ -73,7 +74,7 @@ function Layer.New(screen)
     ---@return Box
     function s.Box(pos, dimensions, cornerRadius, props)
         local b = Box.New(s, pos, dimensions, cornerRadius, props or Props.Default())
-        screen.Add(b)
+        table.insert(s.Components, b)
         return b
     end
 
@@ -85,7 +86,7 @@ function Layer.New(screen)
     ---@return Bezier
     function s.Bezier(a, b, c, props)
         local bezier = Bezier.New(s, a, b, c, props or Props.Default())
-        screen.Add(bezier)
+        table.insert(s.Components, bezier)
         return bezier
     end
 
@@ -96,7 +97,7 @@ function Layer.New(screen)
     ---@return Circle
     function s.Circle(pos, radius, props)
         local circle = Circle.New(s, pos, radius, props or Props.Default())
-        screen.Add(circle)
+        table.insert(s.Components, circle)
         return circle
     end
 
@@ -107,7 +108,7 @@ function Layer.New(screen)
     ---@return Line
     function s.Line(a, b, props)
         local line = Line.New(s, a, b, props or Props.Default())
-        screen.Add(line)
+        table.insert(s.Components, line)
         return line
     end
 
@@ -120,7 +121,7 @@ function Layer.New(screen)
     ---@return Quad
     function s.Quad(a, b, c, d, props)
         local quad = Quad.New(s, a, b, c, d, props or Props.Default())
-        screen.Add(quad)
+        table.insert(s.Components, quad)
         return quad
     end
 
@@ -132,7 +133,7 @@ function Layer.New(screen)
     ---@return Triangle
     function s.Triangle(a, b, c, props)
         local triangle = Triangle.New(s, a, b, c, props or Props.Default())
-        screen.Add(triangle)
+        table.insert(s.Components, triangle)
         return triangle
     end
 
@@ -140,6 +141,10 @@ function Layer.New(screen)
         rs.SetLayerOrigin(s.Id, s.Origin:Unpack())
         rs.SetLayerRotation(s.Id, math.rad(s.Rotation))
         rs.SetLayerScale(s.Id, s.Scale:Unpack())
+
+        for _, comp in ipairs(s.Components) do
+            comp.Render()
+        end
     end
 
     return setmetatable(s, Layer)
