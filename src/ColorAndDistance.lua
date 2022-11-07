@@ -3,6 +3,7 @@ local Color = require("Color")
 ---@class ColorAndDistance
 ---@field Color Color The color
 ---@field Distance number The distance
+---@field Clone fun():ColorAndDistance
 
 local ColorAndDistance = {}
 ColorAndDistance.__index = ColorAndDistance
@@ -15,6 +16,12 @@ function ColorAndDistance.New(color, distance)
         Color = color,
         Distance = distance
     }
+
+    ---Clones the ColorAndDistance
+    ---@return ColorAndDistance
+    function s.Clone()
+        return ColorAndDistance.New(s.Color.Clone(), s.Distance)
+    end
 
     return setmetatable(s, ColorAndDistance)
 end

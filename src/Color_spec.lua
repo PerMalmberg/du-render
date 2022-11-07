@@ -49,4 +49,12 @@ describe("Color", function()
         assert.are_equal(3, c.Blue)
         assert.are_equal(0, c.Alpha)
     end)
+
+    it("Can be cloned", function()
+        local c = Color.New(1, 2, 3, 1)
+        local c2 = c.Clone()
+        assert.are_equal(c, c2)
+        c.Red = 2
+        assert.are_not_equal(c, c2)
+    end)
 end)

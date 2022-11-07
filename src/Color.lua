@@ -11,6 +11,7 @@ end
 ---@field Green number
 ---@field Blue number
 ---@field Alpha number
+---@field Clone fun():Color
 
 local Color = {}
 Color.__index = Color
@@ -45,6 +46,12 @@ function Color.New(red, green, blue, alpha)
     ---@return number, number, number, number
     function s.Unpack(c)
         return c.Red, c.Green, c.Blue, c.Alpha
+    end
+
+    ---Clones the color
+    ---@return Color
+    function s.Clone()
+        return Color.New(s.Red, s.Green, s.Blue, s.Alpha)
     end
 
     return setmetatable(s, Color)

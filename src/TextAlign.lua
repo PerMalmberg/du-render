@@ -2,6 +2,7 @@
 ---@field Hor RSAlignHor
 ---@field Ver RSAlignVer
 ---@field Default fun():TextAlign
+---@field Clone fun():Text
 
 local TextAlign = {}
 TextAlign.__index = TextAlign
@@ -14,6 +15,12 @@ function TextAlign.New(horizontal, vertical)
         Hor = horizontal,
         Ver = vertical
     }
+
+    ---Clones the TextAlign
+    ---@return TextAlign
+    function s.Clone()
+        return TextAlign.New(s.Hor, s.Ver)
+    end
 
     return setmetatable(s, TextAlign)
 end

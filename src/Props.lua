@@ -11,6 +11,7 @@ local rs = require("RenderScript").Instance()
 ---@field Align TextAlign The text alignment for text strings
 ---@field Apply fun(layer:integer) Applies the properties to the layer
 ---@field ApplyDefault fun(layer:integer, shape:RSShape) Applies the properties as defaults to the layer
+---@field Clone fun():Props
 
 local Props = {}
 Props.__index = Props
@@ -52,6 +53,11 @@ function Props.New(color, rotation, shadow, stroke, align)
         rs.SetDefaultStrokeColor(layer, shape, s.Stroke.Color:Unpack())
         rs.SetDefaultStrokeWidth(layer, shape, s.Stroke.Distance)
         rs.SetDefaultTextAlign(layer, s.Align.Hor, s.Align.Ver)
+    end
+
+    ---Deeply clones a Props
+    function s.Clone()
+        return Props.New(Color.Clone(), s.Rotation, s.Shadow.Clone(), s.Stroke.Clone(), s.TextAlign.Clone())
     end
 
     return setmetatable(s, Props)
