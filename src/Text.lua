@@ -14,6 +14,7 @@ local Vec2 = require("Vec2")
 ---@field Width fun():number
 ---@field Height fun():number
 ---@field Render fun()
+---@field Hit fun(point:Vec2):boolean
 
 local Text = {}
 Text.__index = Text
@@ -57,6 +58,15 @@ function Text.New(text, pos, layer, font, props)
         local layerId = s.Layer.Id
         s.Props.Apply(layerId)
         rs.AddText(layerId, s.Font, s.Text, s.Pos:Unpack())
+    end
+
+    --Determines if the position is within the element
+    ---@param point Vec2
+    ---@return boolean
+    function s.Hit(point)
+        local max = s.Pos + s.Bounds()
+        return point.x >= s.Pos.x and point.x <= max.x
+            and point.y >= s.Pos.y and point.y <= max.y
     end
 
     return setmetatable(s, Text)

@@ -10,6 +10,7 @@ local Layer = require("Layer")
 ---@field CursorPos fun():Vec2
 ---@field Pressed fun():boolean
 ---@field Released fun():boolean
+---@field DetermineHitElement fun():table
 
 local Screen = {}
 Screen.__index = Screen
@@ -87,14 +88,29 @@ function Screen.New()
 
     ---Returns true if the cursor was pressed since the last frame.
     ---@return boolean
-    function Pressed()
+    function s.Pressed()
         return rs.GetCursorPressed()
     end
 
     ---Returns true if the cursor was released since the last frame.
     ---@return boolean
-    function Released()
+    function s.Released()
         return rs.GetCursorReleased()
+    end
+
+    ---Determines which element that is hit
+    function s.DetermineHitElement()
+        local cursor = Vec2.New(rs.GetCursor())
+
+        for _, layer in ipairs(layers) do
+            -- Here we can add check on layer clipping
+            local hit = layer.DetermineHitElement(cursor)
+            if hit then
+                return hit
+            end
+        end
+
+        return nil
     end
 
     return setmetatable(s, Screen)

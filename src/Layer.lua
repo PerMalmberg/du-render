@@ -27,6 +27,7 @@ local Props = require("Props")
 ---@field Circle fun(pos:Vec2, radius:number, props:Props?):Circle
 ---@field Quad fun(a:Vec2, b:Vec2, c:Vec2, d:Vec2, props:Props?):Quad
 ---@field Render fun()
+---@field DetermineHitElement fun(cursor:Vec2):table
 
 local Layer = {}
 Layer.__index = Layer
@@ -58,10 +59,11 @@ function Layer.New(screen)
     ---Adds an image to the layer
     ---@param url string
     ---@param pos Vec2
+    ---@param dimensions Vec2
     ---@param props Props?
     ---@return Image
-    function s.Image(url, pos, props)
-        local img = Image.New(url, pos, s, props or Props.Default())
+    function s.Image(url, pos, dimensions, props)
+        local img = Image.New(url, pos, dimensions, s, props or Props.Default())
         table.insert(s.Components, img)
         return img
     end
@@ -145,6 +147,21 @@ function Layer.New(screen)
         for _, comp in ipairs(s.Components) do
             comp.Render()
         end
+    end
+
+    ---Determines which element that is hit
+    ---@param cursor Vec2
+    ---@return table|nil
+    function s.DetermineHitElement(cursor)
+        for _, component in ipairs(s.Components) do
+            if type(component.Hit) == "function" then
+                if component.Hit(cursor) then
+                    return component
+                end
+            end
+        end
+
+        return nil
     end
 
     return setmetatable(s, Layer)

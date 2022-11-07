@@ -5,6 +5,7 @@ local rs = require("RenderScript").Instance()
 ---@field Radius number
 ---@field Props Props
 ---@field Render fun()
+---@field Hit fun(point:Vec2):boolean
 
 local Circle = {}
 Circle.__index = Circle
@@ -27,6 +28,13 @@ function Circle.New(layer, pos, radius, props)
         s.Props.Apply(layerId)
         local x, y = s.Pos:Unpack()
         rs.AddCircle(layerId, x, y, s.Radius)
+    end
+
+    ---Determines if the position is within the element
+    ---@param point Vec2
+    ---@return boolean
+    function s.Hit(point)
+        return (pos - point):Len() <= s.Radius
     end
 
     return setmetatable(s, Circle)

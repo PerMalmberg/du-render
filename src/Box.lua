@@ -5,6 +5,7 @@ local rs = require("RenderScript").Instance()
 ---@field Dimensions Vec2
 ---@field Props Props
 ---@field Render fun()
+---@field Hit fun(point:Vec2):boolean
 
 local Box = {}
 Box.__index = Box
@@ -34,6 +35,15 @@ function Box.New(layer, pos, dimensions, cornerRadius, props)
         else
             rs.AddBox(layerId, s.Pos.x, s.Pos.y, s.Dimensions:Unpack())
         end
+    end
+
+    --Determines if the position is within the element
+    ---@param point Vec2
+    ---@return boolean
+    function s.Hit(point)
+        local max = s.Pos + s.Dimensions
+        return point.x >= s.Pos.x and point.x <= max.x
+            and point.y >= s.Pos.y and point.y <= max.y
     end
 
     return setmetatable(s, Box)
