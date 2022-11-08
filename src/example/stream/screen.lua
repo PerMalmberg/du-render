@@ -26,19 +26,25 @@ path.Vec2(t, "Pos", "pos")
 
 local triangle = layer.Triangle(Vec2.New(150, 150), Vec2.New(150, 250), Vec2.New(250, 200))
 triangle.Props.Fill = Color.New(0, 0, 1, 1)
-behavior.OnMouseEnterOrLeave(triangle, function(element, event)
-    if event == MouseEvent.MouseEnter then
-        element.Props.Fill = Color.New(0, 1, 0, 1)
+behavior.OnMouseInsideOrOutside(triangle, function(element, event)
+    if event == MouseState.MouseInside then
+        element.Props.Rotation = 45
     else
-        element.Props.Fill = Color.New(1, 0, 0, 1)
+        element.Props.Rotation = 0
     end
 end)
 
 behavior.OnMouseDownOrUp(triangle, function(element, event)
-    if event == MouseEvent.MouseDown then
-        element.Props.Fill = Color.New(0, 1, 1, 1)
+    if event == MouseState.MouseDown then
+        element.Props.Fill = Color.New(1, 1, 1, 1)
     else
-        element.Props.Fill = Color.New(0, 1, 2, 1)
+        --element.Props.Fill = Color.New(0, 1, 0, 1)
+    end
+end)
+
+behavior.OnMouseClick(triangle, function(element, event)
+    if event == MouseState.Click then
+        logMessage("Click!")
     end
 end)
 

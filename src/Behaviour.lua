@@ -1,18 +1,18 @@
 local rs = require("RenderScript").Instance()
 local Vec2 = require("Vec2")
 
----@enum MouseEvent
-MouseEvent = {
+---@enum MouseState
+MouseState = {
     Click = 1,
     MouseDown = 2,
     MouseUp = 3,
-    MouseEnter = 4,
-    MouseLeave = 5
+    MouseInside = 4,
+    MouseOutside = 5
 }
 
 ---@alias HitFunc fun(pos:Vec2):boolean
 ---@alias InteractibleElement {Hit:HitFunc, Props:Props}
----@alias ClickHandler fun(element:InteractibleElement, event:MouseEvent)
+---@alias ClickHandler fun(element:InteractibleElement, event:MouseState)
 ---@alias BooleanMouseContainer {obj:table, handler:ClickHandler}
 
 ---@class Behaviour
@@ -25,46 +25,59 @@ Behaviour.__index = Behaviour
 function Behaviour.New()
     local s = {}
 
+    local onMouseClick = {} ---@type BooleanMouseContainer[]
     local onMouseDownOrUp = {} ---@type BooleanMouseContainer[]
-    local onMouseEnterOrLeave = {} ---@type BooleanMouseContainer[]
+    local onMouseInSideorOutside = {} ---@type BooleanMouseContainer[]
 
-    ---Registers the element for mouse down events
+    ---Registers the element for mouse click events
+    ---@param element InteractibleElement
+    ---@param handler ClickHandler
+    function s.OnMouseClick(element, handler)
+        table.insert(onMouseClick, { obj = element, handler = handler })
+    end
+
+    ---Registers the element for mouse down and/or up events
     ---@param element InteractibleElement
     ---@param handler ClickHandler
     function s.OnMouseDownOrUp(element, handler)
         table.insert(onMouseDownOrUp, { obj = element, handler = handler })
     end
 
-    ---Registers the element for mouse enter events
+    ---Registers the element for mouse inside and/or outside events
     ---@param element InteractibleElement
     ---@param handler ClickHandler
-    function s.OnMouseEnterOrLeave(element, handler)
-        table.insert(onMouseEnterOrLeave, { obj = element, handler = handler })
+    function s.OnMouseInsideOrOutside(element, handler)
+        table.insert(onMouseInSideorOutside, { obj = element, handler = handler })
     end
 
     ---Triggers events
     ---@param screen Screen
     function s.TriggerEvents(screen)
-        local up = rs.GetCursorReleased()
+        local released = rs.GetCursorReleased()
+        local pressed = rs.GetCursorPressed()
         local down = rs.GetCursorDown()
 
         local hitElement = screen.DetermineHitElement()
 
-        if up or down then
-            for _, cont in ipairs(onMouseDownOrUp) do
-                if down and hitElement == cont.obj then
-                    cont.handler(cont.obj, MouseEvent.MouseDown)
-                else
-                    cont.handler(cont.obj, MouseEvent.MouseUp)
-                end
+        for _, cont in ipairs(onMouseClick) do
+            if pressed and hitElement == cont.obj then
+                cont.handler(cont.obj, MouseState.Click)
             end
         end
 
-        for _, cont in ipairs(onMouseEnterOrLeave) do
-            if hitElement == cont.obj then
-                cont.handler(cont.obj, MouseEvent.MouseEnter)
+        for _, cont in ipairs(onMouseDownOrUp) do
+            if down and hitElement == cont.obj then
+                cont.handler(cont.obj, MouseState.MouseDown)
             else
-                cont.handler(cont.obj, MouseEvent.MouseLeave)
+                cont.handler(cont.obj, MouseState.MouseUp)
+            end
+        end
+
+        for _, cont in ipairs(onMouseInSideorOutside) do
+            if hitElement == cont.obj then
+                cont.handler(cont.obj, MouseState.MouseInside)
+            else
+                cont.handler(cont.obj, MouseState.MouseOutside)
             end
         end
     end

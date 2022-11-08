@@ -102,9 +102,10 @@ function Screen.New()
     function s.DetermineHitElement()
         local cursor = Vec2.New(rs.GetCursor())
 
-        for _, layer in ipairs(layers) do
+        -- Top layer first
+        for i = #layers, 1, -1 do
             -- Here we can add check on layer clipping
-            local hit = layer.DetermineHitElement(cursor)
+            local hit = layers[i].DetermineHitElement(cursor)
             if hit then
                 return hit
             end
