@@ -35,23 +35,23 @@ function Binder.New()
     end
 
     ---@param data table
-    ---@param tree BindPathTree
-    local function apply(data, tree)
+    ---@param branch BindPathTree
+    local function apply(data, branch)
         -- Iterate each key in the data
         for key, value in pairs(data) do
             local t = type(value)
             if t == "table" then
                 -- If there is a matching entry in the BindPath tree, go into that
-                local p = tree.Sub[key]
+                local p = branch.Sub[key]
                 if p then
                     apply(value, p)
                 end
             elseif t == "number" then
-                for _, bind in pairs(tree.Bind) do
+                for _, bind in pairs(branch.Bind) do
                     bind.ProcessNumber(key, value)
                 end
             elseif t == "string" then
-                for _, bind in pairs(tree.Bind) do
+                for _, bind in pairs(branch.Bind) do
                     bind.ProcessText(key, value)
                 end
             end
