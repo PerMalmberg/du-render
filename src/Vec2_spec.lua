@@ -81,4 +81,8 @@ describe("Vec2", function()
         assert.are_equal(3, v.y)
     end)
 
+    it("Can make absolute value", function()
+        assert.are_equal(Vec2.New(1, 2), Vec2.New(-1, -2):Abs())
+    end)
+
 end)

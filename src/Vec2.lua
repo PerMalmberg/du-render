@@ -5,6 +5,7 @@ local atan2 = math.atan
 local sqrt  = math.sqrt
 local cos   = math.cos
 local sin   = math.sin
+local abs   = math.abs
 
 ---@class Vec2
 ---@field x number
@@ -40,6 +41,7 @@ local sin   = math.sin
 ---@field ToPolar fun(a:Vec2):number, number
 ---@field FlipX fun(a:Vec2):Vec2
 ---@field FlipY fun(a:Vec2):Vec2
+---@field Abs fun(a:Vec2):Vec2
 ---@field ToString fun(a:Vec2):string
 ---@operator add(Vec2):Vec2
 ---@operator sub(Vec2):Vec2
@@ -328,14 +330,21 @@ end
 ---@param a Vec2  Vector to x-flip.
 ---@return Vec2 x-flipped vector
 function Vec2.FlipX(a)
-    return Vec2.Vec2.New(-a.x, a.y)
+    return Vec2.New(-a.x, a.y)
 end
 
 -- Negate y axis only of vector.
 ---@param a Vec2  Vector to y-flip.
 ---@return Vec2 y-flipped vector
 function Vec2.FlipY(a)
-    return Vec2.Vec2.New(a.x, -a.y)
+    return Vec2.New(a.x, -a.y)
+end
+
+-- Returns the absolute value
+---@param a Vec2  Vector to abs
+---@return Vec2
+function Vec2.Abs(a)
+    return Vec2.New(abs(a.x), abs(a.y))
 end
 
 --- Return a formatted string.
