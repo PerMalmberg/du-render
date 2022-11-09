@@ -53,7 +53,6 @@ function Behaviour.New()
     ---Triggers events
     ---@param screen Screen
     function s.TriggerEvents(screen)
-        local released = rs.GetCursorReleased()
         local pressed = rs.GetCursorPressed()
         local down = rs.GetCursorDown()
 
