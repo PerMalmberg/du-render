@@ -21,7 +21,7 @@ Color.__index = Color
 ---@param red number
 ---@param green number
 ---@param blue number
----@param alpha number|nil
+---@param alpha? number
 function Color.New(red, green, blue, alpha)
     local s = {
         Red = clamp(red, 0, 5),
