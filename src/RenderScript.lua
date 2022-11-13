@@ -82,7 +82,7 @@ RSAlignVer = {
 ---@field SetNextStrokeWidth fun(layer:integer, strokeWidth:integer) Set the stroke width of the next rendered shape on the given layer; has no effect on shapes that do not support a stroke width
 ---@field SetNextTextAlign fun(layer:integer, hor:RSAlignHor, ver:RSAlignVer) Set the text alignment of the next rendered text string on the given layer. By default, text is anchored horizontally on the left, and vertically on the baseline.
 ---@field SetOutput fun(output:string) Set the script's output string, which can be retrieved via a programming board with the screen unit API function getScriptOutput
-
+---@field Log fun(msg:string) Logs the message
 local RenderScript = {}
 RenderScript.__index = _ENV
 
@@ -151,6 +151,7 @@ function RenderScript.Instance()
         SetNextStrokeWidth = _ENV.setNextStrokeWidth,
         SetNextTextAlign = _ENV.setNextTextAlign,
         SetOutput = _ENV.setOutput,
+        Log = _ENV.logMessage
     }
 
     setmetatable(singelton, RenderScript)

@@ -17,12 +17,12 @@ function Binder.New()
     local tree = BindPathTree.New()
 
     ---Creates a BindPath
-    ---@param path string The json-path in the data to the object holding the data to bind to, such as "a/b" or just "" for the root object,
+    ---@param path string The json-path in the data to the object holding the data to bind to, such as "a/b" or just "" for the root object, Only a-z, A-Z and _ are allowed.
     ---@return BindPath
     function s.Path(path)
         -- Build a tree for the paths
         local curr = tree
-        for nodeName in string.gmatch(path, "[a-z_]+") do
+        for nodeName in string.gmatch(path, "[a-zA-Z_]+") do
             if not curr.Sub[nodeName] then
                 curr.Sub[nodeName] = BindPathTree.New()
             end
