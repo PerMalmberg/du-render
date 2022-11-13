@@ -1,8 +1,15 @@
+local env = require("environment")
+
+env.Prepare()
+local rs   = require("RenderScript")
+rs.GetTime = getTime
+
 local Binder = require("Binder")
 local Color  = require("Color")
 local Vec2   = require("Vec2")
 
 describe("Binder", function()
+
     it("Can bind to a text and number", function()
         local b = Binder.New()
         local p1 = b.Path("a/b_c/de")
@@ -54,5 +61,32 @@ describe("Binder", function()
         b.Render()
 
         assert.are_equal(Vec2.New(4, 5), obj1.Pos)
+    end)
+
+    it("Can prevent updates based on time", function()
+        local b = Binder.New()
+        local p1 = b.Path("a", 1)
+
+        local obj1 = {}
+
+        p1.Vec2(obj1, "Pos", "pos")
+
+        b.MergeData({ a = { pos = "(4,5)" } })
+        b.Render()
+        assert.are_equal(Vec2.New(4, 5), obj1.Pos)
+
+        -- Doesn't take effect
+        b.MergeData({ a = { pos = "(6,7)" } })
+        b.Render()
+        assert.are_equal(Vec2.New(4, 5), obj1.Pos)
+
+        local now = rs.GetTime()
+        while rs.GetTime() - now < 1.1 do
+            -- Wait a bit
+        end
+
+        -- Takes effect
+        b.Render()
+        assert.are_equal(Vec2.New(6, 7), obj1.Pos)
     end)
 end)

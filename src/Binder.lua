@@ -3,7 +3,7 @@ local BindPathTree = require("BindPathTree")
 
 ---@class Binder
 ---@field New fun():Binder
----@field Path fun(path:string):BindPath
+---@field Path fun(path:string, updateInterval?:number):BindPath
 ---@field MergeData fun(data:table)
 ---@field Render fun()
 
@@ -18,8 +18,10 @@ function Binder.New()
 
     ---Creates a BindPath
     ---@param path string The json-path in the data to the object holding the data to bind to, such as "a/b" or just "" for the root object, Only a-z, A-Z and _ are allowed.
+    ---@param updateInterval? number The minimum update interval. Default 0.5.
     ---@return BindPath
-    function s.Path(path)
+    function s.Path(path, updateInterval)
+        updateInterval = updateInterval or 0.5
         -- Build a tree for the paths
         local curr = tree
         for nodeName in string.gmatch(path, "[a-zA-Z_]+") do
@@ -29,7 +31,7 @@ function Binder.New()
             curr = curr.Sub[nodeName]
         end
 
-        local p = BindPath.New()
+        local p = BindPath.New(updateInterval)
         table.insert(curr.Bind, p)
         return p
     end

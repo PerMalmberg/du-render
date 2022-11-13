@@ -1,5 +1,6 @@
-local Color = require("Color")
-local Vec2  = require("Vec2")
+local Color   = require("Color")
+local Vec2    = require("Vec2")
+local getTime = require("RenderScript").GetTime
 
 ---@class BindPath
 ---@field New fun(parts:string[]):BindPath
@@ -11,66 +12,99 @@ local Vec2  = require("Vec2")
 ---@field ProcessText fun(propertyName:string, value:string)
 ---@field ProcessColor fun(propertyName:string, value:string)
 
----@alias BoundText {obj:table, propertyName:string, valueName:string}
----@alias BoundNumber {obj:table, propertyName:string, valueName:string, format:string}
+---@alias BoundText {obj:table, propertyName:string, valueName:string, updateInterval:number, lastUpdate:number}
+---@alias BoundNumber {obj:table, propertyName:string, valueName:string, format:string, updateInterval:number, lastUpdate:number}
 
 local BindPath = {}
 BindPath.__index = BindPath
 
 ---Creates a new BindPath
+---@param updateInterval number
 ---@return BindPath
-function BindPath.New()
+function BindPath.New(updateInterval)
     local s = {}
     local boundText = {} ---@type BoundText[]
     local boundNumber = {} ---@type BoundNumber[]
     local boundColor = {} ---@type BoundText[]
-    local boundVec2 = {} ---@BoundText[]
+    local boundVec2 = {} ---@type BoundText[]
 
-    function s.Text(obj, propertyName, valueName)
+    ---Binds a text property
+    ---@param obj table
+    ---@param propertyName string
+    ---@param valueName string
+    ---@param interval? number
+    function s.Text(obj, propertyName, valueName, interval)
         table.insert(boundText, {
             obj = obj,
             propertyName = propertyName,
-            valueName = valueName
+            valueName = valueName,
+            lastUpdate = 0,
+            updateInterval = interval or updateInterval
         })
     end
 
-    function s.Number(obj, propertyName, valueName, format)
+    ---Binds a number property
+    ---@param obj table
+    ---@param propertyName string
+    ---@param valueName string
+    ---@param format string
+    ---@param interval? number
+    function s.Number(obj, propertyName, valueName, format, interval)
         table.insert(boundNumber, {
             obj = obj,
             propertyName = propertyName,
             valueName = valueName,
-            format = format
+            format = format,
+            lastUpdate = 0,
+            updateInterval = interval or updateInterval
         })
     end
 
-    function s.Color(obj, propertyName, valueName)
+    ---Binds a number property
+    ---@param obj table
+    ---@param propertyName string
+    ---@param valueName string
+    ---@param interval? number
+    function s.Color(obj, propertyName, valueName, interval)
         table.insert(boundColor, {
             obj = obj,
             propertyName = propertyName,
-            valueName = valueName
+            valueName = valueName,
+            lastUpdate = 0,
+            updateInterval = interval or updateInterval
         })
     end
 
-    function s.Vec2(obj, propertyName, valueName)
+    ---Binds a number property
+    ---@param obj table
+    ---@param propertyName string
+    ---@param valueName string
+    ---@param interval? number
+    function s.Vec2(obj, propertyName, valueName, interval)
         table.insert(boundVec2, {
             obj = obj,
             propertyName = propertyName,
-            valueName = valueName
+            valueName = valueName,
+            lastUpdate = 0,
+            updateInterval = interval or updateInterval
         })
     end
 
     function s.ProcessNumber(valueName, value)
+        local now = getTime()
         for _, bind in ipairs(boundNumber) do
-            if bind.valueName == valueName then
+            if bind.valueName == valueName and now - bind.lastUpdate >= bind.updateInterval then
                 bind.obj[bind.propertyName] = string.format(bind.format or "%f", value)
             end
         end
     end
 
     function s.ProcessText(valueName, value)
+        local now = getTime()
         for _, bind in ipairs(boundText) do
-            if bind.valueName == valueName then
+            if bind.valueName == valueName and now - bind.lastUpdate >= bind.updateInterval then
                 bind.obj[bind.propertyName] = value
+                bind.lastUpdate = now
             end
         end
 
@@ -78,8 +112,9 @@ function BindPath.New()
         local c = Color.FromString(value)
         if c then
             for _, bind in ipairs(boundColor) do
-                if bind.valueName == valueName then
+                if bind.valueName == valueName and now - bind.lastUpdate >= bind.updateInterval then
                     bind.obj[bind.propertyName] = c
+                    bind.lastUpdate = now
                 end
             end
         end
@@ -87,8 +122,9 @@ function BindPath.New()
         local v = Vec2.FromString(value)
         if v then
             for _, bind in ipairs(boundVec2) do
-                if bind.valueName == valueName then
+                if bind.valueName == valueName and now - bind.lastUpdate >= bind.updateInterval then
                     bind.obj[bind.propertyName] = v
+                    bind.lastUpdate = now
                 end
             end
         end
