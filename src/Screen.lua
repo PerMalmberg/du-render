@@ -1,11 +1,13 @@
 local rs = require("RenderScript").Instance()
 local Vec2 = require("Vec2")
 local Layer = require("Layer")
+local Font = require("Font")
 
 ---@class Screen Represents a screen
 ---@field New fun():Screen
 ---@field Layer fun():Layer
----@field Render fun(frames:integer)
+---@field Render fun(printCost:boolean)
+---@field Animate fun(frames:integer, printCost:boolean)
 ---@field Stats fun():number
 ---@field CursorPos fun():Vec2
 ---@field Pressed fun():boolean
@@ -49,16 +51,33 @@ function Screen.New()
     end
 
     ---Renders the screen content
-    function s.Render()
+    ---@param printCost boolean
+    function s.Render(printCost)
         for i = 1, #layers do
             layers[i].Render()
+        end
+
+        if printCost then
+            local layer
+            if #layers == 0 then layer = s.Layer(1)
+            else layer = layers[#layers] end
+
+            local cost = string.format("Render cost: %0.2f%%", s.Stats())
+            local font = Font.Get(FontName.Play, 20)
+            local bounds = Vec2.New(rs.GetTextBounds(font, cost))
+            local rWidth = Vec2.New(rs.GetTextBounds(font, "R")).x
+            local pos = Vec2.New(rWidth, s.Bounds().y - bounds.y)
+            rs.SetNextFillColor(layer.Id, 1, 1, 1, 1)
+            rs.SetNextTextAlign(layer.Id, RSAlignHor.Left, RSAlignVer.Top)
+            rs.AddText(layer.Id, font, cost, pos:Unpack())
         end
     end
 
     ---Renders and animates the screen context
     ---@param frames integer
-    function s.Animate(frames)
-        s.Render()
+    ---@param printCost boolean
+    function s.Animate(frames, printCost)
+        s.Render(printCost)
         rs.RequestAnimationFrame(frames)
     end
 

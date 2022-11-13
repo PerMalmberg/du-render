@@ -75,4 +75,4 @@ stream.Tick()
 
 behavior.TriggerEvents(screen)
 binder.Render()
-screen.Render()
+screen.Render(true)
