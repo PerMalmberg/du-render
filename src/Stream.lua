@@ -7,6 +7,7 @@
 ---@field New fun(interface:ScreenLink|Renderer, onDataReceived:fun(string), timeout:number, timeoutCallback:fun(isTimedOut:boolean)):Stream
 ---@field Tick fun()
 ---@field Write fun(data:string)
+---@field WaitingToSend fun():boolean
 
 --[[
     Data format:
@@ -238,6 +239,10 @@ function Stream.New(interface, onDataReceived, timeout, timeoutCallback)
             table.insert(output.queue, createBlock(blockCount, output, Command.Data, data))
         end
     end
+
+    ---Returns true if there is data waiting to be sent. Good for holding off additional write.
+    ---@return boolean
+    function s.WaitingToSend() return #output.queue > 0 end
 
     return setmetatable(s, Stream)
 end
