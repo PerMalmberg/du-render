@@ -31,6 +31,18 @@ function Color.New(red, green, blue, alpha)
         Alpha = clamp(alpha or 1, 0, 1)
     }
 
+    ---Unpacks the color
+    ---@return number, number, number, number
+    function s.Unpack()
+        return s.Red, s.Green, s.Blue, s.Alpha
+    end
+
+    ---Clones the color
+    ---@return Color
+    function s.Clone()
+        return Color.New(s.Red, s.Green, s.Blue, s.Alpha)
+    end
+
     ---Prints the color
     ---@return string
     function s.ToString()
@@ -38,19 +50,6 @@ function Color.New(red, green, blue, alpha)
     end
 
     return setmetatable(s, Color)
-end
-
----Unpacks the color
----@return number, number, number, number
-function Color.Unpack(c)
-    return c.Red, c.Green, c.Blue, c.Alpha
-end
-
----Clones the color
----@param c Color
----@return Color
-function Color.Clone(c)
-    return Color.New(c.Red, c.Green, c.Blue, c.Alpha)
 end
 
 ---ToString meta function

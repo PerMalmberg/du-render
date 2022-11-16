@@ -61,7 +61,7 @@ function Props.New(color, rotation, shadow, stroke, align)
 
     ---Deeply clones a Props
     function s.Clone()
-        return Props.New(Color.Clone(), s.Rotation, s.Shadow.Clone(), s.Stroke.Clone(), s.TextAlign.Clone())
+        return Props.New(s.Fill.Clone(), s.Rotation, s.Shadow.Clone(), s.Stroke.Clone(), s.TextAlign.Clone())
     end
 
     ---Creates a table with data ready to persist
