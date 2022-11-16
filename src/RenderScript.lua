@@ -10,23 +10,6 @@ RSShape = {
     Text = 7,
 }
 
----@enum RSAlignHor
-RSAlignHor = {
-    Left = 0,
-    Center = 1,
-    Right = 2,
-}
-
----@enum RSAlignVer
-RSAlignVer = {
-    Ascender = 0,
-    Top = 1,
-    Middle = 2,
-    Baseline = 3,
-    Bottom = 4,
-    Descender = 5,
-}
-
 ---@class Render
 ---@field AddBezier fun(layer:integer, x1:number, y1:number, x2:number, y2:number, x3:number, y3:number)
 ---@field AddBox fun(layer:integer, x:number, y:number, width:number, height:number)

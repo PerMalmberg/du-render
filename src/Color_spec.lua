@@ -40,6 +40,16 @@ describe("Color", function()
         assert.are_equal(0.9, c.Alpha)
     end)
 
+    it("Can create from single digit numbers", function()
+        local s = "r4,g3,b2,a1"
+        local c = Color.FromString(s)
+        assert.is_not_nil(c)
+        assert.are_equal(4, c.Red)
+        assert.are_equal(3, c.Green)
+        assert.are_equal(2, c.Blue)
+        assert.are_equal(1, c.Alpha)
+    end)
+
     it("Can create a color from another string", function()
         local s = "r1,g2,b3,a0"
         local c = Color.FromString(s)
@@ -52,9 +62,23 @@ describe("Color", function()
 
     it("Can be cloned", function()
         local c = Color.New(1, 2, 3, 1)
-        local c2 = c.Clone()
+        local c2 = c:Clone()
         assert.are_equal(c, c2)
         c.Red = 2
         assert.are_not_equal(c, c2)
+    end)
+
+    it("Handles nil when loaded from string", function()
+        local c = Color.FromString(nil)
+        assert.is_not_nil(c)
+        assert.are_equal(Color.Transparent(), c)
+    end)
+
+    it("Can unpack", function()
+        local r, g, b, a = Color.New(1, 2, 3, 0.4):Unpack()
+        assert.are_equal(1, r)
+        assert.are_equal(2, g)
+        assert.are_equal(3, b)
+        assert.are_equal(0.4, a)
     end)
 end)

@@ -1,0 +1,12 @@
+local TextAlign = require("TextAlign")
+
+describe("TextAlign", function()
+    it("Can do tostring and create from string", function()
+        local a = TextAlign.New(RSAlignHor.Right, RSAlignVer.Descender)
+        local s = tostring(a)
+        assert.are_equal("h2,v5", s)
+        local t = TextAlign.FromString(s)
+        assert.are_equal(a.Hor, t.Hor)
+        assert.are_equal(a.Ver, t.Ver)
+    end)
+end)
