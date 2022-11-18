@@ -3,6 +3,7 @@ local Screen          = require("Screen")
 local json            = require("dkjson")
 local rs              = require("RenderScript").Instance()
 local TextAlign       = require("TextAlign")
+local Color           = require("Color")
 
 local function loadFile(path)
     local f = io.open(path)
@@ -18,17 +19,41 @@ rs.LoadFont = function(name, size)
 end
 
 describe("ComponentLoader", function()
-    it("Can load fonts", function()
-        local screen = Screen.New()
-        local c = ComponentLoader.New(screen)
-        local s = loadFile("src/example/layout.json")
-        c.Load(json.decode(s))
+    local screen = Screen.New()
+    local c = ComponentLoader.New(screen)
+    local s = loadFile("src/test_layouts/layout.json")
+    assert.True(c.Load(json.decode(s)))
 
+    it("Can load fonts", function()
+        local play10 = c.Fonts()["Play10"]
+        assert.is_not_nil(play10)
+        local montserrat5 = c.Fonts()["Montserrat5"]
+        assert.is_not_nil(montserrat5)
+    end)
+
+    it("Can load styles", function()
         local styles = c.Styles()
         local button1 = styles["button1"]
         assert.is_not_nil(button1)
 
         assert.are_equal(TextAlign.New(RSAlignHor.Left, RSAlignVer.Top), button1.Align)
+        assert.are_equal(Color.FromString("r2.000,g2.000,b2.000,a0.500"), button1.Stroke.Color)
+        assert.are_equal(12, button1.Stroke.Distance)
+        assert.are_equal(45, button1.Rotation)
+        assert.are_equal(Color.FromString("r3.000,g2.000,b1.000,a1.000"), button1.Shadow.Color)
+        assert.are_equal(10, button1.Shadow.Distance)
 
+        local button1_hover = styles["button1_hover"]
+        assert.is_not_nil(button1_hover)
+    end)
+
+    it("Can load pages", function()
+        local pages = c.Pages()
+        local pagename = pages["pagename"]
+
+    end)
+
+    it("Can handle missing style", function()
+        --assert.False(true)
     end)
 end)
