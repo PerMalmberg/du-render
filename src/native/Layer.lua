@@ -1,16 +1,16 @@
 ---@module "Screen"
 
-local rs = require("RenderScript").Instance()
-local Vec2 = require("Vec2")
-local Text = require("Text")
-local Image = require("Image")
-local Box = require("Box")
-local Bezier = require("Bezier")
-local Circle = require("Circle")
-local Line = require("Line")
-local Triangle = require("Triangle")
-local Quad = require("Quad")
-local Props = require("Props")
+local rs = require("native/RenderScript").Instance()
+local Vec2 = require("native/Vec2")
+local Text = require("native/Text")
+local Image = require("native/Image")
+local Box = require("native/Box")
+local Bezier = require("native/Bezier")
+local Circle = require("native/Circle")
+local Line = require("native/Line")
+local Triangle = require("native/Triangle")
+local Quad = require("native/Quad")
+local Props = require("native/Props")
 
 ---@class Layer
 ---@field New fun():Layer

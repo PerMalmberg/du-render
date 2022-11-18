@@ -1,4 +1,4 @@
-local Color = require("Color")
+local Color = require("native/Color")
 
 describe("Color", function()
     it("Can create Color", function()

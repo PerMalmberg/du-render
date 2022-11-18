@@ -1,5 +1,5 @@
-local rs = require("RenderScript").Instance()
-local Vec2 = require("Vec2")
+local rs = require("native/RenderScript").Instance()
+local Vec2 = require("native/Vec2")
 
 ---@module "Props"
 

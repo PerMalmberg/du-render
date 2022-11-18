@@ -1,9 +1,9 @@
 local ComponentLoader = require("ComponentLoader")
-local Screen          = require("Screen")
+local Screen          = require("native/Screen")
 local json            = require("dkjson")
-local rs              = require("RenderScript").Instance()
-local TextAlign       = require("TextAlign")
-local Color           = require("Color")
+local rs              = require("native/RenderScript").Instance()
+local TextAlign       = require("native/TextAlign")
+local Color           = require("native/Color")
 
 local function loadFile(path)
     local f = io.open(path)

@@ -1,6 +1,6 @@
-local Color   = require("Color")
-local Vec2    = require("Vec2")
-local getTime = require("RenderScript").Instance().GetTime
+local Color   = require("native/Color")
+local Vec2    = require("native/Vec2")
+local getTime = require("native/RenderScript").Instance().GetTime
 
 ---@class BindPath
 ---@field New fun(parts:string[]):BindPath

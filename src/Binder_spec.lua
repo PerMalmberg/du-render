@@ -1,12 +1,12 @@
 local env = require("environment")
 
 env.Prepare()
-local rs   = require("RenderScript")
+local rs   = require("native/RenderScript")
 rs.GetTime = getTime
 
 local Binder = require("Binder")
-local Color  = require("Color")
-local Vec2   = require("Vec2")
+local Color  = require("native/Color")
+local Vec2   = require("native/Vec2")
 
 describe("Binder", function()
 

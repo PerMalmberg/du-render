@@ -1,7 +1,7 @@
-local Color = require("Color")
-local ColorAndDistance = require("ColorAndDistance")
-local TextAlign = require("TextAlign")
-local rs = require("RenderScript").Instance()
+local Color = require("native/Color")
+local ColorAndDistance = require("native/ColorAndDistance")
+local TextAlign = require("native/TextAlign")
+local rs = require("native/RenderScript").Instance()
 
 ---@alias PropsTableStruct {fill:string, rotation:number, shadow: {color:string, distance:number}, stroke:{color:string, distance:number}, align:string}
 

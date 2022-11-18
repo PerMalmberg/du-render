@@ -1,4 +1,4 @@
-local rs = require("RenderScript").Instance()
+local rs = require("native/RenderScript").Instance()
 
 ---@class Circle
 ---@field Pos Vec2

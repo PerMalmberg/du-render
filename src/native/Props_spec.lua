@@ -1,6 +1,6 @@
-local Props = require("Props")
-local Color = require("Color")
-local ColorAndDistance = require("ColorAndDistance")
+local Props = require("native/Props")
+local Color = require("native/Color")
+local ColorAndDistance = require("native/ColorAndDistance")
 
 describe("Props", function()
     it("Can load and persist", function()

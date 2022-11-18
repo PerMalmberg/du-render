@@ -1,4 +1,4 @@
-local TextAlign = require("TextAlign")
+local TextAlign = require("native/TextAlign")
 
 describe("TextAlign", function()
     it("Can do tostring and create from string", function()

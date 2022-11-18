@@ -1,4 +1,4 @@
-local rs = require("RenderScript").Instance()
+local rs = require("native/RenderScript").Instance()
 
 ---@class Quad
 ---@field PosA Vec2

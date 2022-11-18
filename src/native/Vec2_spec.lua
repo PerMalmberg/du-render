@@ -1,4 +1,4 @@
-local Vec2 = require("Vec2")
+local Vec2 = require("native/Vec2")
 
 describe("Vec2", function()
     it("Can create a Vec2 ", function()

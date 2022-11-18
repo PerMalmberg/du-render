@@ -1,7 +1,7 @@
-local rs = require("RenderScript").Instance()
-local Vec2 = require("Vec2")
-local Layer = require("Layer")
-local Font = require("Font")
+local rs = require("native/RenderScript").Instance()
+local Vec2 = require("native/Vec2")
+local Layer = require("native/Layer")
+local Font = require("native/Font")
 
 ---@class Screen Represents a screen
 ---@field New fun():Screen

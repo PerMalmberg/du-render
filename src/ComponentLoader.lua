@@ -1,5 +1,5 @@
-local Font = require("Font")
-local Props = require("Props")
+local Font = require("native/Font")
+local Props = require("native/Props")
 
 --- QQQ repace with actual classes
 ---@alias Button {layer:integer, pos:string, dimension:string}

@@ -1,4 +1,4 @@
-local Color = require("Color")
+local Color = require("native/Color")
 
 ---@class ColorAndDistance
 ---@field Color Color The color
