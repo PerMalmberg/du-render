@@ -2,8 +2,8 @@ local Stream = require("Stream")
 local screen = library.getLinkByName("screen")
 local time = system.getUtcTime
 local json = require("dkjson")
-local Vec2 = require("Vec2")
-local Color = require("Color")
+local Vec2 = require("native/Vec2")
+local Color = require("native/Color")
 
 local wave = { "~o~", "\\o\\", "|o|", "/o/" }
 local i = 1

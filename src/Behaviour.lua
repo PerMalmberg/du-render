@@ -1,5 +1,5 @@
-local rs = require("RenderScript").Instance()
-local Vec2 = require("Vec2")
+local rs = require("native/RenderScript").Instance()
+local Vec2 = require("native/Vec2")
 
 ---@enum MouseState
 MouseState = {
@@ -11,13 +11,16 @@ MouseState = {
 }
 
 ---@alias HitFunc fun(pos:Vec2):boolean
----@alias InteractibleElement {Hit:HitFunc, Props:Props}
+---@alias InteractibleElement {Hit:HitFunc}
 ---@alias ClickHandler fun(element:InteractibleElement, event:MouseState)
 ---@alias BooleanMouseContainer {obj:table, handler:ClickHandler}
+---@alias MouseHandler fun(element:InteractibleElement, handler:ClickHandler)
 
 ---@class Behaviour
----@field OnMouseDown fun(element:InteractibleElement, handler:ClickHandler)
-
+---@field New fun():Behaviour
+---@field OnMouseClick MouseHandler
+---@field OnMouseDownOrUp MouseHandler
+---@field OnMouseInsideOrOutside MouseHandler
 
 local Behaviour = {}
 Behaviour.__index = Behaviour

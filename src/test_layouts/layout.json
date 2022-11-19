@@ -10,63 +10,96 @@
         }
     },
     "styles": {
-        "button1": {
+        "blue_green_border": {
             "align": "h0,v1",
             "stroke": {
-                "color": "r2.000,g2.000,b2.000,a0.500",
+                "color": "r1,g0,b0,a1",
                 "distance": 12
             },
-            "fill": "r1.000,g2.000,b3.000,a1.000",
+            "fill": "r0,g1,b0,a1",
             "rotation": 45,
             "shadow": {
-                "color": "r3.000,g2.000,b1.000,a1.000",
+                "color": "r3,g2,b1,a1",
                 "distance": 10
             }
         },
         "button1_hover": {
             "align": "h0,v1",
             "stroke": {
-                "color": "r1.000,g1.000,b12.000,a0.500",
+                "color": "r1,g1,b0,a0.5",
                 "distance": 12
             },
-            "fill": "r1.000,g2.000,b3.000,a1.000",
+            "fill": "r1,g2,b3,a1",
             "rotation": 45,
             "shadow": {
-                "color": "r1.000,g1.000,b1.000,a1.000",
+                "color": "r1,g1,b1,a1",
                 "distance": 12
             }
+        },
+        "text_style": {
+            "align": "h0,v1",
+            "stroke": {
+                "color": "r0,g1,b0,a1",
+                "distance": 12
+            },
+            "fill": "r1,g2,b3,a1"
         }
     },
     "pages": {
         "pagename": {
-            "button": {
-                "layer": 1,
-                "pos": "(1,1)",
-                "dimension": "(10,10)",
-                "action": {
-                    "sendtext": "click me!"
+            "components": [
+                {
+                    "type": "box",
+                    "layer": 1,
+                    "pos": "(1,1)",
+                    "dimension": "(10,10)",
+                    "corner_radius": "2",
+                    "style": "button1",
+                    "mouse": {
+                        "click": {
+                            "command": "$bind(path/to/data:key:format)"
+                        },
+                        "mouse_inside": {
+                            "set_style": "button1_hover"
+                        }
+                    }
                 },
-                "text": {
-                    "font": "Play10",
-                    "bind": "flightData/flight/absspeed",
-                    "default": "some text"
+                {
+                    "type": "box",
+                    "layer": 1,
+                    "pos": "(10,10)",
+                    "dimension": "(10,10)",
+                    "corner_radius": "2",
+                    "style": "button1",
+                    "mouse": {
+                        "click": {
+                            "command": "just text command"
+                        },
+                        "inside": {
+                            "setstyle": "button1_hover"
+                        }
+                    }
                 },
-                "styles": {
-                    "idle": "button1",
-                    "mouse_hover": "button1_hover"
+                {
+                    "type": "text",
+                    "layer": 1,
+                    "pos": "(10,10)",
+                    "style": "text_style",
+                    "mouse": {
+                        "click": {
+                            "command": "command from text"
+                        },
+                        "inside": {
+                            "setstyle": "button1_hover"
+                        }
+                    }
+                },
+                {
+                    "type": "gauge",
+                    "pos": "(30, 30)",
+                    "dimension": "(10,10)"
                 }
-            },
-            "gauge": {
-                "layer": 1,
-                "pos": "(15,1)",
-                "dimensions": "(10,98)",
-                "values": {
-                    "font": "Play10",
-                    "bind": "fuel/flight/absspeed",
-                    "min": "some text"
-                }
-            }
-        },
-        "pagename2": {}
+            ]
+        }
     }
 }

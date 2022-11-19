@@ -5,9 +5,10 @@ local Font = require("native/Font")
 
 ---@class Screen Represents a screen
 ---@field New fun():Screen
----@field Layer fun():Layer
+---@field Layer fun(id:integer):Layer
 ---@field Render fun(printCost:boolean)
 ---@field Animate fun(frames:integer, printCost:boolean)
+---@field Bounds fun():Vec2
 ---@field Stats fun():number
 ---@field CursorPos fun():Vec2
 ---@field Pressed fun():boolean
@@ -26,7 +27,7 @@ function Screen.New()
     ---@return Layer
     function s.Layer(id)
         while id > #layers do
-            table.insert(layers, Layer.New(s))
+            table.insert(layers, Layer.New())
         end
 
         return layers[id]

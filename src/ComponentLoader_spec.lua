@@ -1,5 +1,7 @@
 local ComponentLoader = require("ComponentLoader")
 local Screen          = require("native/Screen")
+local Behaviour       = require("Behaviour")
+local Binder          = require("Binder")
 local json            = require("dkjson")
 local rs              = require("native/RenderScript").Instance()
 local TextAlign       = require("native/TextAlign")
@@ -18,9 +20,19 @@ rs.LoadFont = function(name, size)
     return 1
 end
 
+rs.CreateLayer = function()
+    return 1
+end
+
+rs.GetResolution = function()
+    return 10, 10
+end
+
 describe("ComponentLoader", function()
     local screen = Screen.New()
-    local c = ComponentLoader.New(screen)
+    local behaviour = Behaviour.New()
+    local binder = Binder.New()
+    local c = ComponentLoader.New(screen, behaviour, binder)
     local s = loadFile("src/test_layouts/layout.json")
     assert.True(c.Load(json.decode(s)))
 

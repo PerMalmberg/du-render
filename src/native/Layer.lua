@@ -33,9 +33,8 @@ local Layer = {}
 Layer.__index = Layer
 
 ---Create a new layer
----@param screen Screen
 ---@return Layer
-function Layer.New(screen)
+function Layer.New()
     local s = {
         Id = rs.CreateLayer(),
         Origin = Vec2.New(),
@@ -140,6 +139,7 @@ function Layer.New(screen)
     end
 
     function s.Render()
+        s.Id = rs.CreateLayer() -- Refresh the id on each render
         rs.SetLayerOrigin(s.Id, s.Origin:Unpack())
         rs.SetLayerRotation(s.Id, math.rad(s.Rotation))
         rs.SetLayerScale(s.Id, s.Scale:Unpack())
