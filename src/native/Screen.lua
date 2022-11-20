@@ -6,8 +6,8 @@ local Font = require("native/Font")
 ---@class Screen Represents a screen
 ---@field New fun():Screen
 ---@field Layer fun(id:integer):Layer
----@field Render fun(printCost:boolean)
----@field Animate fun(frames:integer, printCost:boolean)
+---@field Render fun(printStats:boolean)
+---@field Animate fun(frames:integer, printStats:boolean)
 ---@field Bounds fun():Vec2
 ---@field Stats fun():number
 ---@field CursorPos fun():Vec2
@@ -52,18 +52,18 @@ function Screen.New()
     end
 
     ---Renders the screen content
-    ---@param printCost boolean
-    function s.Render(printCost)
+    ---@param printStats boolean
+    function s.Render(printStats)
         for i = 1, #layers do
             layers[i].Render()
         end
 
-        if printCost then
+        if printStats then
             local layer
             if #layers == 0 then layer = s.Layer(1)
             else layer = layers[#layers] end
 
-            local cost = string.format("Render cost: %0.2f%%", s.Stats())
+            local cost = string.format("Res: %s, cost: %0.2f%%", s.Bounds():ToString(), s.Stats())
             local font = Font.Get(FontName.Play, 20)
             local bounds = Vec2.New(rs.GetTextBounds(font, cost))
             local rWidth = Vec2.New(rs.GetTextBounds(font, "R")).x

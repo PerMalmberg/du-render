@@ -2,6 +2,7 @@ local Font  = require("native/Font")
 local Props = require("native/Props")
 local Vec2  = require("native/Vec2")
 local rs    = require("native/RenderScript").Instance()
+local Color = require("native/Color")
 
 -- These are Json structures for the layout
 ---@alias Style PropsTableStruct
@@ -35,17 +36,7 @@ function ComponentLoader.New(screen, behaviour, binder)
     local fonts = {} ---@type table<string,FontHandle>
     local styles = {} ---@type table<string,Props>
     local pages = {} ---@type NamedPages
-    local screenBounds = screen.Bounds()
-
-    ---@param vec2 Vec2
-    ---@return Vec2
-    local function vec2PercentToPixels(vec2)
-        return vec2 / 100 * screen.Bounds()
-    end
-
-    local function percentToPixels(num)
-        return num / 100 * screenBounds:ComponentMax(screenBounds).x
-    end
+    local missingStyle = Props.New(Color.New(220 / 255, 20 / 255, 60 / 255))
 
     ---Loads fonts
     ---@param fontData NamedFonts
@@ -69,6 +60,10 @@ function ComponentLoader.New(screen, behaviour, binder)
         return true
     end
 
+    local function bindValue()
+        -- $bind(path/to/data:key:format:interval)
+    end
+
     ---@param layer Layer
     ---@param data BoxJson
     ---@return boolean
@@ -78,15 +73,16 @@ function ComponentLoader.New(screen, behaviour, binder)
         local corner = type(data.corner_radius) == "number" and data.corner_radius or 0
 
         if not (pos and dim) then rs.Log("Missing pos or dimension for box") return false end
-        pos = vec2PercentToPixels(pos)
-        dim = vec2PercentToPixels(dim)
-        local style = styles[data.style] or Props.Default()
+        local style = styles[data.style] or missingStyle
 
         local box = layer.Box(pos, dim, corner, style)
 
         behaviour.OnMouseInsideOrOutside(box, function(element, event)
-            if event == MouseState.MouseInside and data.mouse and data.mouse.mouse_inside then
-                box.Props = style[data.mouse.mouse_inside] or Props.Default()
+            if event == MouseState.MouseInside then
+                if data.mouse and data.mouse.mouse_inside then
+                    local insideStyle = data.mouse.mouse_inside.set_style
+                    box.Props = insideStyle and styles[insideStyle] or missingStyle
+                end
             else
                 box.Props = style
             end

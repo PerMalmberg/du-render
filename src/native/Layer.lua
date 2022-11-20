@@ -36,7 +36,7 @@ Layer.__index = Layer
 ---@return Layer
 function Layer.New()
     local s = {
-        Id = rs.CreateLayer(),
+        Id = 0, -- Set on render
         Origin = Vec2.New(),
         Rotation = 0,
         Scale = Vec2.New(1, 1),

@@ -45,18 +45,18 @@ describe("ComponentLoader", function()
 
     it("Can load styles", function()
         local styles = c.Styles()
-        local button1 = styles["button1"]
-        assert.is_not_nil(button1)
+        local testStyle = styles["blue_green_border"]
+        assert.is_not_nil(testStyle)
 
-        assert.are_equal(TextAlign.New(RSAlignHor.Left, RSAlignVer.Top), button1.Align)
-        assert.are_equal(Color.FromString("r2.000,g2.000,b2.000,a0.500"), button1.Stroke.Color)
-        assert.are_equal(12, button1.Stroke.Distance)
-        assert.are_equal(45, button1.Rotation)
-        assert.are_equal(Color.FromString("r3.000,g2.000,b1.000,a1.000"), button1.Shadow.Color)
-        assert.are_equal(10, button1.Shadow.Distance)
+        assert.are_equal(TextAlign.New(RSAlignHor.Left, RSAlignVer.Top), testStyle.Align)
+        assert.are_equal(Color.FromString("r0.000,g1.000,b0.000,a1.000"), testStyle.Stroke.Color)
+        assert.are_equal(1, testStyle.Stroke.Distance)
+        assert.are_equal(45, testStyle.Rotation)
+        assert.are_equal(Color.FromString("r0.200,g0.000,b0.000,a1.000"), testStyle.Shadow.Color)
+        assert.are_equal(2, testStyle.Shadow.Distance)
 
-        local button1_hover = styles["button1_hover"]
-        assert.is_not_nil(button1_hover)
+        local style2 = styles["transparent_red_border"]
+        assert.is_not_nil(style2)
     end)
 
     it("Can load pages", function()

@@ -1,5 +1,5 @@
 if not _ENV.screen then
-    local layout  = library.embedFile("../../test_layouts/layout.json")
+    local layout  = library.embedFile("../../test_layouts/layout_min.json")
     _ENV.screen   = require("native/Screen").New()
     _ENV.binder   = require("Binder").New()
     _ENV.behavior = require("Behaviour").New()

@@ -13,27 +13,27 @@
         "blue_green_border": {
             "align": "h0,v1",
             "stroke": {
-                "color": "r1,g0,b0,a1",
-                "distance": 12
+                "color": "r0,g1,b0,a1",
+                "distance": 1
             },
-            "fill": "r0,g1,b0,a1",
+            "fill": "r0,g0,b1,a1",
             "rotation": 45,
             "shadow": {
-                "color": "r3,g2,b1,a1",
-                "distance": 10
+                "color": "r0.2,g0,b0,a1",
+                "distance": 2
             }
         },
-        "button1_hover": {
+        "transparent_red_border": {
             "align": "h0,v1",
             "stroke": {
-                "color": "r1,g1,b0,a0.5",
-                "distance": 12
+                "color": "r1,g0,b0,a1",
+                "distance": 1
             },
-            "fill": "r1,g2,b3,a1",
-            "rotation": 45,
+            "fill": "r1,g2,b3,a0",
+            "rotation": 0,
             "shadow": {
-                "color": "r1,g1,b1,a1",
-                "distance": 12
+                "color": "r1,g1,b1,a0",
+                "distance": 0
             }
         },
         "text_style": {
@@ -52,31 +52,31 @@
                     "type": "box",
                     "layer": 1,
                     "pos": "(1,1)",
-                    "dimension": "(10,10)",
+                    "dimension": "(100,100)",
                     "corner_radius": "2",
-                    "style": "button1",
+                    "style": "blue_green_border",
                     "mouse": {
                         "click": {
-                            "command": "$bind(path/to/data:key:format)"
+                            "command": "$bind(path/to/data:key:format:interval)"
                         },
                         "mouse_inside": {
-                            "set_style": "button1_hover"
+                            "set_style": "transparent_red_border"
                         }
                     }
                 },
                 {
                     "type": "box",
                     "layer": 1,
-                    "pos": "(10,10)",
-                    "dimension": "(10,10)",
+                    "pos": "(100,100)",
+                    "dimension": "(50,50)",
                     "corner_radius": "2",
-                    "style": "button1",
+                    "style": "blue_green_border",
                     "mouse": {
                         "click": {
                             "command": "just text command"
                         },
                         "inside": {
-                            "setstyle": "button1_hover"
+                            "setstyle": "transparent_red_border"
                         }
                     }
                 },
