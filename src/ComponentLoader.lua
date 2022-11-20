@@ -16,12 +16,18 @@ local Color = require("native/Color")
 
 ---@alias BoxJson {pos:string, dimension:string, corner_radius:number, style:string, mouse:MouseJson}
 
+---@enum BindType
+BindType = {
+    String = 1,
+    Number = 2
+}
 
 ---@class ComponentLoader
 ---@field Load fun(layout:Layout):boolean
 ---@field Styles fun():table<string,Props>
 ---@field Fonts fun():table<string,FontHandle>
 ---@field Pages fun():table<string,Page>
+---@field GetBindValue fun(v:string):nil|{path:string, key:string, format:string, interval:number}
 
 local ComponentLoader = {}
 ComponentLoader.__index = ComponentLoader
@@ -60,10 +66,6 @@ function ComponentLoader.New(screen, behaviour, binder)
         return true
     end
 
-    local function bindValue()
-        -- $bind(path/to/data:key:format:interval)
-    end
-
     ---@param layer Layer
     ---@param data BoxJson
     ---@return boolean
@@ -77,20 +79,48 @@ function ComponentLoader.New(screen, behaviour, binder)
 
         local box = layer.Box(pos, dim, corner, style)
 
+        -- Style when mouse is inside, if any
+        local insideStyle ---@type Props|nil
+
+        if data.mouse and data.mouse.mouse_inside then
+            local set_style = data.mouse.mouse_inside.set_style
+            if set_style then
+                insideStyle = styles[set_style] or missingStyle
+            end
+        end
+
         behaviour.OnMouseInsideOrOutside(box, function(element, event)
-            if event == MouseState.MouseInside then
-                if data.mouse and data.mouse.mouse_inside then
-                    local insideStyle = data.mouse.mouse_inside.set_style
-                    box.Props = insideStyle and styles[insideStyle] or missingStyle
-                end
+            if event == MouseState.MouseInside and insideStyle then
+                box.Props = insideStyle
             else
                 box.Props = style
             end
         end)
 
-        behaviour.OnMouseClick(box, function(element, event)
-            rs.Log(data.mouse.click.command)
-        end)
+        if data.mouse and data.mouse.click then
+            local cmd = data.mouse.click.command
+
+            if cmd then
+                -- Object to hold command for the box
+                local cmdContainer = { Command = "" }
+
+                local bind = ComponentLoader.GetBindValue(cmd)
+                if bind then
+                    local path = binder.Path(bind.path, bind.interval)
+                    if bind.type == BindType.String then
+                        path.Text(cmdContainer, "Command", bind.key, bind.format)
+                    elseif bind.type == BindType.Number then
+                        path.Number(cmdContainer, "Command", bind.key, bind.format)
+                    end
+                else
+                    cmdContainer.Command = cmd
+                end
+
+                behaviour.OnMouseClick(box, function(element, event)
+                    rs.Log("-> " .. cmdContainer.Command)
+                end)
+            end
+        end
 
         return true
     end
@@ -158,6 +188,31 @@ function ComponentLoader.New(screen, behaviour, binder)
     end
 
     return setmetatable(s, ComponentLoader)
+end
+
+---Get the bind value parameters if, any.
+---@param v string|nil
+---@return nil|{type:BindType, path:string, key:string, format:string, interval:number}
+function ComponentLoader.GetBindValue(v)
+    if not v then return nil end
+
+    local res
+
+    local path, key, format, interval = v:match("^$bindString%((%S+):(%S+):(.+):(%d*%.?%d+)%)$")
+    if path then
+        res = { type = BindType.String, path = path, key = key, format = format, interval = interval }
+    else
+        path, key, format, interval = v:match("^$bindNumber%((%S+):(%S+):(.+):(%d*%.?%d+)%)$")
+        if path then
+            res = { type = BindType.Number, path = path, key = key, format = format, interval = interval }
+        end
+    end
+
+    if res then
+        res.interval = tonumber(res.interval)
+    end
+
+    return res
 end
 
 return ComponentLoader

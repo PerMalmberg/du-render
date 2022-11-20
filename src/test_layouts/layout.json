@@ -57,7 +57,7 @@
                     "style": "blue_green_border",
                     "mouse": {
                         "click": {
-                            "command": "$bind(path/to/data:key:format:interval)"
+                            "command": "$bindString(path/to/data:key:My command: '%s':1)"
                         },
                         "mouse_inside": {
                             "set_style": "transparent_red_border"

@@ -62,10 +62,31 @@ describe("ComponentLoader", function()
     it("Can load pages", function()
         local pages = c.Pages()
         local pagename = pages["pagename"]
-
     end)
 
-    it("Can handle missing style", function()
-        --assert.False(true)
+    it("Bind string pattern", function()
+        local a = "$bindString(path/to/data:key:Text with tripple colon in format string:a: '%s'::1)"
+        local bind = ComponentLoader.GetBindValue(a)
+        if bind == nil then
+            assert.False(true)
+        else
+            assert.are_equal("path/to/data", bind.path)
+            assert.are_equal("key", bind.key)
+            assert.are_equal("Text with tripple colon in format string:a: '%s':", bind.format)
+            assert.are_equal(1, bind.interval)
+        end
+    end)
+
+    it("Bind number pattern", function()
+        local a = "$bindNumber(path/to/data:key:Text with tripple colon in format string:a: '%f'::1)"
+        local bind = ComponentLoader.GetBindValue(a)
+        if bind == nil then
+            assert.False(true)
+        else
+            assert.are_equal("path/to/data", bind.path)
+            assert.are_equal("key", bind.key)
+            assert.are_equal("Text with tripple colon in format string:a: '%f':", bind.format)
+            assert.are_equal(1, bind.interval)
+        end
     end)
 end)

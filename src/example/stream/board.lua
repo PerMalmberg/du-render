@@ -1,5 +1,5 @@
 local Stream = require("Stream")
-local screen = library.getLinkByName("screen")
+local screen = library.getLinkByClass("ScreenUnit")
 local time = system.getUtcTime
 local json = require("dkjson")
 local Vec2 = require("native/Vec2")
@@ -23,11 +23,7 @@ local function onUpdate()
     if now - t > 0.3 then
         t = now
         stream.Write(json.encode(
-            { man = wave[i],
-                color = Color.New(1, 1, 0, 1):ToString(),
-                pos = Vec2.New(100, 150):ToString()
-            }))
-        i = 1 + (i % #wave)
+            { path = { to = { data = { key = "from board" } } } }))
     end
 
     stream.Tick()

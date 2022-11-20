@@ -4,7 +4,7 @@ local getTime = require("native/RenderScript").Instance().GetTime
 
 ---@class BindPath
 ---@field New fun(parts:string[]):BindPath
----@field Text fun(o:table, propertyName:string, valueName:string)
+---@field Text fun(o:table, propertyName:string, valueName:string, format:string)
 ---@field Color fun(o:table, propertyName:string, valueName:string)
 ---@field Vec2 fun(o:table, propertyName:string, valueName:string)
 ---@field Number fun(o:table, propertyName:string, valueName:string, format:string)
@@ -12,7 +12,7 @@ local getTime = require("native/RenderScript").Instance().GetTime
 ---@field ProcessText fun(propertyName:string, value:string)
 ---@field ProcessColor fun(propertyName:string, value:string)
 
----@alias BoundText {obj:table, propertyName:string, valueName:string, updateInterval:number, lastUpdate:number}
+---@alias BoundText {obj:table, propertyName:string, valueName:string, updateInterval:number, format:string, lastUpdate:number}
 ---@alias BoundNumber {obj:table, propertyName:string, valueName:string, format:string, updateInterval:number, lastUpdate:number}
 
 local BindPath = {}
@@ -33,11 +33,12 @@ function BindPath.New(updateInterval)
     ---@param propertyName string
     ---@param valueName string
     ---@param interval? number
-    function s.Text(obj, propertyName, valueName, interval)
+    function s.Text(obj, propertyName, valueName, format, interval)
         table.insert(boundText, {
             obj = obj,
             propertyName = propertyName,
             valueName = valueName,
+            format = format,
             lastUpdate = 0,
             updateInterval = interval or updateInterval
         })
@@ -103,7 +104,7 @@ function BindPath.New(updateInterval)
         local now = getTime()
         for _, bind in ipairs(boundText) do
             if bind.valueName == valueName and now - bind.lastUpdate >= bind.updateInterval then
-                bind.obj[bind.propertyName] = value
+                bind.obj[bind.propertyName] = string.format(bind.format or "%s", tostring(value))
                 bind.lastUpdate = now
             end
         end
