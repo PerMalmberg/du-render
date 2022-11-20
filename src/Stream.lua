@@ -4,7 +4,7 @@
 ---@alias StreamData {output:CommQueue, input:CommQueue, lastReceived:number}
 
 ---@class Stream
----@field New fun(interface:ScreenLink|Renderer, onDataReceived:fun(string), timeout:number, timeoutCallback:fun(isTimedOut:boolean)):Stream
+---@field New fun(interface:ScreenLink|Renderer, onDataReceived:fun(string), timeout:number, timeoutCallback:fun(isTimedOut:boolean, stream:Stream)):Stream
 ---@field Tick fun()
 ---@field Write fun(data:string)
 ---@field WaitingToSend fun():boolean
@@ -20,7 +20,13 @@
     - payload is the actual payload, if any
 ]]
 
-local headerSize = 1 + 2 + 1 + 2 + 1
+local headerSize = 1 -- #
+    + 2 -- remaining_chucks
+    + 1 -- |
+    + 1 -- seq
+    + 1 -- |
+    + 2 -- cmd
+    + 1 -- |
 
 ---@enum StreamCommand
 local Command = {
@@ -38,7 +44,7 @@ Stream.__index = Stream
 ---@param interface ScreenLink|Renderer Either a link to a screen or _ENV when in RenderScript
 ---@param onDataReceived fun(string) Callback for when data is received
 ---@param timeout number The amount of time to wait for a reply before considering the connection broken.
----@param timeoutCallback fun(isTimedOut:boolean) The function to call on a timeout event. The parameter indicates if the comms are timedout or not.
+---@param timeoutCallback fun(isTimedOut:boolean, steam:Stream) The function to call on a timeout event. The parameter indicates if the comms are timedout or not.
 ---@return Stream
 function Stream.New(interface, onDataReceived, timeout, timeoutCallback)
     local s = {}
@@ -60,8 +66,9 @@ function Stream.New(interface, onDataReceived, timeout, timeoutCallback)
             }
         end
         streamData = _ENV.streamData
-
     else
+        -- Prevent any existing data to be received on startup.
+        interface.clearScriptOutput()
         getTime = system.getUtcTime
         streamData = {
             input = { queue = {}, waitingForReply = false, seq = 0 },
@@ -98,10 +105,10 @@ function Stream.New(interface, onDataReceived, timeout, timeoutCallback)
     local function sameInput(commQueue, seq)
         if seq == commQueue.seq then
             return true
-        else
-            commQueue.seq = seq
-            return false
         end
+
+        commQueue.seq = seq
+        return false
     end
 
     ---Creates a block
@@ -163,7 +170,7 @@ function Stream.New(interface, onDataReceived, timeout, timeoutCallback)
 
         -- Did we get any input?
         if cmd then
-            timeoutCallback(false)
+            timeoutCallback(false, s)
             streamData.lastReceived = getTime()
 
             if runningInScreen then
@@ -204,7 +211,7 @@ function Stream.New(interface, onDataReceived, timeout, timeoutCallback)
         end
 
         if getTime() - streamData.lastReceived >= timeout then
-            timeoutCallback(true)
+            timeoutCallback(true, s)
             streamData.lastReceived = getTime() -- Reset to trigger again
             output.queue = {}
             output.waitingForReply = false

@@ -2,18 +2,23 @@ local Stream = require("Stream")
 local screen = library.getLinkByClass("ScreenUnit")
 local time = system.getUtcTime
 local json = require("dkjson")
-local Vec2 = require("native/Vec2")
-local Color = require("native/Color")
 
-local wave = { "~o~", "\\o\\", "|o|", "/o/" }
-local i = 1
-local t = time()
+local layoutString = library.embedFile("../../test_layouts/layout_min.json")
+local layout       = json.decode(layoutString)
+local layoutSent   = false
+local t            = time()
 
 local function onData(data)
+    system.print("From board: " .. data)
 end
 
-local function onTimeout(isTimedOut)
-
+local function onTimeout(isTimedOut, stream)
+    if isTimedOut then
+        layoutSent = false
+    elseif not layoutSent then
+        stream.Write(json.encode({ screen_layout = layout }))
+        layoutSent = true
+    end
 end
 
 local stream = Stream.New(screen, onData, 1, onTimeout)

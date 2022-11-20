@@ -18,6 +18,7 @@ MouseState = {
 
 ---@class Behaviour
 ---@field New fun():Behaviour
+---@field Clear fun()
 ---@field OnMouseClick MouseHandler
 ---@field OnMouseDownOrUp MouseHandler
 ---@field OnMouseInsideOrOutside MouseHandler
@@ -82,6 +83,12 @@ function Behaviour.New()
                 cont.handler(cont.obj, MouseState.MouseOutside)
             end
         end
+    end
+
+    function s.Clear()
+        onMouseClick = {}
+        onMouseDownOrUp = {}
+        onMouseInSideorOutside = {}
     end
 
     return setmetatable(s, Behaviour)

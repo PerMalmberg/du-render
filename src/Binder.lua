@@ -6,6 +6,8 @@ local BindPathTree = require("BindPathTree")
 ---@field Path fun(path:string, updateInterval?:number):BindPath
 ---@field MergeData fun(data:table)
 ---@field Render fun()
+---@field Clear fun()
+
 
 local Binder = {}
 Binder.__index = {}
@@ -15,6 +17,7 @@ Binder.__index = {}
 function Binder.New()
     local s = {}
     local tree = BindPathTree.New()
+    local binderData = {}
 
     ---Creates a BindPath
     ---@param path string The json-path in the data to the object holding the data to bind to, such as "a/b" or just "" for the root object, Only a-z, A-Z and _ are allowed.
@@ -80,24 +83,29 @@ function Binder.New()
     ---Merges the given data with the data previously provided
     ---@param data table
     function s.MergeData(data)
-        if not _ENV.binderData then
-            _ENV.binderData = {}
+        if not binderData then
+            binderData = {}
         end
 
-        merge(_ENV.binderData, data)
+        merge(binderData, data)
     end
 
     ---Sets the data, discarding any previously merged data.
     ---@param data table
     function s.SetData(data)
-        _ENV.binderData = data
+        binderData = data
     end
 
     ---Renders the data
     function s.Render()
-        if _ENV.binderData then
-            apply(_ENV.binderData, tree)
+        if binderData then
+            apply(binderData, tree)
         end
+    end
+
+    function s.Clear()
+        tree = BindPathTree.New()
+        binderData = nil
     end
 
     return setmetatable(s, Binder)

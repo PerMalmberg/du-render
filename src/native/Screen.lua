@@ -14,6 +14,7 @@ local Font = require("native/Font")
 ---@field Pressed fun():boolean
 ---@field Released fun():boolean
 ---@field DetermineHitElement fun():table
+---@field Clear fun()
 
 local Screen = {}
 Screen.__index = Screen
@@ -60,8 +61,14 @@ function Screen.New()
 
         if printStats then
             local layer
-            if #layers == 0 then layer = s.Layer(1)
-            else layer = layers[#layers] end
+            -- Render on top-most layer
+            if #layers == 0 then
+                layer = s.Layer(1)
+                -- New layer so need to render it to get its id.
+                layer.Render()
+            else
+                layer = layers[#layers]
+            end
 
             local cost = string.format("Res: %s, cost: %0.2f%%", s.Bounds():ToString(), s.Stats())
             local font = Font.Get(FontName.Play, 20)
@@ -69,8 +76,13 @@ function Screen.New()
             local rWidth = Vec2.New(rs.GetTextBounds(font, "R")).x
             local pos = Vec2.New(rWidth, s.Bounds().y - bounds.y)
             rs.SetNextFillColor(layer.Id, 1, 1, 1, 1)
-            rs.SetNextTextAlign(layer.Id, RSAlignHor.Left, RSAlignVer.Top)
             rs.AddText(layer.Id, font, cost, pos:Unpack())
+        end
+    end
+
+    function s.Clear()
+        for i = 1, #layers do
+            layers[i].Clear()
         end
     end
 

@@ -3,6 +3,7 @@ local Props = require("native/Props")
 local Vec2  = require("native/Vec2")
 local rs    = require("native/RenderScript").Instance()
 local Color = require("native/Color")
+local json  = require("dkjson")
 
 -- These are Json structures for the layout
 ---@alias Style PropsTableStruct
@@ -35,14 +36,16 @@ ComponentLoader.__index = ComponentLoader
 ---@param screen Screen
 ---@param behaviour Behaviour
 ---@param binder Binder
+---@param stream Stream
 ---@return ComponentLoader
-function ComponentLoader.New(screen, behaviour, binder)
+function ComponentLoader.New(screen, behaviour, binder, stream)
     local s = {}
 
     local fonts = {} ---@type table<string,FontHandle>
     local styles = {} ---@type table<string,Props>
     local pages = {} ---@type NamedPages
-    local missingStyle = Props.New(Color.New(220 / 255, 20 / 255, 60 / 255))
+    -- Use a crimson color for missing styles
+    local missingStyle = Props.New(Color.New(0.862745098, 0.078431373, 0.235294118))
 
     ---Loads fonts
     ---@param fontData NamedFonts
@@ -111,13 +114,17 @@ function ComponentLoader.New(screen, behaviour, binder)
                         path.Text(cmdContainer, "Command", bind.key, bind.format)
                     elseif bind.type == BindType.Number then
                         path.Number(cmdContainer, "Command", bind.key, bind.format)
+                    else
+                        rs.Log("Unknown bind type: " .. tostring(bind.type))
                     end
                 else
                     cmdContainer.Command = cmd
                 end
 
                 behaviour.OnMouseClick(box, function(element, event)
-                    rs.Log("-> " .. cmdContainer.Command)
+                    if cmdContainer.Command ~= "" then
+                        stream.Write(json.encode({ mouse_click = cmdContainer.Command }))
+                    end
                 end)
             end
         end
@@ -163,6 +170,10 @@ function ComponentLoader.New(screen, behaviour, binder)
     ---@param layout Layout The data structure holding the layout
     ---@return boolean
     function s.Load(layout)
+        screen.Clear()
+        behaviour.Clear()
+        binder.Clear()
+
         return layout ~= nil
             and loadFonts(layout.fonts)
             and loadStyles(layout.styles)

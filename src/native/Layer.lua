@@ -27,6 +27,7 @@ local Props = require("native/Props")
 ---@field Circle fun(pos:Vec2, radius:number, props:Props?):Circle
 ---@field Quad fun(a:Vec2, b:Vec2, c:Vec2, d:Vec2, props:Props?):Quad
 ---@field Render fun()
+---@field Clear fun()
 ---@field DetermineHitElement fun(cursor:Vec2):table
 
 local Layer = {}
@@ -147,6 +148,10 @@ function Layer.New()
         for _, comp in ipairs(s.Components) do
             comp.Render()
         end
+    end
+
+    function s.Clear()
+        s.Components = {}
     end
 
     ---Determines which element that is hit
