@@ -20,7 +20,7 @@ local Props = require("native/Props")
 ---@field Scale Vec2
 ---@field Text fun(text:string, pos:Vec2, font:FontHandle, props:Props?):Text
 ---@field Image fun(url:string, pos:Vec2, props:Props):Image
----@field Box fun(pos:Vec2, dimensions:Vec2, cornerRadius:number, props:Props?):Box
+---@field Box fun(pos1:Vec2, pos2:Vec2, cornerRadius:number, props:Props?):Box
 ---@field Bezier fun(a:Vec2, b:Vec2, c:Vec2, props:Props?):Bezier
 ---@field Line fun(a:Vec2, b:Vec2, props:Props?):Line
 ---@field Triangle fun(a:Vec2, b:Vec2, c:Vec2, props:Props?):Triangle
@@ -69,13 +69,13 @@ function Layer.New()
     end
 
     ---Adds a box to the layer
-    ---@param pos Vec2
-    ---@param dimensions Vec2
+    ---@param pos1 Vec2
+    ---@param pos2 Vec2
     ---@param cornerRadius number
     ---@param props Props?
     ---@return Box
-    function s.Box(pos, dimensions, cornerRadius, props)
-        local b = Box.New(s, pos, dimensions, cornerRadius, props or Props.Default())
+    function s.Box(pos1, pos2, cornerRadius, props)
+        local b = Box.New(s, pos, pos2, cornerRadius, props or Props.Default())
         table.insert(s.Components, b)
         return b
     end

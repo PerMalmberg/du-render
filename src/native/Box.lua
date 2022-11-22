@@ -1,8 +1,8 @@
 local rs = require("native/RenderScript").Instance()
 
 ---@class Box
----@field Pos Vec2
----@field Dimensions Vec2
+---@field Pos1 Vec2
+---@field Pos2 Vec2
 ---@field Props Props
 ---@field Render fun()
 ---@field Hit fun(point:Vec2):boolean
@@ -12,15 +12,15 @@ Box.__index = Box
 
 ---Creates a new Box
 ---@param layer Layer
----@param pos Vec2
----@param dimensions Vec2
+---@param pos1 Vec2
+---@param pos2 Vec2
 ---@param cornerRadius number
 ---@param props Props
-function Box.New(layer, pos, dimensions, cornerRadius, props)
+function Box.New(layer, pos1, pos2, cornerRadius, props)
     local s = {
         Layer = layer,
-        Pos = pos,
-        Dimensions = dimensions,
+        Pos1 = pos1,
+        Pos2 = pos2,
         CornerRadius = cornerRadius,
         Props = props
     }
@@ -31,9 +31,9 @@ function Box.New(layer, pos, dimensions, cornerRadius, props)
 
         local r = s.CornerRadius
         if r and r > 0 then
-            rs.AddBoxRounded(layerId, s.Pos.x, s.Pos.y, s.Dimensions.x, s.Dimensions.y, r)
+            rs.AddBoxRounded(layerId, s.Pos1.x, s.Pos1.y, s.Pos2.x, s.Pos2.y, r)
         else
-            rs.AddBox(layerId, s.Pos.x, s.Pos.y, s.Dimensions:Unpack())
+            rs.AddBox(layerId, s.Pos1.x, s.Pos1.y, s.Pos2:Unpack())
         end
     end
 
@@ -41,9 +41,10 @@ function Box.New(layer, pos, dimensions, cornerRadius, props)
     ---@param point Vec2
     ---@return boolean
     function s.Hit(point)
-        local max = s.Pos + s.Dimensions
-        return point.x >= s.Pos.x and point.x <= max.x
-            and point.y >= s.Pos.y and point.y <= max.y
+        local min = s.Pos1
+        local max = s.Pos2
+        return point.x >= min.x and point.x <= max.x
+            and point.y >= min.y and point.y <= max.y
     end
 
     return setmetatable(s, Box)

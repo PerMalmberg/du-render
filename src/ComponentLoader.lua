@@ -15,13 +15,7 @@ local json  = require("dkjson")
 ---@alias NamedPages table<string,Page>
 ---@alias Layout { fonts:NamedFonts, styles:table<string,Props>, pages:table<string, Page> }
 
----@alias BoxJson {pos:string, dimension:string, corner_radius:number, style:string, mouse:MouseJson}
-
----@enum BindType
-BindType = {
-    String = 1,
-    Number = 2
-}
+---@alias BoxJson {pos1:string, pos2:string, corner_radius:number, style:string, mouse:MouseJson}
 
 ---@class ComponentLoader
 ---@field Load fun(layout:Layout):boolean
@@ -73,14 +67,34 @@ function ComponentLoader.New(screen, behaviour, binder, stream)
     ---@param data BoxJson
     ---@return boolean
     local function createBox(layer, data)
-        local pos = Vec2.FromString(data.pos)
-        local dim = Vec2.FromString(data.dimension)
         local corner = type(data.corner_radius) == "number" and data.corner_radius or 0
 
-        if not (pos and dim) then rs.Log("Missing pos or dimension for box") return false end
         local style = styles[data.style] or missingStyle
 
-        local box = layer.Box(pos, dim, corner, style)
+        local box = layer.Box(Vec2.New(), Vec2.New(), corner, style)
+
+        local function bindPos(pos, box, prop)
+            if not binder.CreateBinding(pos, box, prop) then
+                local p = Vec2.FromString(pos)
+                if p then
+                    box[prop] = p
+                else
+                    rs.Log("Missing pos1/2 for box")
+                    return false
+                end
+            end
+            return true
+        end
+
+        if not bindPos(data.pos1, box, "Pos1") then
+            rs.Log("Error binding/setting Pos1 of box")
+            return false
+        end
+
+        if not bindPos(data.pos2, box, "Pos2") then
+            rs.Log("Error binding/setting Pos2 of box")
+            return false
+        end
 
         -- Style when mouse is inside, if any
         local insideStyle ---@type Props|nil
@@ -106,18 +120,7 @@ function ComponentLoader.New(screen, behaviour, binder, stream)
             if cmd then
                 -- Object to hold command for the box
                 local cmdContainer = { Command = "" }
-
-                local bind = ComponentLoader.GetBindValue(cmd)
-                if bind then
-                    local path = binder.Path(bind.path, bind.interval)
-                    if bind.type == BindType.String then
-                        path.Text(cmdContainer, "Command", bind.key, bind.format)
-                    elseif bind.type == BindType.Number then
-                        path.Number(cmdContainer, "Command", bind.key, bind.format)
-                    else
-                        rs.Log("Unknown bind type: " .. tostring(bind.type))
-                    end
-                else
+                if not binder.CreateBinding(cmd, cmdContainer, "Command") then
                     cmdContainer.Command = cmd
                 end
 
@@ -205,17 +208,25 @@ end
 ---@param v string|nil
 ---@return nil|{type:BindType, path:string, key:string, format:string, interval:number}
 function ComponentLoader.GetBindValue(v)
-    if not v then return nil end
-
-    local res
-
     local path, key, format, interval = v:match("^$bindString%((%S+):(%S+):(.+):(%d*%.?%d+)%)$")
     if path then
         res = { type = BindType.String, path = path, key = key, format = format, interval = interval }
-    else
+    end
+
+    if not res then
         path, key, format, interval = v:match("^$bindNumber%((%S+):(%S+):(.+):(%d*%.?%d+)%)$")
         if path then
             res = { type = BindType.Number, path = path, key = key, format = format, interval = interval }
+        end
+    end
+
+    if not res then
+        --$mulVec2(x(-:-):y(gauge/fuel:value):value(202,2):0.1)
+        local xPath, xKey, yPath, yKey, value
+        xPath, xKey, yPath, yKey, value, interval = v:match("$mulVec2%(x%((%S+):(%S%)):y%((%S+):(%S+)):value(%(%d*%.?%d+,%d*%.?%d+%)):%d*%.?%d+)")
+        if xPath then
+            res = { type = BindType.Vec2, xPath = xPath, xKey = xKey, yPath = yPath, yKey = yKey, value = value,
+                interval = interval }
         end
     end
 

@@ -6,6 +6,7 @@ local json            = require("dkjson")
 local rs              = require("native/RenderScript").Instance()
 local TextAlign       = require("native/TextAlign")
 local Color           = require("native/Color")
+local Stream          = require("Stream")
 
 local function loadFile(path)
     local f = io.open(path)
@@ -28,11 +29,16 @@ rs.GetResolution = function()
     return 10, 10
 end
 
+rs.Log = print
+
+local fakeStream = { setScriptInput = function() end, clearScriptOutput = function() end,
+    getScriptOutput = function() return "" end }
+
 describe("ComponentLoader", function()
     local screen = Screen.New()
     local behaviour = Behaviour.New()
     local binder = Binder.New()
-    local c = ComponentLoader.New(screen, behaviour, binder)
+    local c = ComponentLoader.New(screen, behaviour, binder, fakeStream)
     local s = loadFile("src/test_layouts/layout.json")
     assert.True(c.Load(json.decode(s)))
 
@@ -64,8 +70,12 @@ describe("ComponentLoader", function()
         local pagename = pages["pagename"]
     end)
 
-    it("Bind string pattern", function()
-        local a = "$bindString(path/to/data:key:Text with tripple colon in format string:a: '%s'::1)"
+    -- $string(path{path/to/data:key}:format{My command: '%s'}:interval{1}:init{init value})
+    -- $num(path{path/to/data:key}:interval{1}:init{init value}:op{mul})
+    -- $vec2(xpath{-:-}:ypath{gauge/fuel:value}:init{(202,2)}:interval{0.1}:op{mul})
+
+    --[[ it("Bind string pattern", function()
+        local a = "$bind(path/to/data:key:Text with tripple colon in format string:a: '%s'::1)"
         local bind = ComponentLoader.GetBindValue(a)
         if bind == nil then
             assert.False(true)
@@ -89,4 +99,8 @@ describe("ComponentLoader", function()
             assert.are_equal(1, bind.interval)
         end
     end)
+
+    it("Can bind vec2 pattern", function()
+
+    end) ]]
 end)

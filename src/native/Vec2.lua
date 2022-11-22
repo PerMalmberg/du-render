@@ -423,11 +423,13 @@ end
 ---@param s string
 ---@return Vec2|nil
 function Vec2.FromString(s)
-    local x, y = s:match("^%(([+-]*%d*%.?%d+),([+-]*%d*%.?%d+)%)$")
-    x = tonumber(x)
-    y = tonumber(y)
-    if x and y then
-        return Vec2.New(x, y)
+    if s then
+        local x, y = s:match("^%(([+-]*%d*%.?%d+),([+-]*%d*%.?%d+)%)$")
+        x = tonumber(x)
+        y = tonumber(y)
+        if x and y then
+            return Vec2.New(x, y)
+        end
     end
     return nil
 end

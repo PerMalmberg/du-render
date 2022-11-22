@@ -1,8 +1,9 @@
 local env = require("environment")
 
 env.Prepare()
-local rs   = require("native/RenderScript")
+local rs   = require("native/RenderScript").Instance()
 rs.GetTime = getTime
+rs.Log     = print
 
 local Binder = require("Binder")
 local Color  = require("native/Color")
@@ -19,20 +20,26 @@ describe("Binder", function()
         local obj2 = {}
         local obj3 = {}
         local obj4 = {}
+        local obj5 = {}
 
-        p1.Number(obj3, "Number", "num", "%0.1f")
-        p1.Number(obj4, "Number", "num", "%0.2f")
+        p1.Number(obj3, "Number", "num", nil, 1, function(n)
+            return n * 2
+        end)
+        p1.Number(obj4, "Number", "num")
 
-        p2.Text(obj1, "Text", "text")
+        p1.Number(obj5, "Number", "num", "Made into a string %0.1f")
+
+        p2.Text(obj1, "Text", "text", "Format string %s goes here")
         p2.Text(obj2, "Text", "text")
 
         b.MergeData({ a = { b_c = { de = { num = 123.456, f = { text = "a text" } } } } })
         b.Render()
 
-        assert.are_equal("a text", obj1.Text)
+        assert.are_equal("Format string a text goes here", obj1.Text)
         assert.are_equal("a text", obj2.Text)
-        assert.are_equal("123.5", obj3.Number)
-        assert.are_equal("123.46", obj4.Number)
+        assert.are_equal(246.912, obj3.Number)
+        assert.are_equal(123.456, obj4.Number)
+        assert.are_equal("Made into a string 123.5", obj5.Number)
     end)
 
     it("Can bind to a Color", function()
@@ -88,5 +95,26 @@ describe("Binder", function()
         -- Takes effect
         b.Render()
         assert.are_equal(Vec2.New(6, 7), obj1.Pos)
+    end)
+
+    it("Can create string binding from expression", function()
+        local b = Binder.New()
+        local target = {}
+        assert.True(b.CreateBinding("$str(path{path/to/data:key}:format{My command: '%s'}:interval{0}:init{init value}:op{mul})"
+            , target, "Prop"))
+        assert.Equal("init value", target.Prop)
+
+        b.MergeData({ path = { to = { data = { key = "string value" } } } })
+
+        local now = rs.GetTime()
+        while rs.GetTime() - now < 1.1 do
+            -- Wait a bit
+        end
+
+
+        b.Render()
+
+        assert.Equal("My command: 'string value'", target.Prop)
+
     end)
 end)
