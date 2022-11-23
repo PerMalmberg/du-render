@@ -22,7 +22,6 @@ local json  = require("dkjson")
 ---@field Styles fun():table<string,Props>
 ---@field Fonts fun():table<string,FontHandle>
 ---@field Pages fun():table<string,Page>
----@field GetBindValue fun(v:string):nil|{path:string, key:string, format:string, interval:number}
 
 local ComponentLoader = {}
 ComponentLoader.__index = ComponentLoader
@@ -202,39 +201,6 @@ function ComponentLoader.New(screen, behaviour, binder, stream)
     end
 
     return setmetatable(s, ComponentLoader)
-end
-
----Get the bind value parameters if, any.
----@param v string|nil
----@return nil|{type:BindType, path:string, key:string, format:string, interval:number}
-function ComponentLoader.GetBindValue(v)
-    local path, key, format, interval = v:match("^$bindString%((%S+):(%S+):(.+):(%d*%.?%d+)%)$")
-    if path then
-        res = { type = BindType.String, path = path, key = key, format = format, interval = interval }
-    end
-
-    if not res then
-        path, key, format, interval = v:match("^$bindNumber%((%S+):(%S+):(.+):(%d*%.?%d+)%)$")
-        if path then
-            res = { type = BindType.Number, path = path, key = key, format = format, interval = interval }
-        end
-    end
-
-    if not res then
-        --$mulVec2(x(-:-):y(gauge/fuel:value):value(202,2):0.1)
-        local xPath, xKey, yPath, yKey, value
-        xPath, xKey, yPath, yKey, value, interval = v:match("$mulVec2%(x%((%S+):(%S%)):y%((%S+):(%S+)):value(%(%d*%.?%d+,%d*%.?%d+%)):%d*%.?%d+)")
-        if xPath then
-            res = { type = BindType.Vec2, xPath = xPath, xKey = xKey, yPath = yPath, yKey = yKey, value = value,
-                interval = interval }
-        end
-    end
-
-    if res then
-        res.interval = tonumber(res.interval)
-    end
-
-    return res
 end
 
 return ComponentLoader
