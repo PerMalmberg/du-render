@@ -43,3 +43,4 @@ luac.out
 util/Codex.lua
 luacov-html/*
 out/*
+src/test_layouts/layout_min.json

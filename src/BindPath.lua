@@ -9,6 +9,7 @@ local getTime = require("native/RenderScript").Instance().GetTime
 ---@field Color fun(o:table, propertyName:string, valueName:string, interval?:number, modifier?:fun(c:Color):Color)
 ---@field Vec2 fun(o:table, propertyName:string, valueName:string, interval?:number, modifier?:fun(v:Vec2):Vec2)
 ---@field ProcessNumber fun(propertyName:string, value:number)
+---@field ProcessVec2 fun(propertyName:string, value:Vec2)
 ---@field ProcessText fun(propertyName:string, value:string)
 ---@field ProcessColor fun(propertyName:string, value:string)
 
@@ -93,7 +94,7 @@ function BindPath.New(updateInterval)
     ---@param propertyName string
     ---@param valueName string
     ---@param interval? number
-    ---@param modifier? fun(t:string):string
+    ---@param modifier? fun(t:Vec2):Vec2
     function s.Vec2(obj, propertyName, valueName, interval, modifier)
         table.insert(boundVec2, {
             obj = obj,
@@ -119,6 +120,19 @@ function BindPath.New(updateInterval)
         end
     end
 
+    ---@param valueName string
+    ---@param value Vec2
+    function s.ProcessVec2(valueName, value)
+        local now = getTime()
+
+        for _, bind in ipairs(boundVec2) do
+            if bind.valueName == valueName and now - bind.lastUpdate >= bind.updateInterval then
+                bind.obj[bind.propertyName] = bind.modifier(value)
+                bind.lastUpdate = now
+            end
+        end
+    end
+
     function s.ProcessText(valueName, value)
         local now = getTime()
         for _, bind in ipairs(boundText) do
@@ -140,12 +154,7 @@ function BindPath.New(updateInterval)
 
         local v = Vec2.FromString(value)
         if v then
-            for _, bind in ipairs(boundVec2) do
-                if bind.valueName == valueName and now - bind.lastUpdate >= bind.updateInterval then
-                    bind.obj[bind.propertyName] = bind.modifier(v)
-                    bind.lastUpdate = now
-                end
-            end
+            s.ProcessVec2(valueName, v)
         end
     end
 

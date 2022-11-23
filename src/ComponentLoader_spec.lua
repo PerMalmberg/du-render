@@ -68,39 +68,6 @@ describe("ComponentLoader", function()
     it("Can load pages", function()
         local pages = c.Pages()
         local pagename = pages["pagename"]
+        assert.is_not_nil(pagename)
     end)
-
-    -- $string(path{path/to/data:key}:format{My command: '%s'}:interval{1}:init{init value})
-    -- $num(path{path/to/data:key}:interval{1}:init{init value}:op{mul})
-    -- $vec2(xpath{-:-}:ypath{gauge/fuel:value}:init{(202,2)}:interval{0.1}:op{mul})
-
-    --[[ it("Bind string pattern", function()
-        local a = "$bind(path/to/data:key:Text with tripple colon in format string:a: '%s'::1)"
-        local bind = ComponentLoader.GetBindValue(a)
-        if bind == nil then
-            assert.False(true)
-        else
-            assert.are_equal("path/to/data", bind.path)
-            assert.are_equal("key", bind.key)
-            assert.are_equal("Text with tripple colon in format string:a: '%s':", bind.format)
-            assert.are_equal(1, bind.interval)
-        end
-    end)
-
-    it("Bind number pattern", function()
-        local a = "$bindNumber(path/to/data:key:Text with tripple colon in format string:a: '%f'::1)"
-        local bind = ComponentLoader.GetBindValue(a)
-        if bind == nil then
-            assert.False(true)
-        else
-            assert.are_equal("path/to/data", bind.path)
-            assert.are_equal("key", bind.key)
-            assert.are_equal("Text with tripple colon in format string:a: '%f':", bind.format)
-            assert.are_equal(1, bind.interval)
-        end
-    end)
-
-    it("Can bind vec2 pattern", function()
-
-    end) ]]
 end)

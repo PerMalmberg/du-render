@@ -47,7 +47,11 @@ function Binder.New()
         -- Iterate each key in the data
         for key, value in pairs(data) do
             local t = type(value)
-            if t == "table" then
+            if Vec2.IsVec2(value) then
+                for _, bind in pairs(branch.Bind) do
+                    bind.ProcessVec2(key, Vec2.New(value))
+                end
+            elseif t == "table" then
                 -- If there is a matching entry in the BindPath tree, go into that
                 local p = branch.Sub[key]
                 if p then
@@ -114,9 +118,7 @@ function Binder.New()
     local stringPat = "$str%((.-)%)"
     local numPat = "$num%((.-)%)"
     local vec2Pat = "$vec2%((.-)%)"
-    local pathPat = "path{([%S]-):([%S]-)}"
-    local xPathPat = "x" .. pathPat
-    local yPathPat = "y" .. pathPat
+    local pathPat = "path{([^%s:{}]-):([^%s:{}]-)}"
     local formatPat = "format{([%s%S]-)}"
     local intervalPat = "interval{(%d*%.?%d+)}"
     local initPat = "init{(.-)}"
@@ -148,77 +150,55 @@ function Binder.New()
             return false
         end
 
-        local isMul = bindExpression:match(opMul)
-        local isDiv = bindExpression:match(opDiv)
+        local path, key = bindExpression:match(pathPat)
+        if not (path and key) then
+            rs.Log("'path' or 'key' missing in expression " .. bindExpression)
+            return false
+        end
+
+        local isMul = bindExpression:match(opMul) ~= nil
+        local isDiv = bindExpression:match(opDiv) ~= nil
 
         if isVec2 then
-            local xPath, xKey = bindExpression:match(xPathPat)
-            local yPath, yKey = bindExpression:match(yPathPat)
-            if not ((xPath and xKey) or (yPath and yKey)) then
-                rs.Log("'Missing both x/y path and key' in expression " .. bindExpression)
-                return false
-            end
-
             local initVal = Vec2.FromString(init)
             if not initVal then
-                rs.Log("Invalid init value for Vec2 in expression" .. bindExpression)
+                rs.Log("Invalid init value '" .. init .. "' for Vec2 in expression" .. bindExpression)
                 return false
             end
 
-            if xPath and xKey then
-                local p = s.Path(xPath)
-                p.Vec2(targetObject, targetProperty, xKey, interval, function(v)
-                    if isMul then
-                        return Vec2.New(initVal.x * v.x, v.y)
-                    elseif isDiv then
-                        if initVal.x ~= 0 then
-                            return Vec2.New(initVal.x / v.x, v.y)
-                        end
+            targetObject[targetProperty] = initVal
+
+            local p = s.Path(path)
+            p.Vec2(targetObject, targetProperty, key, interval, function(v)
+                if isMul then
+                    return initVal * v
+                elseif isDiv then
+                    if v.x ~= 0 and v.y ~= 0 then
+                        return initVal / v
                     end
+                end
 
-                    return v
-                end)
-            end
+                return v
+            end)
 
-            if yPath and yKey then
-                local p = s.Path(yPath)
-                p.Vec2(targetObject, targetProperty, yKey, interval, function(v)
-                    if isMul then
-                        return Vec2.New(v.x, initVal.y * v.y)
-                    elseif isDiv then
-                        if initVal.y ~= 0 then
-                            return Vec2.New(v.x, initVal.y / v.y)
-                        end
-                    end
-
-                    return v
-                end)
-            end
         else
-            local path, key = bindExpression:match(pathPat)
-
-            if not (path and key) then
-                rs.Log("'path' or 'key' missing in expression " .. bindExpression)
-                return false
-            end
-
             if isString then
                 local p = s.Path(path)
                 targetObject[targetProperty] = init
                 p.Text(targetObject, targetProperty, key, format or "%s", interval)
             elseif isNum then
-                init = tonumber(init)
-                if not init then
-                    rs.Log("'init' not a number in expression " .. bindExpression)
+                local initVal = tonumber(init)
+                if not initVal then
+                    rs.Log("Initial value '" .. init .. "' not a number in expression " .. bindExpression)
                     return false
                 end
 
-                targetObject[targetProperty] = init
+                targetObject[targetProperty] = initVal
 
                 local p = s.Path(path)
                 p.Number(targetObject, targetProperty, key, format, interval, function(n)
-                    if isMul then return init * n
-                    elseif n ~= 0 then return init / n
+                    if isMul then return initVal * n
+                    elseif isDiv and n ~= 0 then return initVal / n
                     else return n end
                 end)
             end

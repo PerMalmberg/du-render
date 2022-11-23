@@ -130,4 +130,111 @@ describe("Binder", function()
         b.Render()
         assert.Equal("string value", target.Prop)
     end)
+
+    it("Can create regular Vec2 bindings, number version", function()
+        local b = Binder.New()
+        local target = {}
+        assert.True(b.CreateBinding("$vec2(path{path:vec2}:init{(4.5,6.7)}:interval{0})"
+            , target, "Prop"))
+        assert.Equal(Vec2.New(4.5, 6.7), target.Prop)
+        b.MergeData({ path = { vec2 = { x = 2, y = 3 } } })
+        b.Render()
+        assert.Equal(Vec2.New(2, 3), target.Prop)
+    end)
+
+    it("Can create regular Vec2 bindings, string version", function()
+        local b = Binder.New()
+        local target = {}
+        assert.True(b.CreateBinding("$vec2(path{path:vec2}:init{(4.5,6.7)}:interval{0})"
+            , target, "Prop"))
+        assert.Equal(Vec2.New(4.5, 6.7), target.Prop)
+        b.MergeData({ path = { vec2 = "(-2,-3)" } })
+        b.Render()
+        assert.Equal(Vec2.New(-2, -3), target.Prop)
+    end)
+
+    it("Handles invalid init value for Vec2 bindings", function()
+        local b = Binder.New()
+        local target = {}
+        assert.False(b.CreateBinding("$vec2(path{path:vec2}:init{(X,X)}:interval{0})"
+            , target, "Prop"))
+    end)
+
+    it("Can create multiplying Vec2 bindings, number version", function()
+        local b = Binder.New()
+        local target = {}
+        assert.True(b.CreateBinding("$vec2(path{path:vec2}:init{(4.5,6.7)}:interval{0}:op{mul})"
+            , target, "Prop"))
+        assert.Equal(Vec2.New(4.5, 6.7), target.Prop)
+        b.MergeData({ path = { vec2 = { x = 2, y = 3 } } })
+        b.Render()
+        assert.Equal(Vec2.New(4.5 * 2, 6.7 * 3), target.Prop)
+    end)
+
+    it("Can create multiplying Vec2 bindings, string version", function()
+        local b = Binder.New()
+        local target = {}
+        assert.True(b.CreateBinding("$vec2(path{path:vec2}:init{(4.5,6.7)}:interval{0}:op{mul})"
+            , target, "Prop"))
+        assert.Equal(Vec2.New(4.5, 6.7), target.Prop)
+        b.MergeData({ path = { vec2 = "(2,3)" } })
+        b.Render()
+        assert.Equal(Vec2.New(4.5 * 2, 6.7 * 3), target.Prop)
+    end)
+
+    it("Can create dividing Vec2 bindings, number version", function()
+        local b = Binder.New()
+        local target = {}
+        assert.True(b.CreateBinding("$vec2(path{path:vec2}:init{(4.5,6.7)}:interval{0}:op{div})"
+            , target, "Prop"))
+        assert.Equal(Vec2.New(4.5, 6.7), target.Prop)
+        b.MergeData({ path = { vec2 = { x = 2, y = 3 } } })
+        b.Render()
+        assert.Equal(Vec2.New(4.5 / 2, 6.7 / 3), target.Prop)
+    end)
+
+    it("Can create dividing Vec2 bindings, string version", function()
+        local b = Binder.New()
+        local target = {}
+        assert.True(b.CreateBinding("$vec2(path{path:vec2}:init{(4.5,6.7)}:interval{0}:op{div})"
+            , target, "Prop"))
+        assert.Equal(Vec2.New(4.5, 6.7), target.Prop)
+        b.MergeData({ path = { vec2 = "(2,3)" } })
+        b.Render()
+        assert.Equal(Vec2.New(4.5 / 2, 6.7 / 3), target.Prop)
+    end)
+
+    it("Handles missing init value", function()
+        local b = Binder.New()
+        local target = {}
+        assert.False(b.CreateBinding("$vec2(path{path:vec2}:interval{0}:op{mul})"
+            , target, "Prop"))
+    end)
+
+    it("Handles missing path or key", function()
+        local b = Binder.New()
+        local target = {}
+        assert.False(b.CreateBinding("$vec2(path{path}:init{(4.5,6.7)}:interval{0}:op{mul})"
+            , target, "Prop"))
+        assert.False(b.CreateBinding("$vec2(init{(4.5,6.7)}:interval{0}:op{mul})"
+            , target, "Prop"))
+    end)
+
+    it("Can create number bindnig", function()
+        local b = Binder.New()
+        local target = {}
+        assert.True(b.CreateBinding("$num(path{path:number}:init{12.34}:interval{0})"
+            , target, "Prop"))
+        assert.Equal(12.34, target.Prop)
+        b.MergeData({ path = { number = 78.9 } })
+        b.Render()
+        assert.Equal(78.9, target.Prop)
+    end)
+
+    it("Can handle invalid init value for number bindnig", function()
+        local b = Binder.New()
+        local target = {}
+        assert.False(b.CreateBinding("$num(path{path:number}:init{X}:interval{0})"
+            , target, "Prop"))
+    end)
 end)
