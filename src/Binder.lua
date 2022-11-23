@@ -117,7 +117,7 @@ function Binder.New()
     local pathPat = "path{([%S]-):([%S]-)}"
     local xPathPat = "x" .. pathPat
     local yPathPat = "y" .. pathPat
-    local formatPat = "format{([%S]-)}"
+    local formatPat = "format{([%s%S]-)}"
     local intervalPat = "interval{(%d*%.?%d+)}"
     local initPat = "init{(.-)}"
     local opMul = "op{mul}"
@@ -205,7 +205,7 @@ function Binder.New()
             if isString then
                 local p = s.Path(path)
                 targetObject[targetProperty] = init
-                p.Text(targetObject, targetProperty, key, format, interval)
+                p.Text(targetObject, targetProperty, key, format or "%s", interval)
             elseif isNum then
                 init = tonumber(init)
                 if not init then

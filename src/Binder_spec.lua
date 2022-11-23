@@ -100,21 +100,34 @@ describe("Binder", function()
     it("Can create string binding from expression", function()
         local b = Binder.New()
         local target = {}
-        assert.True(b.CreateBinding("$str(path{path/to/data:key}:format{My command: '%s'}:interval{0}:init{init value}:op{mul})"
+        assert.True(b.CreateBinding("$str(path{path/to/data:key}:format{My command: '%s'}:interval{0.5}:init{init value}:op{mul})"
             , target, "Prop"))
         assert.Equal("init value", target.Prop)
 
         b.MergeData({ path = { to = { data = { key = "string value" } } } })
+        b.Render()
+        b.MergeData({ path = { to = { data = { key = "this is delayed" } } } })
+        b.Render()
+        assert.Equal("My command: 'string value'", target.Prop)
 
         local now = rs.GetTime()
-        while rs.GetTime() - now < 1.1 do
+        while rs.GetTime() - now <= 0.5 do
             -- Wait a bit
         end
 
-
         b.Render()
+        assert.Equal("My command: 'this is delayed'", target.Prop)
+    end)
 
-        assert.Equal("My command: 'string value'", target.Prop)
+    it("Can create string binding from expression without a format string or interval", function()
+        local b = Binder.New()
+        local target = {}
+        assert.True(b.CreateBinding("$str(path{path/to/data:key}:init{init value}:op{mul})"
+            , target, "Prop"))
+        assert.Equal("init value", target.Prop)
 
+        b.MergeData({ path = { to = { data = { key = "string value" } } } })
+        b.Render()
+        assert.Equal("string value", target.Prop)
     end)
 end)
