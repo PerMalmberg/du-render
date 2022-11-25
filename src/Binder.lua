@@ -1,5 +1,6 @@
 local BindPath = require("BindPath")
 local BindPathTree = require("BindPathTree")
+local BinderModifier = require("BinderModifier")
 local rs = require("native/RenderScript").Instance()
 local Vec2 = require("native/Vec2")
 
@@ -90,29 +91,23 @@ function Binder.New()
     ---Merges the given data with the data previously provided
     ---@param data table
     function s.MergeData(data)
-        if not binderData then
-            binderData = {}
-        end
-
         merge(binderData, data)
     end
 
     ---Sets the data, discarding any previously merged data.
     ---@param data table
     function s.SetData(data)
-        binderData = data
+        binderData = data or {}
     end
 
     ---Renders the data
     function s.Render()
-        if binderData then
-            apply(binderData, tree)
-        end
+        apply(binderData, tree)
     end
 
     function s.Clear()
         tree = BindPathTree.New()
-        binderData = nil
+        binderData = {}
     end
 
     local stringPat = "$str%((.-)%)"
@@ -124,6 +119,7 @@ function Binder.New()
     local initPat = "init{(.-)}"
     local opMul = "op{mul}"
     local opDiv = "op{div}"
+    local percentPat = "percent{(.-)}"
 
     ---Attempts to create a binding from the expression into the target object
     ---@param bindExpression string
@@ -151,13 +147,16 @@ function Binder.New()
         end
 
         local path, key = bindExpression:match(pathPat)
+        path = path or "" -- If left out, binds to the root path
         if not (path and key) then
             rs.Log("'path' or 'key' missing in expression " .. bindExpression)
             return false
         end
 
+
         local isMul = bindExpression:match(opMul) ~= nil
         local isDiv = bindExpression:match(opDiv) ~= nil
+        local precent = bindExpression:match(percentPat)
 
         if isVec2 then
             local initVal = Vec2.FromString(init)
@@ -166,20 +165,19 @@ function Binder.New()
                 return false
             end
 
+            local precentVal
+            if precent then
+                precentVal = Vec2.FromString(precent)
+                if not precentVal then
+                    rs.Log("Invalid percent value '" .. precent .. "' for Vec2 in expression " .. bindExpression)
+                    return false
+                end
+            end
+
             targetObject[targetProperty] = initVal
 
             local p = s.Path(path)
-            p.Vec2(targetObject, targetProperty, key, interval, function(v)
-                if isMul then
-                    return initVal * v
-                elseif isDiv then
-                    if v.x ~= 0 and v.y ~= 0 then
-                        return initVal / v
-                    end
-                end
-
-                return v
-            end)
+            p.Vec2(targetObject, targetProperty, key, interval, BinderModifier.New(isMul, isDiv, precentVal, initVal))
 
         else
             if isString then
@@ -193,14 +191,20 @@ function Binder.New()
                     return false
                 end
 
+                local precentVal
+                if precent then
+                    precentVal = tonumber(precent)
+                    if not precentVal then
+                        rs.Log("Percent value '" .. precent .. "' not a number in expression " .. bindExpression)
+                        return false
+                    end
+                end
+
                 targetObject[targetProperty] = initVal
 
                 local p = s.Path(path)
-                p.Number(targetObject, targetProperty, key, format, interval, function(n)
-                    if isMul then return initVal * n
-                    elseif isDiv and n ~= 0 then return initVal / n
-                    else return n end
-                end)
+                p.Number(targetObject, targetProperty, key, format, interval,
+                    BinderModifier.New(isMul, isDiv, precentVal, initVal))
             end
         end
 

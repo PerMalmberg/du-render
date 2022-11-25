@@ -1,13 +1,14 @@
 local Color   = require("native/Color")
 local Vec2    = require("native/Vec2")
 local getTime = require("native/RenderScript").Instance().GetTime
+---@module "BinderModifier"
 
 ---@class BindPath
 ---@field New fun(parts:string[]):BindPath
 ---@field Text fun(o:table, propertyName:string, valueName:string, format?:string, interval?:number, modifier?:fun(t:string):string)
----@field Number fun(o:table, propertyName:string, valueName:string, format?:string, interval?:number, modifier?:fun(n:number):number)
+---@field Number fun(o:table, propertyName:string, valueName:string, format?:string, interval?:number, modifier?:BinderModifier)
 ---@field Color fun(o:table, propertyName:string, valueName:string, interval?:number, modifier?:fun(c:Color):Color)
----@field Vec2 fun(o:table, propertyName:string, valueName:string, interval?:number, modifier?:fun(v:Vec2):Vec2)
+---@field Vec2 fun(o:table, propertyName:string, valueName:string, interval?:number, modifier?:BinderModifier)
 ---@field ProcessNumber fun(propertyName:string, value:number)
 ---@field ProcessVec2 fun(propertyName:string, value:Vec2)
 ---@field ProcessText fun(propertyName:string, value:string)
@@ -15,7 +16,7 @@ local getTime = require("native/RenderScript").Instance().GetTime
 
 ---@alias genericModifier fun(any):any
 ---@alias BoundText {obj:table, propertyName:string, valueName:string, updateInterval:number, format:string, modifier:genericModifier, lastUpdate:number}
----@alias BoundNumber {obj:table, propertyName:string, valueName:string, updateInterval:number, format:string, modifier:genericModifier, lastUpdate:number}
+---@alias BoundNumber {obj:table, propertyName:string, valueName:string, updateInterval:number, format:string, modifier:BinderModifier, lastUpdate:number}
 
 local BindPath = {}
 BindPath.__index = BindPath
@@ -59,7 +60,7 @@ function BindPath.New(updateInterval)
     ---@param valueName string
     ---@param format string|nil If provided, this is used to format the resulting value into a string instead of a number.
     ---@param interval? number
-    ---@param modifier? fun(t:string):string
+    ---@param modifier? BinderModifier
     function s.Number(obj, propertyName, valueName, format, interval, modifier)
         table.insert(boundNumber, {
             obj = obj,
@@ -94,7 +95,7 @@ function BindPath.New(updateInterval)
     ---@param propertyName string
     ---@param valueName string
     ---@param interval? number
-    ---@param modifier? fun(t:Vec2):Vec2
+    ---@param modifier? BinderModifier
     function s.Vec2(obj, propertyName, valueName, interval, modifier)
         table.insert(boundVec2, {
             obj = obj,

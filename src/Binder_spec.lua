@@ -231,10 +231,52 @@ describe("Binder", function()
         assert.Equal(78.9, target.Prop)
     end)
 
-    it("Can handle invalid init value for number bindnig", function()
+    it("Can handle invalid init value for number binding", function()
         local b = Binder.New()
         local target = {}
         assert.False(b.CreateBinding("$num(path{path:number}:init{X}:interval{0})"
+            , target, "Prop"))
+    end)
+
+    it("Can do percent binding for Vec2", function()
+        local b = Binder.New()
+        local target = {}
+        assert.True(b.CreateBinding("$vec2(path{path:vec2}:init{(0,0)}:interval{0}:percent{(10,10)})"
+            , target, "Prop"))
+        assert.Equal(Vec2.New(0, 0), target.Prop)
+        b.MergeData({ path = { vec2 = "(0.5,0.5)" } })
+        b.Render()
+        assert.Equal(Vec2.New(5, 5), target.Prop)
+        b.MergeData({ path = { vec2 = "(0.5,1)" } })
+        b.Render()
+        assert.Equal(Vec2.New(5, 10), target.Prop)
+        b.MergeData({ path = { vec2 = "(0.9,0.1)" } })
+        b.Render()
+        assert.Equal(Vec2.New(9, 1), target.Prop)
+    end)
+
+    it("Handles bad percent value in Vec2 binding", function()
+        local b = Binder.New()
+        local target = {}
+        assert.False(b.CreateBinding("$vec2(path{path:vec2}:init{(0,0)}:interval{0}:percent{(foo)})"
+            , target, "Prop"))
+    end)
+
+    it("Can do percent binding for number", function()
+        local b = Binder.New()
+        local target = {}
+        assert.True(b.CreateBinding("$num(path{:num}:init{0}:interval{0}:percent{-10})"
+            , target, "Prop"))
+        assert.Equal(0, target.Prop)
+        b.MergeData({ num = 1 })
+        b.Render()
+        assert.are_equal(-10, target.Prop)
+    end)
+
+    it("Handle bad percent value in number bindings", function()
+        local b = Binder.New()
+        local target = {}
+        assert.False(b.CreateBinding("$num(path{:num}:init{0}:interval{0}:percent{foo})"
             , target, "Prop"))
     end)
 end)
