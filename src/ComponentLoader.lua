@@ -70,8 +70,6 @@ function ComponentLoader.New(screen, behaviour, binder, stream)
 
         local style = styles[data.style] or missingStyle
 
-        local box = layer.Box(Vec2.New(), Vec2.New(), corner, style)
-
         local function bindPos(pos, box, prop)
             if not binder.CreateBinding(pos, box, prop) then
                 local p = Vec2.FromString(pos)
@@ -84,6 +82,8 @@ function ComponentLoader.New(screen, behaviour, binder, stream)
             end
             return true
         end
+
+        local box = layer.Box(Vec2.New(), Vec2.New(), corner, style)
 
         if not bindPos(data.pos1, box, "Pos1") then
             rs.Log("Error binding/setting Pos1 of box")
