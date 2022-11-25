@@ -11,32 +11,35 @@ local json  = require("dkjson")
 ---@alias NamedStyles table<string,Style>
 ---@alias BaseCompJson {type:string, layer:integer}
 ---@alias MouseJson { click: { command:string }, mouse_inside: { set_style:string }}
----@alias Page {components:BaseCompJson[]}
----@alias NamedPages table<string,Page>
----@alias Layout { fonts:NamedFonts, styles:table<string,Props>, pages:table<string, Page> }
+---@alias PageJson {components:BaseCompJson[]}
+---@alias NamedPagesJson table<string,PageJson>
+---@alias LayoutJson { fonts:NamedFonts, styles:table<string,Props>, pages:table<string, PageJson> }
 
 ---@alias BoxJson {pos1:string, pos2:string, corner_radius:number, style:string, mouse:MouseJson}
 
----@class ComponentLoader
----@field Load fun(layout:Layout):boolean
+---@alias Page Layer[]
+---@alias Pages table<string,Page>
+
+---@class Layout
+---@field SetLayout fun(layout:Layout):boolean
 ---@field Styles fun():table<string,Props>
 ---@field Fonts fun():table<string,FontHandle>
----@field Pages fun():table<string,Page>
+---@field Activate fun(page:string):boolean
 
-local ComponentLoader = {}
-ComponentLoader.__index = ComponentLoader
+local Layout = {}
+Layout.__index = Layout
 
 ---@param screen Screen
 ---@param behaviour Behaviour
 ---@param binder Binder
 ---@param stream Stream
----@return ComponentLoader
-function ComponentLoader.New(screen, behaviour, binder, stream)
+---@return Layout
+function Layout.New(screen, behaviour, binder, stream)
     local s = {}
 
     local fonts = {} ---@type table<string,FontHandle>
     local styles = {} ---@type table<string,Props>
-    local pages = {} ---@type NamedPages
+    local layoutData = {} ---@type LayoutJson
     -- Use a crimson color for missing styles
     local missingStyle = Props.New(Color.New(0.862745098, 0.078431373, 0.235294118))
 
@@ -135,7 +138,7 @@ function ComponentLoader.New(screen, behaviour, binder, stream)
     end
 
     ---Loads the page
-    ---@param page Page
+    ---@param page PageJson
     ---@return boolean
     local function loadPage(page)
         if not page.components then return false end
@@ -155,31 +158,33 @@ function ComponentLoader.New(screen, behaviour, binder, stream)
         return true
     end
 
-    ---Loads the pages
-    ---@param pageData NamedPages
+    ---Sets the layout and loads fonts and styles
+    ---@param layout LayoutJson
     ---@return boolean
-    local function loadPages(pageData)
-        for name, page in pairs(pageData) do
-            local p = loadPage(page)
-            if not p then return false end
-            pages[name] = page
-        end
-
-        return true
+    function s.SetLayout(layout)
+        layoutData = layout
+        return loadFonts(layoutData.fonts) and loadStyles(layoutData.styles)
     end
 
     ---Loads controls and data bindings
-    ---@param layout Layout The data structure holding the layout
+    ---@param pageName string The page name to activate
     ---@return boolean
-    function s.Load(layout)
+    function s.Activate(pageName)
         screen.Clear()
         behaviour.Clear()
         binder.Clear()
 
-        return layout ~= nil
-            and loadFonts(layout.fonts)
-            and loadStyles(layout.styles)
-            and loadPages(layout.pages)
+        local pages = layoutData.pages
+
+        if pages then
+            local p = pages[pageName]
+
+            if p then
+                return loadPage(p)
+            end
+        end
+
+        return false
     end
 
     ---Gets the syles
@@ -194,13 +199,7 @@ function ComponentLoader.New(screen, behaviour, binder, stream)
         return fonts
     end
 
-    ---Gets the pages
-    ---@return NamedPages
-    function s.Pages()
-        return pages
-    end
-
-    return setmetatable(s, ComponentLoader)
+    return setmetatable(s, Layout)
 end
 
-return ComponentLoader
+return Layout

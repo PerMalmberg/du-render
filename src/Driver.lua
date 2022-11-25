@@ -17,13 +17,13 @@ function Driver.Instance()
     local binder   = require("Binder").New()
     local behavior = require("Behaviour").New()
     local json     = require("dkjson")
-    local loader ---@type ComponentLoader
+    local loader ---@type Layout
 
     local onDataReceived = function(data)
         local j = json.decode(data)
         if j then
             if j.screen_layout then
-                if not loader.Load(j.screen_layout) then
+                if not loader.SetLayout(j.screen_layout) then
                     logMessage("Could not load layout")
                 end
             else
@@ -37,7 +37,7 @@ function Driver.Instance()
     end
 
     local stream = require("Stream").New(_ENV, onDataReceived, 1, timeoutCallback)
-    loader = require("ComponentLoader").New(screen, behavior, binder, stream)
+    loader = require("Layout").New(screen, behavior, binder, stream)
 
     ---Call this each frame
     function s.Tick()

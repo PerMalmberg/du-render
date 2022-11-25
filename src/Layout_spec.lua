@@ -1,12 +1,11 @@
-local ComponentLoader = require("ComponentLoader")
-local Screen          = require("native/Screen")
-local Behaviour       = require("Behaviour")
-local Binder          = require("Binder")
-local json            = require("dkjson")
-local rs              = require("native/RenderScript").Instance()
-local TextAlign       = require("native/TextAlign")
-local Color           = require("native/Color")
-local Stream          = require("Stream")
+local Layout    = require("Layout")
+local Screen    = require("native/Screen")
+local Behaviour = require("Behaviour")
+local Binder    = require("Binder")
+local json      = require("dkjson")
+local rs        = require("native/RenderScript").Instance()
+local TextAlign = require("native/TextAlign")
+local Color     = require("native/Color")
 
 local function loadFile(path)
     local f = io.open(path)
@@ -34,13 +33,13 @@ rs.Log = print
 local fakeStream = { setScriptInput = function() end, clearScriptOutput = function() end,
     getScriptOutput = function() return "" end }
 
-describe("ComponentLoader", function()
+describe("Layout", function()
     local screen = Screen.New()
     local behaviour = Behaviour.New()
     local binder = Binder.New()
-    local c = ComponentLoader.New(screen, behaviour, binder, fakeStream)
+    local c = Layout.New(screen, behaviour, binder, fakeStream)
     local s = loadFile("src/test_layouts/layout.json")
-    assert.True(c.Load(json.decode(s)))
+    assert.True(c.SetLayout(json.decode(s)))
 
     it("Can load fonts", function()
         local play10 = c.Fonts()["Play10"]
@@ -65,9 +64,10 @@ describe("ComponentLoader", function()
         assert.is_not_nil(style2)
     end)
 
-    it("Can load pages", function()
-        local pages = c.Pages()
-        local pagename = pages["pagename"]
-        assert.is_not_nil(pagename)
+
+    it("Can activate a page", function()
+        assert.False(c.Activate("does not exist"))
+        assert.True(c.Activate("firstpage"))
+        -- count layers and components to verify loading
     end)
 end)

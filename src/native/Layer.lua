@@ -41,7 +41,8 @@ function Layer.New()
         Origin = Vec2.New(),
         Rotation = 0,
         Scale = Vec2.New(1, 1),
-        Components = {} ---@type table[]
+        ---@type BasicComponent[]
+        Components = {},
     }
 
     ---Create a new text on the layer
@@ -75,7 +76,7 @@ function Layer.New()
     ---@param props Props?
     ---@return Box
     function s.Box(pos1, pos2, cornerRadius, props)
-        local b = Box.New(s, pos, pos2, cornerRadius, props or Props.Default())
+        local b = Box.New(s, pos1, pos2, cornerRadius, props or Props.Default())
         table.insert(s.Components, b)
         return b
     end
@@ -146,7 +147,9 @@ function Layer.New()
         rs.SetLayerScale(s.Id, s.Scale:Unpack())
 
         for _, comp in ipairs(s.Components) do
-            comp.Render()
+            if comp.Props.Visible then
+                comp.Render()
+            end
         end
     end
 

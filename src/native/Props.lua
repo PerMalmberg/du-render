@@ -3,7 +3,7 @@ local ColorAndDistance = require("native/ColorAndDistance")
 local TextAlign = require("native/TextAlign")
 local rs = require("native/RenderScript").Instance()
 
----@alias PropsTableStruct {fill:string, rotation:number, shadow: {color:string, distance:number}, stroke:{color:string, distance:number}, align:string}
+---@alias PropsTableStruct {fill:string, rotation:number, shadow: {color:string, distance:number}, stroke:{color:string, distance:number}, align:string, visible:boolean}
 
 ---@class Props
 ---@field Fill Color The fill color
@@ -16,6 +16,9 @@ local rs = require("native/RenderScript").Instance()
 ---@field Clone fun():Props
 ---@field Load fun(input:PropsTableStruct):Props Loads a Props from a table
 ---@field Persist fun():PropsTableStruct
+---@field Show fun()
+---@field Hide fun()
+---@field Visible boolean
 
 local Props = {}
 Props.__index = Props
@@ -26,14 +29,16 @@ Props.__index = Props
 ---@param shadow? ColorAndDistance
 ---@param stroke? ColorAndDistance
 ---@param align? TextAlign
+---@param visible? boolean
 ---@return Props
-function Props.New(color, rotation, shadow, stroke, align)
+function Props.New(color, rotation, shadow, stroke, align, visible)
     local s = {
         Fill = color or Color.Transparent(),
         Rotation = rotation or 0,
         Shadow = shadow or ColorAndDistance.New(Color.Transparent(), 0),
         Stroke = stroke or ColorAndDistance.New(Color.Transparent(), 0),
-        Align = align or TextAlign.Default()
+        Align = align or TextAlign.Default(),
+        Visible = visible or true
     }
 
     ---Applies the propertries to the layer
@@ -122,7 +127,12 @@ function Props.Load(input)
 
     local align = TextAlign.FromString(input.align)
 
-    return Props.New(color, rotation, shadow, stroke, align)
+    local visible = true
+    if input.visible ~= nil then
+        visible = input.visible
+    end
+
+    return Props.New(color, rotation, shadow, stroke, align, visible)
 end
 
 return Props

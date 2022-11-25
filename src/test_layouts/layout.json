@@ -72,11 +72,12 @@
         }
     },
     "pages": {
-        "pagename": {
+        "firstpage": {
             "components": [
                 {
                     "type": "box",
                     "layer": 1,
+                    "visible": true,
                     "pos1": "(1,1)",
                     "pos2": "(100,100)",
                     "corner_radius": "2",
@@ -93,6 +94,7 @@
                 {
                     "type": "box",
                     "layer": 1,
+                    "visible": true,
                     "pos1": "(100,100)",
                     "pos2": "(150,150)",
                     "corner_radius": "2",
@@ -109,6 +111,7 @@
                 {
                     "type": "box",
                     "layer": 1,
+                    "visible": true,
                     "pos1": "(200,0)",
                     "pos2": "(250,613)",
                     "corner_radius": "5",
@@ -117,7 +120,8 @@
                 {
                     "type": "box",
                     "layer": 1,
-                    "pos1": "$vec2(ypath{gauge/fuel:value}:init{(202,2)}:interval{0.1}:op{mul})",
+                    "visible": true,
+                    "pos1": "$vec2(path{gauge/fuel:value}:init{(202,2)}:interval{0.1}:op{mul})",
                     "pos2": "(248,611)",
                     "corner_radius": "5",
                     "style": "gauge_style_bar"
@@ -125,6 +129,7 @@
                 {
                     "type": "text",
                     "layer": 1,
+                    "visible": true,
                     "pos": "(10,10)",
                     "style": "text_style",
                     "mouse": {
