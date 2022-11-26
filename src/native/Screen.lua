@@ -15,6 +15,7 @@ local Font = require("native/Font")
 ---@field Released fun():boolean
 ---@field DetermineHitElement fun():table
 ---@field Clear fun()
+---@field CountParts fun():integer, integer
 
 local Screen = {}
 Screen.__index = Screen
@@ -144,6 +145,15 @@ function Screen.New()
         end
 
         return nil
+    end
+
+    function s.CountParts()
+        local comps = 0
+        for _, layer in ipairs(layers) do
+            comps = comps + #layer.Components
+        end
+
+        return #layers, comps
     end
 
     return setmetatable(s, Screen)

@@ -67,7 +67,13 @@ describe("Layout", function()
 
     it("Can activate a page", function()
         assert.False(c.Activate("does not exist"))
+        local layers, comps = screen.CountParts()
+        assert.are_equal(0, layers)
+        assert.are_equal(0, comps)
+
         assert.True(c.Activate("firstpage"))
-        -- count layers and components to verify loading
+        layers, comps = screen.CountParts()
+        assert.are_equal(1, layers)
+        assert.are_equal(4, comps)
     end)
 end)

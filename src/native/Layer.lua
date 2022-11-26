@@ -29,6 +29,7 @@ local Props = require("native/Props")
 ---@field Render fun()
 ---@field Clear fun()
 ---@field DetermineHitElement fun(cursor:Vec2):table
+---@field Components BasicComponent[]
 
 local Layer = {}
 Layer.__index = Layer
