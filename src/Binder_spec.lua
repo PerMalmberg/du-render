@@ -279,4 +279,34 @@ describe("Binder", function()
         assert.False(b.CreateBinding("$num(path{:num}:init{0}:interval{0}:percent{foo})"
             , target, "Prop"))
     end)
+
+    it("Can get a number in a tree", function()
+        local a = { b = { c = { d = 5 } } }
+        local aa = { b = { c = { d = "foo" } } }
+        assert.are_equal(5, Binder.GetNumByPath(a, "b/c/d"))
+        assert.are_equal(nil, Binder.GetNumByPath(aa, "b/c/d"))
+        assert.are_equal(nil, Binder.GetNumByPath(a, "b/c/d/d"))
+    end)
+
+    it("Can get a string in a tree", function()
+        local a = { b = { c = { d = "5" } } }
+        local aa = { b = { c = { d = 5 } } }
+        assert.are_equal("5", Binder.GetStrByPath(a, "b/c/d"))
+        assert.are_equal(nil, Binder.GetStrByPath(aa, "b/c/d"))
+        assert.are_equal(nil, Binder.GetStrByPath(a, "b/c/d/d"))
+    end)
+
+    it("Can get a table in a tree", function()
+        local a = { b = { c = { d = "5" } } }
+        local r = Binder.GetTblByPath(a, "b/c")
+        assert.are_equal("5", r.d)
+        assert.are_equal(nil, Binder.GetTblByPath(a, "b/c/d"))
+        assert.are_equal(nil, Binder.GetTblByPath(a, "b/c/d/d"))
+    end)
+
+    it("Can get table from first level", function()
+        local a = { b = 1 }
+        assert.are_equal(1, Binder.GetNumByPath(a, "b"))
+        assert.are_equal(nil, Binder.GetNumByPath(a, "b/c"))
+    end)
 end)

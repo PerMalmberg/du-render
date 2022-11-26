@@ -1,9 +1,10 @@
-local Font  = require("native/Font")
-local Props = require("native/Props")
-local Vec2  = require("native/Vec2")
-local rs    = require("native/RenderScript").Instance()
-local Color = require("native/Color")
-local json  = require("dkjson")
+local Font   = require("native/Font")
+local Props  = require("native/Props")
+local Vec2   = require("native/Vec2")
+local rs     = require("native/RenderScript").Instance()
+local Color  = require("native/Color")
+local json   = require("dkjson")
+local Binder = require("Binder")
 
 -- These are Json structures for the layout
 ---@alias Style PropsTableStruct
@@ -37,7 +38,7 @@ Layout.__index = Layout
 function Layout.New(screen, behaviour, binder, stream)
     local s = {}
 
-    local fonts = {} ---@type table<string,FontHandle>
+    local fonts = {} ---@type table<string,LoadedFont>
     local styles = {} ---@type table<string,Props>
     local layoutData = {} ---@type LayoutJson
     -- Use a crimson color for missing styles
@@ -65,6 +66,19 @@ function Layout.New(screen, behaviour, binder, stream)
         return true
     end
 
+    local function bindPos(pos, box, prop, componentType)
+        if not binder.CreateBinding(pos, box, prop) then
+            local p = Vec2.FromString(pos)
+            if p then
+                box[prop] = p
+            else
+                rs.Log("Missing " .. prop .. " in " .. componentType)
+                return false
+            end
+        end
+        return true
+    end
+
     ---@param layer Layer
     ---@param data BoxJson
     ---@return boolean
@@ -73,65 +87,47 @@ function Layout.New(screen, behaviour, binder, stream)
 
         local style = styles[data.style] or missingStyle
 
-        local function bindPos(pos, box, prop)
-            if not binder.CreateBinding(pos, box, prop) then
-                local p = Vec2.FromString(pos)
-                if p then
-                    box[prop] = p
-                else
-                    rs.Log("Missing pos1/2 for box")
-                    return false
-                end
-            end
-            return true
-        end
-
         local box = layer.Box(Vec2.New(), Vec2.New(), corner, style)
 
-        if not bindPos(data.pos1, box, "Pos1") then
-            rs.Log("Error binding/setting Pos1 of box")
+        if not (bindPos(data.pos1, box, "Pos1", "box")
+            and bindPos(data.pos2, box, "Pos2", "box")) then
             return false
         end
 
-        if not bindPos(data.pos2, box, "Pos2") then
-            rs.Log("Error binding/setting Pos2 of box")
-            return false
-        end
+        local boxStyles = {
+            ---@type Props|nil
+            standardStyle = style,
+            ---@type Props|nil
+            insideStyle = nil
+        }
 
-        -- Style when mouse is inside, if any
-        local insideStyle ---@type Props|nil
-
-        if data.mouse and data.mouse.mouse_inside then
-            local set_style = data.mouse.mouse_inside.set_style
-            if set_style then
-                insideStyle = styles[set_style] or missingStyle
-            end
+        local inside = Binder.GetStrByPath(data, "mouse/mouse_inside/set_style")
+        if inside then
+            boxStyles.insideStyle = styles[inside] or missingStyle
         end
 
         behaviour.OnMouseInsideOrOutside(box, function(element, event)
-            if event == MouseState.MouseInside and insideStyle then
-                box.Props = insideStyle
+            if event == MouseState.MouseInside and boxStyles.insideStyle then
+                box.Props = boxStyles.insideStyle
             else
-                box.Props = style
+                box.Props = boxStyles.standardStyle
             end
         end)
 
-        if data.mouse and data.mouse.click then
-            local cmd = data.mouse.click.command
+        local cmd = Binder.GetStrByPath(data, "mouse/click/command")
 
-            if cmd then
-                -- Object to hold command for the box
-                local cmdContainer = { Command = "" }
-                if not binder.CreateBinding(cmd, cmdContainer, "Command") then
-                    cmdContainer.Command = cmd
-                end
-
-                behaviour.OnMouseClick(box, function(element, event)
-                    if cmdContainer.Command ~= "" then
-                        stream.Write(json.encode({ mouse_click = cmdContainer.Command }))
-                    end
-                end)
+        if cmd then
+            -- Object to hold command for the box
+            local cmdContainer = { Command = "" }
+            if not binder.CreateBinding(cmd, cmdContainer, "Command") then
+                cmdContainer.Command = cmd
             end
+
+            behaviour.OnMouseClick(box, function(element, event)
+                if cmdContainer.Command ~= "" then
+                    stream.Write(json.encode({ mouse_click = cmdContainer.Command }))
+                end
+            end)
         end
 
         return true
@@ -194,7 +190,7 @@ function Layout.New(screen, behaviour, binder, stream)
     end
 
     ---Gets the fonts
-    ---@return table<string, FontHandle>
+    ---@return table<string, LoadedFont>
     function s.Fonts()
         return fonts
     end

@@ -1,3 +1,5 @@
+---@alias SimpleModifier fun(any):any
+
 ---@class BinderModifier
 ---@field isMul boolean
 ---@field isDiv boolean

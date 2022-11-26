@@ -1,10 +1,6 @@
 local rs = require("native/RenderScript").Instance()
+local LoadedFont = require("native/LoadedFont")
 
----@class Font
----@field Size number
----@field Name string
-
----@alias FontHandle integer
 
 ---@enum FontName
 FontName = {
@@ -22,15 +18,35 @@ FontName = {
     RobotoMonoBold          = "RobotoMono-Bold",
 }
 
+---@class Font
+---@field Get fun(name:string, size:integer):LoadedFont
+---@field Clear fun()
+
 local Font = {}
 Font.__index = Font
+
+local loaded = {} ---@type table<string, LoadedFont>
 
 ---Gets the requested font
 ---@param name FontName
 ---@param size integer
----@return FontHandle
+---@return LoadedFont
 function Font.Get(name, size)
-    return rs.LoadFont(name, size)
+    local nameAndSize = string.format("%s%d", name, size)
+
+    local exists = loaded[nameAndSize]
+    if not exists then
+        loaded[nameAndSize] = LoadedFont.New(name, size)
+    end
+
+    return loaded[nameAndSize]
+end
+
+---Clears fonts, call this at the end of the screen render.
+function Font.Clear()
+    for _, value in pairs(loaded) do
+        value.Reset()
+    end
 end
 
 return Font

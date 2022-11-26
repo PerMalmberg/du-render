@@ -18,7 +18,7 @@ local Props = require("native/Props")
 ---@field Origin Vec2
 ---@field Rotation number
 ---@field Scale Vec2
----@field Text fun(text:string, pos:Vec2, font:FontHandle, props:Props?):Text
+---@field Text fun(text:string, pos:Vec2, font:LoadedFont, props:Props?):Text
 ---@field Image fun(url:string, pos:Vec2, props:Props):Image
 ---@field Box fun(pos1:Vec2, pos2:Vec2, cornerRadius:number, props:Props?):Box
 ---@field Bezier fun(a:Vec2, b:Vec2, c:Vec2, props:Props?):Bezier
@@ -49,7 +49,7 @@ function Layer.New()
     ---Create a new text on the layer
     ---@param text string
     ---@param pos Vec2
-    ---@param font FontHandle
+    ---@param font LoadedFont
     ---@param props Props?
     ---@return Text
     function s.Text(text, pos, font, props)

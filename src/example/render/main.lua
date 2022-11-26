@@ -6,7 +6,7 @@ local Screen = require("native/Screen")
 local Vec2 = require("native/Vec2")
 local ColorAndDistance = require("native/ColorAndDistance")
 
-local screen = Screen.Instance()
+local screen = Screen.New()
 local screenDim = screen.Bounds()
 local w, h = screenDim:Unpack()
 

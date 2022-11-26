@@ -71,14 +71,16 @@ function Screen.New()
                 layer = layers[#layers]
             end
 
+            local costFont = Font.Get(FontName.Play, 20)
             local cost = string.format("Res: %s, cost: %0.2f%%", s.Bounds():ToString(), s.Stats())
-            local font = Font.Get(FontName.Play, 20)
-            local bounds = Vec2.New(rs.GetTextBounds(font, cost))
-            local rWidth = Vec2.New(rs.GetTextBounds(font, "R")).x
-            local pos = Vec2.New(rWidth, s.Bounds().y - bounds.y)
+            local textBounds = rs.GetTextBounds(costFont, cost)
+            local rWidth = rs.GetTextBounds(costFont, "R").x
+            local pos = Vec2.New(rWidth, s.Bounds().y - textBounds.y)
             rs.SetNextFillColor(layer.Id, 1, 1, 1, 1)
-            rs.AddText(layer.Id, font, cost, pos:Unpack())
+            rs.AddText(layer.Id, costFont.GetID(), cost, pos:Unpack())
         end
+
+        Font.Clear()
     end
 
     function s.Clear()

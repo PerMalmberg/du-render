@@ -23,7 +23,7 @@ Text.__index = Text
 ---@param text string
 ---@param pos Vec2
 ---@param layer Layer
----@param font FontHandle
+---@param font LoadedFont
 ---@param props Props
 ---@return Text
 function Text.New(text, pos, layer, font, props)
@@ -38,7 +38,7 @@ function Text.New(text, pos, layer, font, props)
     ---Returns the width and height, in pixels the text occupies.
     ---@return Vec2
     function s.Bounds()
-        return Vec2.New(rs.GetTextBounds(s.Font, s.Text))
+        return rs.GetTextBounds(s.Font, s.Text)
     end
 
     ---Width of text
@@ -57,7 +57,7 @@ function Text.New(text, pos, layer, font, props)
     function s.Render()
         local layerId = s.Layer.Id
         s.Props.Apply(layerId)
-        rs.AddText(layerId, s.Font, s.Text, s.Pos:Unpack())
+        rs.AddText(layerId, s.Font.GetID(), s.Text, s.Pos:Unpack())
     end
 
     --Determines if the position is within the element

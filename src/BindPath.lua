@@ -6,9 +6,9 @@ local getTime = require("native/RenderScript").Instance().GetTime
 ---@class BindPath
 ---@field New fun(parts:string[]):BindPath
 ---@field Text fun(o:table, propertyName:string, valueName:string, format?:string, interval?:number, modifier?:fun(t:string):string)
----@field Number fun(o:table, propertyName:string, valueName:string, format?:string, interval?:number, modifier?:BinderModifier)
+---@field Number fun(o:table, propertyName:string, valueName:string, format?:string, interval?:number, modifier?:BinderModifier|SimpleModifier)
 ---@field Color fun(o:table, propertyName:string, valueName:string, interval?:number, modifier?:fun(c:Color):Color)
----@field Vec2 fun(o:table, propertyName:string, valueName:string, interval?:number, modifier?:BinderModifier)
+---@field Vec2 fun(o:table, propertyName:string, valueName:string, interval?:number, modifier?:BinderModifier|SimpleModifier)
 ---@field ProcessNumber fun(propertyName:string, value:number)
 ---@field ProcessVec2 fun(propertyName:string, value:Vec2)
 ---@field ProcessText fun(propertyName:string, value:string)

@@ -11,6 +11,7 @@ local Vec2 = require("native/Vec2")
 ---@field Render fun()
 ---@field Clear fun()
 ---@field CreateBinding fun(bindExpression:string, targetObject:table, targetProperty:string):boolean
+---@field private getByPath fun(sourceObject:table, path:string):any|nil
 
 
 local Binder = {}
@@ -212,6 +213,67 @@ function Binder.New()
     end
 
     return setmetatable(s, Binder)
+end
+
+---Gets a value at the given path, if the entire path exists, or nil.
+---The last part of the path is returned
+---@param sourceObject table
+---@param path string
+---@param desiredType type
+---@return number|table|string|nil
+function Binder.getByPath(sourceObject, path, desiredType)
+    local parts = {}
+
+    for nodeName in string.gmatch(path, "[a-zA-Z_]+") do
+        parts[#parts + 1] = nodeName
+    end
+
+    if #parts == 0 then return nil end
+
+    local curr = sourceObject
+
+    while #parts > 0 do
+        local p = table.remove(parts, 1)
+        if type(curr) == "table" and curr[p] then
+            curr = curr[p]
+        else
+            return nil
+        end
+    end
+
+    if type(curr) ~= desiredType then return nil end
+
+    return curr
+end
+
+---Gets a number by path
+---@param sourceObject table
+---@param path string Path to get value from in the form a/b/c, where c would be the value to get
+---@return number|nil
+function Binder.GetNumByPath(sourceObject, path)
+    local r = Binder.getByPath(sourceObject, path, "number")
+    ---@cast r number|nil
+    return r
+end
+
+---Gets a number by path
+---@param sourceObject table
+---@param path string Path to get value from in the form a/b/c, where c would be the value to get
+---@return string|nil
+function Binder.GetStrByPath(sourceObject, path)
+    local r = Binder.getByPath(sourceObject, path, "string")
+    ---@cast r string|nil
+    return r
+end
+
+---Gets a table by path
+---@param sourceObject table
+---@param path string Path to get value from in the form a/b/c, where c would be the value to get
+---@return table|nil
+function Binder.GetTblByPath(sourceObject, path)
+    local r = Binder.getByPath(sourceObject, path, "table")
+    ---@cast r table|nil
+    return r
 end
 
 return Binder

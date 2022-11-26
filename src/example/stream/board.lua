@@ -7,6 +7,7 @@ local layoutString = library.embedFile("../../test_layouts/layout_min.json")
 local layout       = json.decode(layoutString)
 local layoutSent   = false
 local t            = time()
+local t2           = t
 
 local function onData(data)
     system.print("From board: " .. data)
@@ -29,6 +30,9 @@ local function onUpdate()
         t = now
         stream.Write(json.encode(
             { path = { to = { data = { key = "from board" } } } }))
+    elseif now - t2 > 1 then
+        stream.Write(json.encode({ activate_page = "firstpage" }))
+        t2 = now
     end
 
     stream.Tick()

@@ -1,3 +1,5 @@
+local Vec2 = require("native/Vec2")
+
 ---@enum RSShape
 RSShape = {
     Bezier = 0,
@@ -19,7 +21,7 @@ RSShape = {
 ---@field AddImageSub fun(layer:integer, image:integer, x:number, y:number, width:number, height:number, subX:number, subY:number, subWidth:number, subHeight:number)
 ---@field AddLine fun(layer:integer, x1:number, y1:number, x2:number, y2:number)
 ---@field AddQuad fun(layer:integer, x1:number, y1:number, x2:number, y2:number, x3:number, y3:number, x4:number, y4:number)
----@field AddText fun(layer:integer, font:integer, text:string, x:number, y:number)
+---@field AddText fun(layer:integer, font:FontHandle, text:string, x:number, y:number)
 ---@field AddTriangle fun(layer:integer, x1:number, y1:number, x2:number, y2:number, x3:number, y3:number)
 ---@field CreateLayer fun():integer
 ---@field GetAvailableFontCount fun():integer
@@ -37,7 +39,7 @@ RSShape = {
 ---@field GetRenderCost fun():number The cost of all rendering operations performed by the render script so far (at the time of the call to this function)
 ---@field GetRenderCostMax fun():number The render cost limit. A script that exceeds this limit (in one execution) will not render correctly and will instead throw an error. Note that this value may change between version releases
 ---@field GetResolution fun():number,number A tuple containing the (width, height) of the screen's render surface, in pixels
----@field GetTextBounds fun(font:integer, text:string):number,number A tuple containing the width and height, respectively, of the bounding box
+---@field GetTextBounds fun(font:LoadedFont, text:string):Vec2 A tuple containing the width and height, respectively, of the bounding box
 ---@field GetTime fun():number Time, in seconds, since the render script started running
 ---@field IsImageLoaded fun(image:integer):boolean True if the image is fully loaded and ready to use, false otherwise
 ---@field LoadImage fun(url:string):integer Load an image to be used with addImage from the given URL
@@ -106,7 +108,12 @@ function RenderScript.Instance()
         GetRenderCost = _ENV.getRenderCost,
         GetRenderCostMax = _ENV.getRenderCostMax,
         GetResolution = _ENV.getResolution,
-        GetTextBounds = _ENV.getTextBounds,
+        ---@param font LoadedFont
+        ---@param text string
+        ---@return Vec2
+        GetTextBounds = function(font, text)
+            return Vec2.New(_ENV.getTextBounds(font.GetID(), text))
+        end,
         GetTime = _ENV.getTime,
         IsImageLoaded = _ENV.isImageLoaded,
         LoadImage = _ENV.loadImage,
