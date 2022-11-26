@@ -4,9 +4,9 @@
             "font": "Play",
             "size": 10
         },
-        "Montserrat5": {
+        "Montserrat100": {
             "font": "Montserrat",
-            "size": 5
+            "size": 100
         }
     },
     "styles": {
@@ -66,9 +66,9 @@
             "align": "h0,v1",
             "stroke": {
                 "color": "r0,g1,b0,a1",
-                "distance": 12
+                "distance": 1
             },
-            "fill": "r1,g2,b3,a1"
+            "fill": "r0.1,g0.1,b0.1,a1"
         }
     },
     "pages": {
@@ -86,7 +86,7 @@
                         "click": {
                             "command": "$str(path{path/to/data:key}:format{My command: '%s'}:interval{1}:init{init value}:op{mul})"
                         },
-                        "mouse_inside": {
+                        "inside": {
                             "set_style": "transparent_red_border"
                         }
                     }
@@ -104,7 +104,7 @@
                             "command": "just text command"
                         },
                         "inside": {
-                            "setstyle": "transparent_red_border"
+                            "set_style": "transparent_red_border"
                         }
                     }
                 },
@@ -128,16 +128,18 @@
                 },
                 {
                     "type": "text",
-                    "layer": 1,
+                    "layer": 2,
                     "visible": true,
-                    "pos": "(10,10)",
+                    "pos": "(100,100)",
                     "style": "text_style",
+                    "font": "Montserrat100",
+                    "text": "Awesome text!",
                     "mouse": {
                         "click": {
                             "command": "command from text"
                         },
                         "inside": {
-                            "setstyle": "button1_hover"
+                            "set_style": "button1_hover"
                         }
                     }
                 }

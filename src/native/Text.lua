@@ -57,7 +57,7 @@ function Text.New(text, pos, layer, font, props)
     function s.Render()
         local layerId = s.Layer.Id
         s.Props.Apply(layerId)
-        rs.AddText(layerId, s.Font.GetID(), s.Text, s.Pos:Unpack())
+        rs.AddText(layerId, s.Font.GetID(), s.Text or "", s.Pos:Unpack())
     end
 
     --Determines if the position is within the element

@@ -17,6 +17,7 @@ local Binder = require("Binder")
 ---@alias LayoutJson { fonts:NamedFonts, styles:table<string,Props>, pages:table<string, PageJson> }
 
 ---@alias BoxJson {pos1:string, pos2:string, corner_radius:number, style:string, mouse:MouseJson}
+---@alias TextJson {pos:string, style:string, font:string, text:string, mouse:MouseJson, mouse:MouseJson}
 
 ---@alias Page Layer[]
 ---@alias Pages table<string,Page>
@@ -43,6 +44,7 @@ function Layout.New(screen, behaviour, binder, stream)
     local layoutData = {} ---@type LayoutJson
     -- Use a crimson color for missing styles
     local missingStyle = Props.New(Color.New(0.862745098, 0.078431373, 0.235294118))
+    local missingFont = Font.Get(FontName.RobotoMono, 10)
 
     ---Loads fonts
     ---@param fontData NamedFonts
@@ -101,7 +103,7 @@ function Layout.New(screen, behaviour, binder, stream)
             insideStyle = nil
         }
 
-        local inside = Binder.GetStrByPath(data, "mouse/mouse_inside/set_style")
+        local inside = Binder.GetStrByPath(data, "mouse/inside/set_style")
         if inside then
             boxStyles.insideStyle = styles[inside] or missingStyle
         end
@@ -133,6 +135,58 @@ function Layout.New(screen, behaviour, binder, stream)
         return true
     end
 
+    ---@param layer Layer
+    ---@param data TextJson
+    ---@return boolean
+    local function createText(layer, data)
+        local style = Binder.GetStrByPath(data, "style")
+        local textStyle
+        if style then
+            textStyle = styles[style]
+        end
+
+        local fontName = Binder.GetStrByPath(data, "font")
+        local textFont
+        if fontName then
+            textFont = fonts[fontName]
+        else
+            rs.Log("Missing font for text " .. (fontName or "<nil>"))
+        end
+
+        local text = layer.Text("", Vec2.New(), textFont or missingFont, textStyle or missingStyle)
+
+        if not bindPos(data.pos, text, "Pos", "text") then
+            return false
+        end
+
+        if not binder.CreateBinding(data.text, text, "Text") then
+            text.Text = data.text
+        end
+
+        local textStyles = {
+            ---@type Props|nil
+            standardStyle = textStyle,
+            ---@type Props|nil
+            insideStyle = nil
+        }
+
+        local inside = Binder.GetStrByPath(data, "mouse/inside/set_style")
+        if inside then
+            textStyles.insideStyle = styles[inside] or missingStyle
+        end
+
+        behaviour.OnMouseInsideOrOutside(text, function(element, event)
+            if event == MouseState.MouseInside and textStyles.insideStyle then
+                text.Props = textStyles.insideStyle
+                rs.Log("Inside text!")
+            else
+                text.Props = textStyles.standardStyle
+            end
+        end)
+
+        return true
+    end
+
     ---Loads the page
     ---@param page PageJson
     ---@return boolean
@@ -143,9 +197,14 @@ function Layout.New(screen, behaviour, binder, stream)
             local layer = comp.layer
             local t = comp.type
 
-            if t == "box" and type(layer) == "number" then
-                ---@cast comp BoxJson
-                res = createBox(screen.Layer(layer), comp)
+            if type(layer) == "number" then
+                if t == "box" then
+                    ---@cast comp BoxJson
+                    res = createBox(screen.Layer(layer), comp)
+                elseif t == "text" then
+                    ---@cast comp TextJson
+                    res = createText(screen.Layer(layer), comp)
+                end
             end
 
             if not res then return res end

@@ -44,8 +44,8 @@ describe("Layout", function()
     it("Can load fonts", function()
         local play10 = c.Fonts()["Play10"]
         assert.is_not_nil(play10)
-        local montserrat5 = c.Fonts()["Montserrat5"]
-        assert.is_not_nil(montserrat5)
+        local montserrat100 = c.Fonts()["Montserrat100"]
+        assert.is_not_nil(montserrat100)
     end)
 
     it("Can load styles", function()
@@ -73,7 +73,7 @@ describe("Layout", function()
 
         assert.True(c.Activate("firstpage"))
         layers, comps = screen.CountParts()
-        assert.are_equal(1, layers)
-        assert.are_equal(4, comps)
+        assert.are_equal(2, layers)
+        assert.are_equal(5, comps)
     end)
 end)

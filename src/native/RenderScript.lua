@@ -112,7 +112,7 @@ function RenderScript.Instance()
         ---@param text string
         ---@return Vec2
         GetTextBounds = function(font, text)
-            return Vec2.New(_ENV.getTextBounds(font.GetID(), text))
+            return Vec2.New(_ENV.getTextBounds(font.GetID(), text or ""))
         end,
         GetTime = _ENV.getTime,
         IsImageLoaded = _ENV.isImageLoaded,

@@ -45,7 +45,6 @@ function Driver.Instance()
 
     local timeoutCallback = function(isTimedOut, stream)
         if isTimedOut then
-            logMessage("Timout!")
             screen.Clear()
             binder.Clear()
             behavior.Clear()
