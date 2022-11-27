@@ -81,13 +81,56 @@ function Layout.New(screen, behaviour, binder, stream)
         return true
     end
 
+    ---Binds mouse actions
+    ---@param object Text|Box|Line
+    ---@param baseStyle Style
+    ---@param data BoxJson|TextJson
+    local function bindMouse(object, baseStyle, data)
+        local bindData = {
+            ---@type Props|nil
+            baseStyle = baseStyle,
+            ---@type Props|nil
+            insideStyle = nil,
+            ---@type string|nil
+            clickCommand = nil
+        }
+
+        local inside = Binder.GetStrByPath(data, "mouse/inside/set_style")
+        if inside then
+            bindData.insideStyle = styles[inside] or missingStyle
+        end
+
+        behaviour.OnMouseInsideOrOutside(object, function(element, event)
+            if event == MouseState.MouseInside and bindData.insideStyle then
+                object.Props = bindData.insideStyle
+            else
+                object.Props = bindData.baseStyle
+            end
+        end)
+
+        local cmd = Binder.GetStrByPath(data, "mouse/click/command")
+
+        if cmd then
+            if not binder.CreateBinding(cmd, bindData, "clickCommand") then
+                bindData.clickCommand = cmd
+            end
+
+            behaviour.OnMouseClick(object, function(element, event)
+                local c = bindData.clickCommand
+                if c ~= nil and string.len(c) > 0 then
+                    stream.Write(json.encode({ mouse_click = c }))
+                end
+            end)
+        end
+    end
+
     ---@param layer Layer
     ---@param data BoxJson
     ---@return boolean
     local function createBox(layer, data)
         local corner = type(data.corner_radius) == "number" and data.corner_radius or 0
 
-        local style = styles[data.style] or missingStyle
+        local style = styles[Binder.GetStrByPath(data, "style") or "-"] or missingStyle
 
         local box = layer.Box(Vec2.New(), Vec2.New(), corner, style)
 
@@ -96,41 +139,7 @@ function Layout.New(screen, behaviour, binder, stream)
             return false
         end
 
-        local boxStyles = {
-            ---@type Props|nil
-            standardStyle = style,
-            ---@type Props|nil
-            insideStyle = nil
-        }
-
-        local inside = Binder.GetStrByPath(data, "mouse/inside/set_style")
-        if inside then
-            boxStyles.insideStyle = styles[inside] or missingStyle
-        end
-
-        behaviour.OnMouseInsideOrOutside(box, function(element, event)
-            if event == MouseState.MouseInside and boxStyles.insideStyle then
-                box.Props = boxStyles.insideStyle
-            else
-                box.Props = boxStyles.standardStyle
-            end
-        end)
-
-        local cmd = Binder.GetStrByPath(data, "mouse/click/command")
-
-        if cmd then
-            -- Object to hold command for the box
-            local cmdContainer = { Command = "" }
-            if not binder.CreateBinding(cmd, cmdContainer, "Command") then
-                cmdContainer.Command = cmd
-            end
-
-            behaviour.OnMouseClick(box, function(element, event)
-                if cmdContainer.Command ~= "" then
-                    stream.Write(json.encode({ mouse_click = cmdContainer.Command }))
-                end
-            end)
-        end
+        bindMouse(box, style, data)
 
         return true
     end
@@ -139,21 +148,12 @@ function Layout.New(screen, behaviour, binder, stream)
     ---@param data TextJson
     ---@return boolean
     local function createText(layer, data)
-        local style = Binder.GetStrByPath(data, "style")
-        local textStyle
-        if style then
-            textStyle = styles[style]
-        end
+        local style = styles[Binder.GetStrByPath(data, "style") or "-"] or missingStyle
 
-        local fontName = Binder.GetStrByPath(data, "font")
-        local textFont
-        if fontName then
-            textFont = fonts[fontName]
-        else
-            rs.Log("Missing font for text " .. (fontName or "<nil>"))
-        end
+        local fontName = Binder.GetStrByPath(data, "font") or "-"
+        local textFont = fonts[fontName] or missingFont
 
-        local text = layer.Text("", Vec2.New(), textFont or missingFont, textStyle or missingStyle)
+        local text = layer.Text("", Vec2.New(), textFont, style)
 
         if not bindPos(data.pos, text, "Pos", "text") then
             return false
@@ -163,26 +163,7 @@ function Layout.New(screen, behaviour, binder, stream)
             text.Text = data.text
         end
 
-        local textStyles = {
-            ---@type Props|nil
-            standardStyle = textStyle,
-            ---@type Props|nil
-            insideStyle = nil
-        }
-
-        local inside = Binder.GetStrByPath(data, "mouse/inside/set_style")
-        if inside then
-            textStyles.insideStyle = styles[inside] or missingStyle
-        end
-
-        behaviour.OnMouseInsideOrOutside(text, function(element, event)
-            if event == MouseState.MouseInside and textStyles.insideStyle then
-                text.Props = textStyles.insideStyle
-                rs.Log("Inside text!")
-            else
-                text.Props = textStyles.standardStyle
-            end
-        end)
+        bindMouse(text, style, data)
 
         return true
     end

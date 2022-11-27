@@ -139,7 +139,7 @@
                             "command": "command from text"
                         },
                         "inside": {
-                            "set_style": "button1_hover"
+                            "set_style": "missing style"
                         }
                     }
                 }
