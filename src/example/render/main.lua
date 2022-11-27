@@ -32,9 +32,6 @@ local greenGlow = Props.New()
 greenGlow.Fill = Color.New(0, 2, 0)
 greenGlow.Align = TextAlign.New(RSAlignHor.Left, RSAlignVer.Bottom)
 
-local cost = layer.Text(string.format("%0.2f%%", screen.Stats()), Vec2.New(), font, greenGlow)
-cost.Pos = Vec2.New(screen.Width() - cost.Width(), cost.Height())
-
 local circle = layer.Circle(screenDim * 0.75, 20)
 circle.Props.Fill = Color.New(0, 0, 1, 0.5)
 circle.Props.Stroke = ColorAndDistance.New(Color.New(1, 0, 0), 5)
@@ -46,6 +43,7 @@ layer2.Text("Hello cruel world", screenDim / 2, font, goldenGlow)
 local bezier = layer2.Bezier(Vec2.New(), Vec2.New(screenDim.x, screenDim.y / 3), screenDim)
 bezier.Props.Stroke = ColorAndDistance.New(Color.New(1.5, 1.5, 1.5), 5)
 
+layer2.Line(screenDim, Vec2.New(),
+    Props.New(Color.Transparent(), 0, ColorAndDistance.None(), ColorAndDistance.New(Color.New(1, 0, 0), 2)))
 
-
-screen.Animate(1)
+screen.Animate(1, true)

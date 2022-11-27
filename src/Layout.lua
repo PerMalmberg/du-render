@@ -1,10 +1,11 @@
-local Font   = require("native/Font")
-local Props  = require("native/Props")
-local Vec2   = require("native/Vec2")
-local rs     = require("native/RenderScript").Instance()
-local Color  = require("native/Color")
-local json   = require("dkjson")
-local Binder = require("Binder")
+local Font             = require("native/Font")
+local Props            = require("native/Props")
+local Vec2             = require("native/Vec2")
+local rs               = require("native/RenderScript").Instance()
+local Color            = require("native/Color")
+local json             = require("dkjson")
+local Binder           = require("Binder")
+local ColorAndDistance = require("native/ColorAndDistance")
 
 -- These are Json structures for the layout
 ---@alias Style PropsTableStruct
@@ -18,6 +19,7 @@ local Binder = require("Binder")
 
 ---@alias BoxJson {pos1:string, pos2:string, corner_radius:number, style:string, mouse:MouseJson}
 ---@alias TextJson {pos:string, style:string, font:string, text:string, mouse:MouseJson, mouse:MouseJson}
+---@alias LineJson {pos1:string, pos2:string, style:string, mouse:MouseJson, mouse:MouseJson}
 
 ---@alias Page Layer[]
 ---@alias Pages table<string,Page>
@@ -43,7 +45,9 @@ function Layout.New(screen, behaviour, binder, stream)
     local styles = {} ---@type table<string,Props>
     local layoutData = {} ---@type LayoutJson
     -- Use a crimson color for missing styles
-    local missingStyle = Props.New(Color.New(0.862745098, 0.078431373, 0.235294118))
+    local crimson = Color.New(0.862745098, 0.078431373, 0.235294118)
+    local missingStyle = Props.New(crimson, 0, ColorAndDistance.New(Color.Transparent(), 0),
+        ColorAndDistance.New(crimson, 1))
     local missingFont = Font.Get(FontName.RobotoMono, 10)
 
     ---Loads fonts
@@ -68,11 +72,16 @@ function Layout.New(screen, behaviour, binder, stream)
         return true
     end
 
-    local function bindPos(pos, box, prop, componentType)
-        if not binder.CreateBinding(pos, box, prop) then
+    ---@param pos string
+    ---@param object Box|Line|Text
+    ---@param prop string
+    ---@param componentType string
+    ---@return boolean
+    local function bindPos(pos, object, prop, componentType)
+        if not binder.CreateBinding(pos, object, prop) then
             local p = Vec2.FromString(pos)
             if p then
-                box[prop] = p
+                object[prop] = p
             else
                 rs.Log("Missing " .. prop .. " in " .. componentType)
                 return false
@@ -84,7 +93,7 @@ function Layout.New(screen, behaviour, binder, stream)
     ---Binds mouse actions
     ---@param object Text|Box|Line
     ---@param baseStyle Style
-    ---@param data BoxJson|TextJson
+    ---@param data BoxJson|TextJson|LineJson
     local function bindMouse(object, baseStyle, data)
         local bindData = {
             ---@type Props|nil
@@ -168,6 +177,23 @@ function Layout.New(screen, behaviour, binder, stream)
         return true
     end
 
+    ---@param layer Layer
+    ---@param data LineJson
+    local function createLine(layer, data)
+        local style = styles[Binder.GetStrByPath(data, "style") or "-"] or missingStyle
+
+        local line = layer.Line(Vec2.New(), Vec2.New(), style)
+
+        if not (bindPos(data.pos1, line, "Pos1", "line")
+            and bindPos(data.pos2, line, "Pos2", "line")) then
+            return false
+        end
+
+        bindMouse(line, style, data)
+
+        return true
+    end
+
     ---Loads the page
     ---@param page PageJson
     ---@return boolean
@@ -179,12 +205,16 @@ function Layout.New(screen, behaviour, binder, stream)
             local t = comp.type
 
             if type(layer) == "number" then
+                local layer = screen.Layer(layer)
                 if t == "box" then
                     ---@cast comp BoxJson
-                    res = createBox(screen.Layer(layer), comp)
+                    res = createBox(layer, comp)
                 elseif t == "text" then
                     ---@cast comp TextJson
-                    res = createText(screen.Layer(layer), comp)
+                    res = createText(layer, comp)
+                elseif t == "line" then
+                    ---@cast comp LineJson
+                    res = createLine(layer, comp)
                 end
             end
 

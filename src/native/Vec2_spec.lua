@@ -81,6 +81,13 @@ describe("Vec2", function()
         assert.are_equal(3, v.y)
     end)
 
+    it("Can create a Vec2 from a string with spaces", function()
+        local v = Vec2.FromString("( -1 , +3 )")
+        assert.is_not_nil(v)
+        assert.are_equal(-1, v.x)
+        assert.are_equal(3, v.y)
+    end)
+
     it("Can make absolute value", function()
         assert.are_equal(Vec2.New(1, 2), Vec2.New(-1, -2):Abs())
     end)

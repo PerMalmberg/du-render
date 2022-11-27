@@ -4,6 +4,8 @@ local Color = require("native/Color")
 ---@field Color Color The color
 ---@field Distance number The distance
 ---@field Clone fun():ColorAndDistance
+---@field New fun(color:Color, distance:number):ColorAndDistance
+---@field None fun():ColorAndDistance
 
 local ColorAndDistance = {}
 ColorAndDistance.__index = ColorAndDistance
@@ -24,6 +26,11 @@ function ColorAndDistance.New(color, distance)
     end
 
     return setmetatable(s, ColorAndDistance)
+end
+
+---@return ColorAndDistance
+function ColorAndDistance.None()
+    return ColorAndDistance.New(Color.Transparent(), 0)
 end
 
 return ColorAndDistance

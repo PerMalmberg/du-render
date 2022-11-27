@@ -10,6 +10,12 @@
         }
     },
     "styles": {
+        "line_style": {
+            "stroke": {
+                "color": "r1,g0.843,b0,a1",
+                "distance": 5
+            }
+        },
         "blue_green_border": {
             "align": "h0,v1",
             "stroke": {
@@ -147,8 +153,8 @@
                     "type": "line",
                     "layer": 3,
                     "visible": true,
-                    "pos1": "(30, 300)",
-                    "pos2": "(300, 1020)",
+                    "pos1": "(30,30)",
+                    "pos2": "(1000,600)",
                     "style": "line_style",
                     "mouse": {
                         "click": {

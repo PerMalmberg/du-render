@@ -424,7 +424,7 @@ end
 ---@return Vec2|nil
 function Vec2.FromString(s)
     if s then
-        local x, y = s:match("^%(([+-]*%d*%.?%d+),([+-]*%d*%.?%d+)%)$")
+        local x, y = s:match("^%(%s?([+-]*%d*%.?%d+)%s?,%s?([+-]*%d*%.?%d+)%s?%)$")
         x = tonumber(x)
         y = tonumber(y)
         if x and y then

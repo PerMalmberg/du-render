@@ -1,9 +1,9 @@
 local rs = require("native/RenderScript").Instance()
 
 ---@class Quad
----@field PosA Vec2
----@field PosB Vec2
----@field PosC Vec2
+---@field Pos1 Vec2
+---@field Pos2 Vec2
+---@field Pos3 Vec2
 ---@field PosD Vec2
 ---@field Props Props
 ---@field Render fun()
@@ -21,9 +21,9 @@ Quad.__index = Quad
 function Quad.New(layer, a, b, c, d, props)
     local s = {
         Layer = layer,
-        PosA = a,
-        PosB = b,
-        PosC = c,
+        Pos1 = a,
+        Pos2 = b,
+        Pos3 = c,
         PosD = d,
         Props = props
     }
@@ -31,9 +31,9 @@ function Quad.New(layer, a, b, c, d, props)
     function s.Render()
         local layerId = s.Layer.Id
         s.Props.Apply(layerId)
-        local x1, y1 = s.PosA:Unpack()
-        local x2, y2 = s.PosB:Unpack()
-        local x3, y3 = s.PosC:Unpack()
+        local x1, y1 = s.Pos1:Unpack()
+        local x2, y2 = s.Pos2:Unpack()
+        local x3, y3 = s.Pos3:Unpack()
         local x4, y4 = s.PosD:Unpack()
         rs.AddQuad(layerId, x1, y1, x2, y2, x3, y3, x4, y4)
     end

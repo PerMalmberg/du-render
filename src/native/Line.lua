@@ -1,8 +1,8 @@
 local rs = require("native/RenderScript").Instance()
 
 ---@class Line
----@field PosA Vec2
----@field PosB Vec2
+---@field Pos1 Vec2
+---@field Pos2 Vec2
 ---@field Props Props
 ---@field Render fun()
 
@@ -17,16 +17,16 @@ Line.__index = Line
 function Line.New(layer, a, b, props)
     local s = {
         Layer = layer,
-        PosA = a,
-        PosB = b,
+        Pos1 = a,
+        Pos2 = b,
         Props = props
     }
 
     function s.Render()
         local layerId = s.Layer.Id
         s.Props.Apply(layerId)
-        local x1, y1 = s.PosA:Unpack()
-        local x2, y2 = s.PosB:Unpack()
+        local x1, y1 = s.Pos1:Unpack()
+        local x2, y2 = s.Pos2:Unpack()
         rs.AddLine(layerId, x1, y1, x2, y2)
     end
 

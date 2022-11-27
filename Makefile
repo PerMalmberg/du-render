@@ -34,6 +34,7 @@ dev: test
 	@jq -c . ./src/test_layouts/layout.json > ./src/test_layouts/layout_min.json
 	@# Modify file inline. Actual regex is '/^\s*---.*$/d' but $ must be doubled in make file
 	@sed -i '/^\s*---.*$$/d' "./out/development/example/stream/screen.lua"
+	@sed -i '/^\s*---.*$$/d' "./out/development/example/render/main.lua"
 
 release: test
 	@LUA_PATH="$(LUA_PATH)" du-lua build --copy=release/main

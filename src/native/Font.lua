@@ -32,7 +32,7 @@ local loaded = {} ---@type table<string, LoadedFont>
 ---@param size integer
 ---@return LoadedFont
 function Font.Get(name, size)
-    local nameAndSize = string.format("%s%d", name, size)
+    local nameAndSize = string.format("%s%0.3f", name, size)
 
     local exists = loaded[nameAndSize]
     if not exists then

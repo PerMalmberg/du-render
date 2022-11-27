@@ -32,13 +32,16 @@ Props.__index = Props
 ---@param visible? boolean
 ---@return Props
 function Props.New(color, rotation, shadow, stroke, align, visible)
+    if visible ~= nil then
+    else visible = true end
+
     local s = {
         Fill = color or Color.Transparent(),
         Rotation = rotation or 0,
         Shadow = shadow or ColorAndDistance.New(Color.Transparent(), 0),
         Stroke = stroke or ColorAndDistance.New(Color.Transparent(), 0),
         Align = align or TextAlign.Default(),
-        Visible = visible or true
+        Visible = visible
     }
 
     ---Applies the propertries to the layer
