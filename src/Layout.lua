@@ -128,7 +128,7 @@ function Layout.New(screen, behaviour, binder, stream)
     ---@param data BoxJson
     ---@return boolean
     local function createBox(layer, data)
-        local corner = type(data.corner_radius) == "number" and data.corner_radius or 0
+        local corner = Binder.GetNumByPath(data, "corner_radius") or 0
 
         local style = styles[Binder.GetStrByPath(data, "style") or "-"] or missingStyle
 
