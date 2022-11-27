@@ -4,6 +4,10 @@
             "font": "Play",
             "size": 10
         },
+        "Montserrat15": {
+            "font": "Montserrat",
+            "size": 15
+        },
         "Montserrat100": {
             "font": "Montserrat",
             "size": 100
@@ -75,6 +79,10 @@
                 "distance": 1
             },
             "fill": "r0.1,g0.1,b0.1,a1"
+        },
+        "fuel_text": {
+            "align": "h0,v1",
+            "fill": "r0.4,g0,b0,a1"
         }
     },
     "pages": {
@@ -127,8 +135,8 @@
                     "type": "box",
                     "layer": 1,
                     "visible": true,
-                    "pos1": "$vec2(path{gauge/fuel:value}:init{(202,2)}:interval{0.1}:op{mul})",
-                    "pos2": "(248,611)",
+                    "pos1": "$vec2(path{gauge/fuel:value}:init{(248,611)}:interval{0.1}):percent{(248,2)}",
+                    "pos2": "(202,611)",
                     "corner_radius": 125,
                     "style": "gauge_style_bar"
                 },
@@ -153,17 +161,18 @@
                     "type": "line",
                     "layer": 3,
                     "visible": true,
-                    "pos1": "(30,30)",
-                    "pos2": "(1000,600)",
-                    "style": "line_style",
-                    "mouse": {
-                        "click": {
-                            "command": "command from text"
-                        },
-                        "inside": {
-                            "set_style": "missing style"
-                        }
-                    }
+                    "pos1": "$vec2(path{gauge/fuel:value}:init{(248,611)}:interval{0.1}):percent{(248,2)}",
+                    "pos2": "$vec2(path{gauge/fuel:value}:init{(255,611)}:interval{0.1}):percent{(255,2)}",
+                    "style": "line_style"
+                },
+                {
+                    "type": "text",
+                    "layer": 2,
+                    "visible": true,
+                    "text": "$num(path{gauge/fuel:value100}:init{0}:format{Fuel level: %0.2f})",
+                    "pos": "$vec2(path{gauge/fuel:value}:init{(258,601)}:interval{0.1}):percent{(258,10)}",
+                    "style": "fuel_text",
+                    "font": "Montserrat15"
                 }
             ]
         }

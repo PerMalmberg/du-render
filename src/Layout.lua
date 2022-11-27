@@ -205,16 +205,16 @@ function Layout.New(screen, behaviour, binder, stream)
             local t = comp.type
 
             if type(layer) == "number" then
-                local layer = screen.Layer(layer)
+                local l = screen.Layer(layer)
                 if t == "box" then
                     ---@cast comp BoxJson
-                    res = createBox(layer, comp)
+                    res = createBox(l, comp)
                 elseif t == "text" then
                     ---@cast comp TextJson
-                    res = createText(layer, comp)
+                    res = createText(l, comp)
                 elseif t == "line" then
                     ---@cast comp LineJson
-                    res = createLine(layer, comp)
+                    res = createLine(l, comp)
                 end
             end
 

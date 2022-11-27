@@ -1,7 +1,8 @@
 local Stream = require("Stream")
+local Vec2   = require("native/Vec2")
 local screen = library.getLinkByClass("ScreenUnit")
-local time = system.getUtcTime
-local json = require("dkjson")
+local time   = system.getUtcTime
+local json   = require("dkjson")
 
 local layoutString = library.embedFile("../../test_layouts/layout_min.json")
 local layout       = json.decode(layoutString)
@@ -18,6 +19,7 @@ local function onTimeout(isTimedOut, stream)
         layoutSent = false
     elseif not layoutSent then
         stream.Write(json.encode({ screen_layout = layout }))
+        stream.Write(json.encode({ activate_page = "firstpage" }))
         layoutSent = true
     end
 end
@@ -28,11 +30,23 @@ local function onUpdate()
     local now = time()
     if now - t > 0.3 then
         t = now
+        local value = math.abs(math.sin(t / 10))
         stream.Write(json.encode(
-            { path = { to = { data = { key = "from board" } } } }))
-    elseif now - t2 > 1 then
-        stream.Write(json.encode({ activate_page = "firstpage" }))
-        t2 = now
+            {
+                gauge = {
+                    fuel = {
+                        value = Vec2.New(1, value):ToString(),
+                        value100 = value * 100
+                    }
+                },
+                path = {
+                    to = {
+                        data = {
+                            key = "from board"
+                        }
+                    }
+                }
+            }))
     end
 
     stream.Tick()
