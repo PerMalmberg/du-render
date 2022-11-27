@@ -29,11 +29,14 @@ function Box.New(layer, pos1, pos2, cornerRadius, props)
         local layerId = s.Layer.Id
         s.Props.Apply(layerId)
 
+        -- The RenderScript API wants positon and width/hight
+        local dimensions = s.Pos2 - s.Pos1
+
         local r = s.CornerRadius
         if r and r > 0 then
-            rs.AddBoxRounded(layerId, s.Pos1.x, s.Pos1.y, s.Pos2.x, s.Pos2.y, r)
+            rs.AddBoxRounded(layerId, s.Pos1.x, s.Pos1.y, dimensions.x, dimensions.y, r)
         else
-            rs.AddBox(layerId, s.Pos1.x, s.Pos1.y, s.Pos2:Unpack())
+            rs.AddBox(layerId, s.Pos1.x, s.Pos1.y, dimensions.x, dimensions.y)
         end
     end
 
