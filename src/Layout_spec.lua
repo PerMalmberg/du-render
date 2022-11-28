@@ -10,7 +10,7 @@ local Color     = require("native/Color")
 local function loadFile(path)
     local f = io.open(path)
     if f == nil then
-        error("Could not lod file " .. path)
+        error("Could not load file " .. path)
     end
     local s = f:read("a")
     return s
@@ -34,12 +34,16 @@ local fakeStream = { setScriptInput = function() end, clearScriptOutput = functi
     getScriptOutput = function() return "" end }
 
 describe("Layout", function()
-    local screen = Screen.New()
-    local behaviour = Behaviour.New()
-    local binder = Binder.New()
-    local c = Layout.New(screen, behaviour, binder, fakeStream)
-    local s = loadFile("src/test_layouts/layout.json")
-    assert.True(c.SetLayout(json.decode(s)))
+    local c, s
+
+    before_each(function()
+        local screen = Screen.New()
+        local behaviour = Behaviour.New()
+        local binder = Binder.New()
+        c = Layout.New(screen, behaviour, binder, fakeStream)
+        s = loadFile("src/test_layouts/layout.json")
+        assert.True(c.SetLayout(json.decode(s)))
+    end)
 
     it("Can load fonts", function()
         local play10 = c.Fonts()["Play10"]
