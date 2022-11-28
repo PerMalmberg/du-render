@@ -34,13 +34,13 @@ local fakeStream = { setScriptInput = function() end, clearScriptOutput = functi
     getScriptOutput = function() return "" end }
 
 describe("Layout", function()
-    local c, s
+    local c, s, screen, behavior, binder
 
     before_each(function()
-        local screen = Screen.New()
-        local behaviour = Behaviour.New()
-        local binder = Binder.New()
-        c = Layout.New(screen, behaviour, binder, fakeStream)
+        screen = Screen.New()
+        behavior = Behaviour.New()
+        binder = Binder.New()
+        c = Layout.New(screen, behavior, binder, fakeStream)
         s = loadFile("src/test_layouts/layout.json")
         assert.True(c.SetLayout(json.decode(s)))
     end)
