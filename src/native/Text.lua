@@ -6,7 +6,7 @@ local Vec2 = require("native/Vec2")
 
 ---@class Text
 ---@field Text string
----@field Pos Vec2
+---@field Pos1 Vec2
 ---@field Font FontHandle
 ---@field Layer Layer
 ---@field Props Props
@@ -29,7 +29,7 @@ Text.__index = Text
 function Text.New(text, pos, layer, font, props)
     local s = {
         Text = text,
-        Pos = pos,
+        Pos1 = pos,
         Font = font,
         Props = props,
         Layer = layer
@@ -64,9 +64,9 @@ function Text.New(text, pos, layer, font, props)
     ---@param point Vec2
     ---@return boolean
     function s.Hit(point)
-        local max = s.Pos + s.Bounds()
-        return point.x >= s.Pos.x and point.x <= max.x
-            and point.y >= s.Pos.y and point.y <= max.y
+        local max = s.Pos1 + s.Bounds()
+        return point.x >= s.Pos1.x and point.x <= max.x
+            and point.y >= s.Pos1.y and point.y <= max.y
     end
 
     return setmetatable(s, Text)

@@ -18,7 +18,7 @@ local ColorAndDistance = require("native/ColorAndDistance")
 ---@alias LayoutJson { fonts:NamedFonts, styles:table<string,Props>, pages:table<string, PageJson> }
 
 ---@alias BoxJson {pos1:string, pos2:string, corner_radius:number, style:string, mouse:MouseJson}
----@alias TextJson {pos:string, style:string, font:string, text:string, mouse:MouseJson, mouse:MouseJson}
+---@alias TextJson {pos1:string, style:string, font:string, text:string, mouse:MouseJson}
 ---@alias LineJson {pos1:string, pos2:string, style:string, mouse:MouseJson, mouse:MouseJson}
 
 ---@alias Page Layer[]
@@ -83,7 +83,7 @@ function Layout.New(screen, behaviour, binder, stream)
             if p then
                 object[prop] = p
             else
-                rs.Log("Missing " .. prop .. " in " .. componentType)
+                rs.Log("Invalid value for Vec2 for " .. prop .. " in " .. componentType .. " '" .. tostring(pos) .. "'")
                 return false
             end
         end
@@ -164,7 +164,7 @@ function Layout.New(screen, behaviour, binder, stream)
 
         local text = layer.Text("", Vec2.New(), textFont, style)
 
-        if not bindPos(data.pos, text, "Pos", "text") then
+        if not bindPos(data.pos1, text, "Pos1", "text") then
             return false
         end
 

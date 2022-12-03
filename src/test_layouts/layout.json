@@ -135,7 +135,7 @@
                     "type": "box",
                     "layer": 1,
                     "visible": true,
-                    "pos1": "$vec2(path{gauge/fuel:value}:init{(248,611)}:interval{0.1}):percent{(248,2)}",
+                    "pos1": "$vec2(path{gauge/fuel:value}:init{(248,611)}:interval{0.1}:percent{(248,2)})",
                     "pos2": "(202,611)",
                     "corner_radius": 125,
                     "style": "gauge_style_bar"
@@ -144,7 +144,7 @@
                     "type": "text",
                     "layer": 2,
                     "visible": true,
-                    "pos": "(100,100)",
+                    "pos1": "(100,100)",
                     "style": "text_style",
                     "font": "Montserrat100",
                     "text": "Awesome text!",
@@ -161,8 +161,8 @@
                     "type": "line",
                     "layer": 3,
                     "visible": true,
-                    "pos1": "$vec2(path{gauge/fuel:value}:init{(248,611)}:interval{0.1}):percent{(248,2)}",
-                    "pos2": "$vec2(path{gauge/fuel:value}:init{(255,611)}:interval{0.1}):percent{(255,2)}",
+                    "pos1": "$vec2(path{gauge/fuel:value}:init{(248,611)}:interval{0.1}:percent{(248,2)})",
+                    "pos2": "$vec2(path{gauge/fuel:value}:init{(255,611)}:interval{0.1}:percent{(255,2)})",
                     "style": "line_style"
                 },
                 {
@@ -170,7 +170,7 @@
                     "layer": 2,
                     "visible": true,
                     "text": "$num(path{gauge/fuel:value100}:init{0}:format{Fuel level: %0.2f})",
-                    "pos": "$vec2(path{gauge/fuel:value}:init{(258,601)}:interval{0.1}):percent{(258,10)}",
+                    "pos1": "$vec2(path{gauge/fuel:value}:init{(258,601)}:interval{0.1}:percent{(258,10)})",
                     "style": "fuel_text",
                     "font": "Montserrat15"
                 }

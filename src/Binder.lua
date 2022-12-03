@@ -154,7 +154,6 @@ function Binder.New()
             return false
         end
 
-
         local isMul = bindExpression:match(opMul) ~= nil
         local isDiv = bindExpression:match(opDiv) ~= nil
         local precent = bindExpression:match(percentPat)
