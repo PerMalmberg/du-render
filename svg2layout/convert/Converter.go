@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/PerMalmberg/du-render/svg2layout/layout"
 	"github.com/PerMalmberg/du-render/svg2layout/svg"
 )
 
@@ -57,28 +58,86 @@ func (c *converter) openFiles() (out *os.File, inp []*os.File, err error) {
 }
 
 func (c *converter) Convert() (err error) {
-	//inp, out, err := c.openFiles()
+	out, inp, err := c.openFiles()
 
 	if err != nil {
 		return
 	}
 
-	//inSvg := c.readFilesAsSvg(inp)
+	defer func() {
+		for _, f := range inp {
+			f.Close()
+		}
+
+		out.Close()
+	}()
+
+	result := layout.Layout{}
+
+	for _, f := range inp {
+		var image *svg.Svg
+		if image, err = ReadFileAsSvg(f); err != nil {
+			return
+		}
+
+		page := layout.Page{}
+
+		err = c.translateSvgToPage(image, &page)
+
+		if err != nil {
+			return
+		}
+
+		result.Pages[f.Name()] = page
+
+	}
 
 	return
 }
 
-func ReadFileAsSvg(file *os.File) (svg svg.Svg, err error) {
+func (c *converter) translateSvgToPage(image *svg.Svg, page *layout.Page) (err error) {
+	for layerId, layer := range image.Layer {
+		for _, mix := range layer.Shape {
+			if rect, ok := mix.Value.(svg.Rect); ok {
+				c := layout.Component{
+					Type:    "box",
+					Visible: true,
+					Layer:   layerId,
+					Pos1:    &layout.Vec2{X: rect.X, Y: rect.Y},
+					Pos2:    &layout.Vec2{X: rect.X + rect.Width, Y: rect.Y + rect.Height},
+				}
+
+				if radius, ok := image.GetCornerRadiusById(rect.PathEffect); ok {
+					c.CornerRadius = &radius
+				}
+
+				// Bindings
+
+				page.Components = append(page.Components, c)
+
+			} else if /*text,*/ _, ok := mix.Value.(svg.Text); ok {
+
+			} else if /*circle*/ _, ok := mix.Value.(svg.Circle); ok {
+
+			}
+		}
+	}
+
+	return
+}
+
+func ReadFileAsSvg(file *os.File) (image *svg.Svg, err error) {
 	b := bytes.NewBuffer(nil)
 	_, err = io.Copy(b, file)
 	if err != nil {
 		return
 	}
 
-	err = xml.Unmarshal(b.Bytes(), &svg)
+	image = &svg.Svg{}
+	err = xml.Unmarshal(b.Bytes(), image)
 
-	if svg.Width != 1024 || svg.Height != 613 {
-		err = fmt.Errorf("dimensions must be 1024x613, as per DU specifications. Image is %fx%f", svg.Width, svg.Height)
+	if image.Width != 1024 || image.Height != 613 {
+		err = fmt.Errorf("dimensions must be 1024x613, as per DU specifications. Image is %fx%f", image.Width, image.Height)
 		return
 	}
 

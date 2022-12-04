@@ -28,23 +28,24 @@ func TestReadFileAsSvg(t *testing.T) {
 	assert.NoError(t, err)
 	assert.EqualValues(t, 1024, data.Width)
 	assert.EqualValues(t, 613, data.Height)
-	assert.Contains(t, data.Defs.Style.Text, ".class")
-	assert.Equal(t, 3, len(data.G.Shape))
+	assert.Contains(t, data.Defs.Style[0].Text, ".class")
+	assert.Equal(t, 3, len(data.Layer[0].Shape))
 
-	textDesccFound := false
+	textDescFound := false
 	rectDescFound := false
 	circleDescFound := false
-	for _, s := range data.G.Shape {
-		if text, ok := s.Value.(svg.Text); ok {
-			textDesccFound = strings.Contains(text.Description.Text, "bindings goes here")
-		} else if rect, ok := s.Value.(svg.Rect); ok {
-			rectDescFound = strings.Contains(rect.Description.Text, "this also has bindings")
-		} else if circle, ok := s.Value.(svg.Circle); ok {
-			circleDescFound = strings.Contains(circle.Description.Text, "circle also has a binding")
+	for _, layer := range data.Layer {
+		for _, s := range layer.Shape {
+			if text, ok := s.Value.(svg.Text); ok {
+				textDescFound = textDescFound || strings.Contains(text.Description.Text, "bindings goes here")
+			} else if rect, ok := s.Value.(svg.Rect); ok {
+				rectDescFound = rectDescFound || strings.Contains(rect.Description.Text, "this also has bindings")
+			} else if circle, ok := s.Value.(svg.Circle); ok {
+				circleDescFound = circleDescFound || strings.Contains(circle.Description.Text, "circle also has a binding")
+			}
 		}
 	}
-
-	assert.True(t, textDesccFound)
+	assert.True(t, textDescFound)
 	assert.True(t, rectDescFound)
 	assert.True(t, circleDescFound)
 }

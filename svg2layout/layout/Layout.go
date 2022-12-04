@@ -192,17 +192,26 @@ type Mouse struct {
 	Inside MouseInside `json:"inside,omitempty"`
 }
 
+type Vec2 struct {
+	X float64
+	Y float64
+}
+
+func (v Vec2) MarshalText() (text []byte, err error) {
+	return []byte(fmt.Sprintf("(%0.3f,%0.3f))", v.X, v.Y)), nil
+}
+
 type Component struct {
-	Type         string  `json:"type,omitempty"`
-	Layer        int     `json:"layer,omitempty"`
-	Visible      bool    `json:"visible,omitempty"`
-	Pos1         string  `json:"pos1,omitempty"`
-	Pos2         string  `json:"pos2,omitempty"`
-	CornerRadius float32 `json:"corner_radius,omitempty"`
-	Style        string  `json:"style,omitempty"`
-	Mouse        Mouse   `json:"mouse,omitempty"`
-	Font         string  `json:"font,omitempty"`
-	Text         string  `json:"text,omitempty"`
+	Type         string   `json:"type,omitempty"`
+	Layer        int      `json:"layer,omitempty"`
+	Visible      bool     `json:"visible,omitempty"`
+	Pos1         *Vec2    `json:"pos1,omitempty"`
+	Pos2         *Vec2    `json:"pos2,omitempty"`
+	CornerRadius *float64 `json:"corner_radius,omitempty"`
+	Style        *string  `json:"style,omitempty"`
+	Mouse        *Mouse   `json:"mouse,omitempty"`
+	Font         *string  `json:"font,omitempty"`
+	Text         *string  `json:"text,omitempty"`
 }
 
 type Page struct {

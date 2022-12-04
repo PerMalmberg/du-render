@@ -58,6 +58,23 @@
   stroke-width:0.634668;
 }
 ]]></style>
+<inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect7185"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,4.7625,0,6 @ F,0,0,1,0,4.7625,0,6 @ F,0,0,1,0,4.7625,0,6 @ F,0,0,1,0,4.7625,0,6"
+       unit="px"
+       method="auto"
+       mode="F"
+       radius="18"
+       chamfer_steps="6"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
   </defs>
   <g
      inkscape:label="Layer 1"
@@ -98,8 +115,6 @@
        x="50.961693"
        y="39.938778"
        class="class1">
-      <desc
-         id="desc6672">this also has bindings</desc>
     </rect>
     <circle
        style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.180955;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
@@ -110,5 +125,22 @@
       <desc
          id="desc14300">circle also has a binding</desc>
     </circle>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Layer 2">
+    <rect
+       style="fill:#28a745;fill-opacity:0.550459;stroke:#e02c9f;stroke-width:0.264583;stroke-opacity:1"
+       id="rect6996"
+       width="16.803328"
+       height="15.902537"
+       x="154.34814"
+       y="34.195652"
+       inkscape:path-effect="#path-effect7185"
+       d="m 159.11064,34.195652 h 7.27833 a 4.7625,4.7625 45 0 1 4.7625,4.7625 v 6.377537 a 4.7625,4.7625 135 0 1 -4.7625,4.7625 l -7.27833,0 a 4.7625,4.7625 45 0 1 -4.7625,-4.7625 v -6.377537 a 4.7625,4.7625 135 0 1 4.7625,-4.7625 z">
+       <desc
+         id="desc6672">this also has bindings</desc>
+       </rect>
   </g>
 </svg>

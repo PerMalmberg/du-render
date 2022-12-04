@@ -3,6 +3,7 @@ package svg
 import (
 	"encoding/xml"
 	"fmt"
+	"strings"
 )
 
 type Style struct {
@@ -11,10 +12,18 @@ type Style struct {
 	Text    string   `xml:",cdata"`
 }
 
-type Defs struct {
-	XMLName xml.Name `xml:"defs"`
+type PathEffect struct {
+	XMLName xml.Name `xml:"path-effect"`
 	Id      string   `xml:"id,attr"`
-	Style   Style    `xml:"style"`
+	Effect  string   `xml:"effect,attr"`
+	Radius  float64  `xml:"radius,attr"`
+}
+
+type Defs struct {
+	XMLName    xml.Name     `xml:"defs"`
+	Id         string       `xml:"id,attr"`
+	Style      []Style      `xml:"style"`
+	PathEffect []PathEffect `xml:"path-effect"`
 }
 
 type Description struct {
@@ -28,20 +37,21 @@ type MixedShape struct {
 }
 
 type PositionalShape struct {
-	X     float32 `xml:"x,attr"`
-	Y     float32 `xml:"y,attr"`
+	X     float64 `xml:"x,attr"`
+	Y     float64 `xml:"y,attr"`
 	Style string  `xml:"style,attr"`
 }
 
 type ShapeArea struct {
 	PositionalShape
-	Width  string `xml:"width,attr"`
-	Height string `xml:"height,attr"`
+	Width  float64 `xml:"width,attr"`
+	Height float64 `xml:"height,attr"`
 }
 
 type Rect struct {
 	ShapeArea
 	Description Description
+	PathEffect  string `xml:"path-effect"`
 }
 
 type Span struct {
@@ -103,5 +113,15 @@ type Svg struct {
 	Width   float64  `xml:"width,attr"`
 	Height  float64  `xml:"height,attr"`
 	Defs    Defs     `xml:"defs"`
-	G       G        `xml:"g"`
+	Layer   []G      `xml:"g"`
+}
+
+func (svg *Svg) GetCornerRadiusById(id string) (float64, bool) {
+	for _, v := range svg.Defs.PathEffect {
+		if v.Id == strings.Trim(id, "#") {
+			return v.Radius, true
+		}
+	}
+
+	return 0, false
 }
