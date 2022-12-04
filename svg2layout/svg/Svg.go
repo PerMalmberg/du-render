@@ -48,30 +48,34 @@ type ShapeArea struct {
 	Height float64 `xml:"height,attr"`
 }
 
-type Rect struct {
-	ShapeArea
-	Description Description
-	PathEffect  string `xml:"path-effect"`
-}
-
 type Span struct {
 	PositionalShape
 	Text        string `xml:",cdata"`
 	Description Description
+	Syle        string `xml:"style,attr"`
 }
 
 type Text struct {
 	PositionalShape
 	Text        []Span `xml:"tspan"`
 	Description Description
+	Class       string `xml:"class"`
+}
+
+type Rect struct {
+	ShapeArea
+	Description Description
+	PathEffect  string `xml:"path-effect"`
+	Class       string `xml:"class,attr"`
 }
 
 type Circle struct {
-	X           float32 `xml:"cx,attr"`
-	Y           float32 `xml:"cy,attr"`
-	Radius      float32 `xml:"r,attr"`
+	X           float64 `xml:"cx,attr"`
+	Y           float64 `xml:"cy,attr"`
+	Radius      float64 `xml:"r,attr"`
 	Style       string  `xml:"style,attr"`
 	Description Description
+	Class       string `xml:"class"`
 }
 
 func (m *MixedShape) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
@@ -98,7 +102,7 @@ func (m *MixedShape) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 		m.Value = e
 		m.Type = start.Name.Local
 	default:
-		return fmt.Errorf("unknown element: %s", start)
+		return fmt.Errorf("unsupported element: %s", start)
 	}
 	return nil
 }

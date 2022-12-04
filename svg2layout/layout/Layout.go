@@ -1,6 +1,7 @@
 package layout
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
 	"regexp"
@@ -201,17 +202,70 @@ func (v Vec2) MarshalText() (text []byte, err error) {
 	return []byte(fmt.Sprintf("(%0.3f,%0.3f))", v.X, v.Y)), nil
 }
 
-type Component struct {
+type outputComponent struct {
 	Type         string   `json:"type,omitempty"`
 	Layer        int      `json:"layer,omitempty"`
 	Visible      bool     `json:"visible,omitempty"`
-	Pos1         *Vec2    `json:"pos1,omitempty"`
-	Pos2         *Vec2    `json:"pos2,omitempty"`
+	Pos1         string   `json:"pos1,omitempty"`
+	Pos2         *string  `json:"pos2,omitempty"`
 	CornerRadius *float64 `json:"corner_radius,omitempty"`
+	Radius       *float64 `json:"radius,omitempty"`
 	Style        *string  `json:"style,omitempty"`
 	Mouse        *Mouse   `json:"mouse,omitempty"`
 	Font         *string  `json:"font,omitempty"`
 	Text         *string  `json:"text,omitempty"`
+}
+
+type Component struct {
+	Type         string
+	Layer        int
+	Visible      bool
+	Pos1         string
+	Pos2         *string
+	CornerRadius *float64
+	Radius       *float64
+	Style        *string
+	Mouse        *Mouse
+	Font         *string
+	Text         *string
+
+	Bindings map[string]string
+}
+
+func (c *Component) getJsonOutput() ([]byte, error) {
+	copy := outputComponent{
+		Type:         c.Type,
+		Layer:        c.Layer,
+		Visible:      c.Visible,
+		Pos1:         c.Pos1,
+		Pos2:         c.Pos2,
+		CornerRadius: c.CornerRadius,
+		Radius:       c.Radius,
+		Style:        c.Style,
+		Mouse:        c.Mouse,
+		Font:         c.Font,
+		Text:         c.Text,
+	}
+
+	for prop, binding := range c.Bindings {
+		v := binding
+		switch prop {
+		case "pos1":
+			copy.Pos1 = v
+		case "pos2":
+			copy.Pos2 = &v
+		case "style":
+			copy.Style = &v
+		case "text":
+			copy.Text = &v
+		}
+	}
+
+	return json.Marshal(copy)
+}
+
+func (c *Component) MarshalJSON() (data []byte, err error) {
+	return c.getJsonOutput()
 }
 
 type Page struct {

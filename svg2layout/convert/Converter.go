@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"regexp"
 
 	"github.com/PerMalmberg/du-render/svg2layout/layout"
 	"github.com/PerMalmberg/du-render/svg2layout/svg"
@@ -99,31 +100,58 @@ func (c *converter) translateSvgToPage(image *svg.Svg, page *layout.Page) (err e
 	for layerId, layer := range image.Layer {
 		for _, mix := range layer.Shape {
 			if rect, ok := mix.Value.(svg.Rect); ok {
-				c := layout.Component{
+				pos2 := fmt.Sprintf("(%0.3f,%0.3f)", rect.X+rect.Width, rect.Y+rect.Height)
+
+				comp := layout.Component{
 					Type:    "box",
 					Visible: true,
 					Layer:   layerId,
-					Pos1:    &layout.Vec2{X: rect.X, Y: rect.Y},
-					Pos2:    &layout.Vec2{X: rect.X + rect.Width, Y: rect.Y + rect.Height},
+					Pos1:    fmt.Sprintf("(%0.3f,%0.3f)", rect.X, rect.Y),
+					Pos2:    &pos2,
 				}
 
 				if radius, ok := image.GetCornerRadiusById(rect.PathEffect); ok {
-					c.CornerRadius = &radius
+					comp.CornerRadius = &radius
 				}
 
-				// Bindings
+				c.createBindings(&comp, rect.Description.Text)
 
-				page.Components = append(page.Components, c)
+				page.Components = append(page.Components, comp)
 
 			} else if /*text,*/ _, ok := mix.Value.(svg.Text); ok {
+				// Create from the tspans
+			} else if circle, ok := mix.Value.(svg.Circle); ok {
+				comp := layout.Component{
+					Type:    "circle",
+					Layer:   layerId,
+					Visible: true,
+					Pos1:    fmt.Sprintf("(%0.3f,%0.3f)", circle.X, circle.Y),
+					Radius:  &circle.Radius,
+				}
 
-			} else if /*circle*/ _, ok := mix.Value.(svg.Circle); ok {
+				c.createBindings(&comp, circle.Description.Text)
 
+				page.Components = append(page.Components, comp)
 			}
 		}
 	}
 
 	return
+}
+
+func (c *converter) createBindings(comp *layout.Component, potentialBindings string) {
+	// Bindings are expected to have this format:
+	// PropertyName:$keyword(...)
+	exp := regexp.MustCompile(`([a-zA-Z0-9]+):(\$[a-zA-Z0-9]+\(.+?\))`)
+	bindings := exp.FindAllStringSubmatch(potentialBindings, -1)
+
+	/// QQQ Can we assign these to the final JSON?
+	comp.Bindings = make(map[string]string)
+	for _, v := range bindings {
+		property := v[1]
+		binding := v[2]
+		comp.Bindings[property] = binding
+	}
 }
 
 func ReadFileAsSvg(file *os.File) (image *svg.Svg, err error) {
