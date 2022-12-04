@@ -3,8 +3,11 @@ package convert
 import (
 	"bytes"
 	"encoding/xml"
+	"fmt"
 	"io"
 	"os"
+
+	"github.com/PerMalmberg/du-render/svg2layout/svg"
 )
 
 type IConverter interface {
@@ -65,13 +68,19 @@ func (c *converter) Convert() (err error) {
 	return
 }
 
-func ReadFileAsSvg(file *os.File) (svg Svg, err error) {
+func ReadFileAsSvg(file *os.File) (svg svg.Svg, err error) {
 	b := bytes.NewBuffer(nil)
 	_, err = io.Copy(b, file)
-	if err != err {
+	if err != nil {
 		return
 	}
 
 	err = xml.Unmarshal(b.Bytes(), &svg)
+
+	if svg.Width != 1024 || svg.Height != 613 {
+		err = fmt.Errorf("dimensions must be 1024x613, as per DU specifications. Image is %fx%f", svg.Width, svg.Height)
+		return
+	}
+
 	return
 }

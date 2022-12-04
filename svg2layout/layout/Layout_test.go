@@ -2,11 +2,9 @@ package layout
 
 import (
 	"encoding/json"
-	"fmt"
-	"os"
+	"strconv"
 	"testing"
 
-	"github.com/PerMalmberg/du-render/svg2layout/convert"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -29,13 +27,40 @@ func TestColor(t *testing.T) {
 	assert.Equal(t, `{"color":"r0.700,g1.000,b0.900,a0.500"}`, string(data))
 }
 
-func TestConvertSvgStyleToJson(t *testing.T) {
-	f, err := os.Open("../test_data/layout.svg")
-	assert.NoError(t, err)
-	svg, err := convert.ReadFileAsSvg(f)
-	assert.NoError(t, err)
+func TestFill(t *testing.T) {
+	style := "fill:#28a745;fill-opacity:0.5655;stroke-width:0.132293;stroke-linecap:butt;stroke-linejoin:miter"
 
-	json, err := json.Marshal(svg.Defs.Style)
+	c, err := fillStyle(style)
 	assert.NoError(t, err)
-	fmt.Print(string(json))
+	r, _ := strconv.ParseInt("28", 16, 0)
+	assert.EqualValues(t, r, c.Red)
+	g, _ := strconv.ParseInt("a7", 16, 0)
+	assert.EqualValues(t, g, c.Green)
+	b, _ := strconv.ParseInt("45", 16, 0)
+	assert.EqualValues(t, b, c.Blue)
+	assert.EqualValues(t, 0.566, c.Alpha)
+}
+
+func TestStroke(t *testing.T) {
+	style := "stroke-linejoin:miter;stroke-linecap:butt;stroke-width:3;fill-opacity:0.55045873;fill:#28a745;stroke:#e02c9f;stroke-opacity:1"
+
+	cd, err := stroke(style)
+	assert.NoError(t, err)
+	r, _ := strconv.ParseInt("e0", 16, 0)
+	assert.EqualValues(t, r, cd.Color.Red)
+	g, _ := strconv.ParseInt("2c", 16, 0)
+	assert.EqualValues(t, g, cd.Color.Green)
+	b, _ := strconv.ParseInt("9f", 16, 0)
+	assert.EqualValues(t, b, cd.Color.Blue)
+	assert.EqualValues(t, 1, cd.Color.Alpha)
+	assert.EqualValues(t, 3, cd.Distance)
+}
+
+func TestStyleFromInlineCSS(t *testing.T) {
+	style := `stroke-linejoin:miter;stroke-linecap:butt;stroke-width:1;fill-opacity:0.55045873;fill:#28a745;stroke:#e02c9f;stroke-opacity:0.2`
+	s := Style{}
+	assert.NoError(t, s.FromInlineCSS(style))
+	assert.EqualValues(t, 0.550, s.Fill.Alpha)
+	assert.EqualValues(t, 0.2, s.Stroke.Color.Alpha)
+	assert.Nil(t, s.Shadow)
 }

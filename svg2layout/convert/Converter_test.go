@@ -2,8 +2,10 @@ package convert
 
 import (
 	"os"
+	"strings"
 	"testing"
 
+	"github.com/PerMalmberg/du-render/svg2layout/svg"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,16 +18,33 @@ func TestOpenFiles(t *testing.T) {
 }
 
 func TestReadFileAsSvg(t *testing.T) {
-	f, err := os.Open("../test_data/layout.svg")
+	f, err := os.Open("../test_data/desc.svg")
 	assert.NoError(t, err)
 	defer func() {
 		f.Close()
 	}()
 
-	svg, err := ReadFileAsSvg(f)
+	data, err := ReadFileAsSvg(f)
 	assert.NoError(t, err)
-	assert.Equal(t, "1024", svg.Width)
-	assert.Equal(t, "613", svg.Height)
-	assert.Contains(t, svg.Defs.Style.Text, ".class")
-	assert.Equal(t, 48, len(svg.G.Shape))
+	assert.EqualValues(t, 1024, data.Width)
+	assert.EqualValues(t, 613, data.Height)
+	assert.Contains(t, data.Defs.Style.Text, ".class")
+	assert.Equal(t, 3, len(data.G.Shape))
+
+	textDesccFound := false
+	rectDescFound := false
+	circleDescFound := false
+	for _, s := range data.G.Shape {
+		if text, ok := s.Value.(svg.Text); ok {
+			textDesccFound = strings.Contains(text.Description.Text, "bindings goes here")
+		} else if rect, ok := s.Value.(svg.Rect); ok {
+			rectDescFound = strings.Contains(rect.Description.Text, "this also has bindings")
+		} else if circle, ok := s.Value.(svg.Circle); ok {
+			circleDescFound = strings.Contains(circle.Description.Text, "circle also has a binding")
+		}
+	}
+
+	assert.True(t, textDesccFound)
+	assert.True(t, rectDescFound)
+	assert.True(t, circleDescFound)
 }
