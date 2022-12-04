@@ -173,6 +173,14 @@
                     "pos1": "$vec2(path{gauge/fuel:value}:init{(258,601)}:interval{0.1}:percent{(258,10)})",
                     "style": "fuel_text",
                     "font": "Montserrat15"
+                },
+                {
+                    "type": "circle",
+                    "layer": 2,
+                    "visible": true,
+                    "pos1": "(200,200)",
+                    "style": "line_style",
+                    "radius": 25
                 }
             ]
         }

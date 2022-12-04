@@ -20,6 +20,7 @@ local ColorAndDistance = require("native/ColorAndDistance")
 ---@alias BoxJson {pos1:string, pos2:string, corner_radius:number, style:string, mouse:MouseJson}
 ---@alias TextJson {pos1:string, style:string, font:string, text:string, mouse:MouseJson}
 ---@alias LineJson {pos1:string, pos2:string, style:string, mouse:MouseJson, mouse:MouseJson}
+---@alias CircleJson {pos1:string, radius:number, style:string, mouse:MouseJson, mouse:MouseJson}
 
 ---@alias Page Layer[]
 ---@alias Pages table<string,Page>
@@ -73,7 +74,7 @@ function Layout.New(screen, behaviour, binder, stream)
     end
 
     ---@param pos string
-    ---@param object Box|Line|Text
+    ---@param object Box|Line|Text|Circle
     ---@param prop string
     ---@param componentType string
     ---@return boolean
@@ -91,9 +92,9 @@ function Layout.New(screen, behaviour, binder, stream)
     end
 
     ---Binds mouse actions
-    ---@param object Text|Box|Line
+    ---@param object Text|Box|Line|Circle
     ---@param baseStyle Style
-    ---@param data BoxJson|TextJson|LineJson
+    ---@param data BoxJson|TextJson|LineJson|CircleJson
     local function bindMouse(object, baseStyle, data)
         local bindData = {
             ---@type Props|nil
@@ -194,6 +195,23 @@ function Layout.New(screen, behaviour, binder, stream)
         return true
     end
 
+    ---@param layer Layer
+    ---@param data LineJson
+    local function createCircle(layer, data)
+        local radius = Binder.GetNumByPath(data, "radius") or 50
+        local style = styles[Binder.GetStrByPath(data, "style") or "-"] or missingStyle
+
+        local circle = layer.Circle(Vec2.New(), radius, style)
+
+        if not bindPos(data.pos1, circle, "Pos1", "circle") then
+            return false
+        end
+
+        bindMouse(circle, style, data)
+
+        return true
+    end
+
     ---Loads the page
     ---@param page PageJson
     ---@return boolean
@@ -215,6 +233,9 @@ function Layout.New(screen, behaviour, binder, stream)
                 elseif t == "line" then
                     ---@cast comp LineJson
                     res = createLine(l, comp)
+                elseif t == "circle" then
+                    ---@cast comp CircleJson
+                    res = createCircle(l, comp)
                 end
             end
 

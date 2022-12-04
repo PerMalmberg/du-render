@@ -255,7 +255,7 @@ function Binder.GetNumByPath(sourceObject, path)
     return r
 end
 
----Gets a number by path
+---Gets a string by path
 ---@param sourceObject table
 ---@param path string Path to get value from in the form a/b/c, where c would be the value to get
 ---@return string|nil
