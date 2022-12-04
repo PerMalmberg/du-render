@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"regexp"
+	"strings"
 
 	"github.com/PerMalmberg/du-render/svg2layout/layout"
 	"github.com/PerMalmberg/du-render/svg2layout/svg"
@@ -142,14 +143,18 @@ func (c *converter) translateSvgToPage(image *svg.Svg, page *layout.Page) (err e
 func (c *converter) parseBindings(comp *layout.Component, potentialBindings string) {
 	// Bindings are expected to have this format:
 	// propertyName:$keyword(...) where propertyName is the lower-case name used in the Json layout.
-	exp := regexp.MustCompile(`([a-z0-9]+):(\$[a-zA-Z0-9]+\(.+?\))`)
-	bindings := exp.FindAllStringSubmatch(potentialBindings, -1)
+	exp := regexp.MustCompile(`^([a-z0-9]+):(\$[a-zA-Z0-9]+\(.+?\))$`)
 
 	comp.Bindings = make(map[string]string)
-	for _, v := range bindings {
-		property := v[1]
-		binding := v[2]
-		comp.Bindings[property] = binding
+
+	for _, part := range strings.Split(potentialBindings, "\n") {
+		bindings := exp.FindAllStringSubmatch(part, -1)
+
+		for _, v := range bindings {
+			property := v[1]
+			binding := v[2]
+			comp.Bindings[property] = binding
+		}
 	}
 }
 

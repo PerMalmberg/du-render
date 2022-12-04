@@ -76,4 +76,5 @@ func TestConvertPage(t *testing.T) {
 	assert.NoError(t, err)
 	data := string(j)
 	assert.Contains(t, data, `"type":"circle"`)
+	assert.Contains(t, data, `$vec2(path{gauge/fuel:value}:init{(248,611)}:interval{0.1}:percent{(248,2)})`)
 }
