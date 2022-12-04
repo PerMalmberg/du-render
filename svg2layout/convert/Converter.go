@@ -114,7 +114,7 @@ func (c *converter) translateSvgToPage(image *svg.Svg, page *layout.Page) (err e
 					comp.CornerRadius = &radius
 				}
 
-				c.createBindings(&comp, rect.Description.Text)
+				c.parseBindings(&comp, rect.Description.Text)
 
 				page.Components = append(page.Components, comp)
 
@@ -129,7 +129,7 @@ func (c *converter) translateSvgToPage(image *svg.Svg, page *layout.Page) (err e
 					Radius:  &circle.Radius,
 				}
 
-				c.createBindings(&comp, circle.Description.Text)
+				c.parseBindings(&comp, circle.Description.Text)
 
 				page.Components = append(page.Components, comp)
 			}
@@ -139,13 +139,12 @@ func (c *converter) translateSvgToPage(image *svg.Svg, page *layout.Page) (err e
 	return
 }
 
-func (c *converter) createBindings(comp *layout.Component, potentialBindings string) {
+func (c *converter) parseBindings(comp *layout.Component, potentialBindings string) {
 	// Bindings are expected to have this format:
-	// PropertyName:$keyword(...)
-	exp := regexp.MustCompile(`([a-zA-Z0-9]+):(\$[a-zA-Z0-9]+\(.+?\))`)
+	// propertyName:$keyword(...) where propertyName is the lower-case name used in the Json layout.
+	exp := regexp.MustCompile(`([a-z0-9]+):(\$[a-zA-Z0-9]+\(.+?\))`)
 	bindings := exp.FindAllStringSubmatch(potentialBindings, -1)
 
-	/// QQQ Can we assign these to the final JSON?
 	comp.Bindings = make(map[string]string)
 	for _, v := range bindings {
 		property := v[1]
