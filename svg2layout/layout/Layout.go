@@ -9,8 +9,8 @@ import (
 )
 
 type Font struct {
-	Font string  `json:"font,omitempty"`
-	Size float32 `json:"size,omitempty"`
+	Font string `json:"font,omitempty"`
+	Size int    `json:"size,omitempty"`
 }
 
 type Color struct {
@@ -273,7 +273,7 @@ type Page struct {
 }
 
 type Layout struct {
-	Fonts  map[string]Font  `json:"fonts,omitempty"`
-	Styles map[string]Style `json:"styles,omitempty"`
-	Pages  map[string]Page  `json:"pages,omitempty"`
+	Fonts  map[string]*Font  `json:"fonts,omitempty"`
+	Styles map[string]*Style `json:"styles,omitempty"`
+	Pages  map[string]*Page  `json:"pages,omitempty"`
 }

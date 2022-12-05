@@ -20,12 +20,14 @@ type IConverter interface {
 type converter struct {
 	input  []string
 	output string
+	fonts  IFonts
 }
 
 func NewConverter(output string, inputs ...string) IConverter {
 	return &converter{
 		input:  inputs,
 		output: output,
+		fonts:  NewFonts(),
 	}
 }
 
@@ -59,6 +61,26 @@ func (c *converter) openFiles() (out *os.File, inp []*os.File, err error) {
 	return
 }
 
+func (c *converter) createFonts(image *svg.Svg) {
+	for _, layer := range image.Layer {
+		for _, component := range layer.Shape {
+			if text, ok := component.Value.(svg.Text); ok {
+				defaultFont, _ := c.fonts.GetFont(text.Style)
+				for _, span := range text.Span {
+					var selectedFont string
+					selectedFont, substituted := c.fonts.GetFont(span.Style)
+					if selectedFont != defaultFont && !substituted {
+						c.fonts.UseFont(selectedFont)
+					} else {
+						c.fonts.UseFont(defaultFont)
+						selectedFont = defaultFont
+					}
+				}
+			}
+		}
+	}
+}
+
 func (c *converter) Convert() (err error) {
 	out, inp, err := c.openFiles()
 
@@ -76,28 +98,47 @@ func (c *converter) Convert() (err error) {
 
 	result := layout.Layout{}
 
+	images := make(map[string]*svg.Svg)
+
 	for _, f := range inp {
+		fmt.Printf("Loading SVG image: %v", f.Name())
 		var image *svg.Svg
 		if image, err = ReadFileAsSvg(f); err != nil {
 			return
 		}
 
-		page := layout.Page{}
+		images[f.Name()] = image
+	}
 
-		err = c.translateSvgToPage(image, &page)
+	for name, image := range images {
+		fmt.Printf("Creating fonts from image %v\n", name)
+		c.createFonts(image)
+	}
+
+	for name, _ := range images {
+		fmt.Printf("Creating styles from image %v\n", name)
+
+	}
+
+	for name, image := range images {
+		fmt.Printf("Converting image %v\n", name)
+		var page *layout.Page
+		page, err = c.translateSvgToPage(image)
 
 		if err != nil {
 			return
 		}
 
-		result.Pages[f.Name()] = page
+		result.Pages[name] = page
 
 	}
 
 	return
 }
 
-func (c *converter) translateSvgToPage(image *svg.Svg, page *layout.Page) (err error) {
+func (c *converter) translateSvgToPage(image *svg.Svg) (page *layout.Page, err error) {
+	page = &layout.Page{}
+
 	for layerId, layer := range image.Layer {
 		for _, mix := range layer.Shape {
 			if rect, ok := mix.Value.(svg.Rect); ok {
@@ -160,6 +201,7 @@ func (c *converter) parseBindings(comp *layout.Component, potentialBindings stri
 
 func ReadFileAsSvg(file *os.File) (image *svg.Svg, err error) {
 	b := bytes.NewBuffer(nil)
+	file.Seek(0, 0)
 	_, err = io.Copy(b, file)
 	if err != nil {
 		return

@@ -68,8 +68,9 @@ func TestConvertPage(t *testing.T) {
 	assert.NoError(t, err)
 
 	c := converter{}
-	page := &layout.Page{}
-	assert.NoError(t, c.translateSvgToPage(image, page))
+	var page *layout.Page
+	page, err = c.translateSvgToPage(image)
+	assert.NoError(t, err)
 	assert.Equal(t, 4, len(page.Components))
 
 	j, err := json.Marshal(page)
@@ -77,4 +78,20 @@ func TestConvertPage(t *testing.T) {
 	data := string(j)
 	assert.Contains(t, data, `"type":"circle"`)
 	assert.Contains(t, data, `$vec2(path{gauge/fuel:value}:init{(248,611)}:interval{0.1}:percent{(248,2)})`)
+}
+
+func TestCreateFonts(t *testing.T) {
+	f, err := os.Open("../test_data/desc.svg")
+	assert.NoError(t, err)
+	defer func() {
+		f.Close()
+	}()
+
+	image, err := ReadFileAsSvg(f)
+	assert.NoError(t, err)
+
+	c := NewConverter("").(*converter)
+	c.createFonts(image)
+	used := c.fonts.GetUsedFonts()
+	assert.Less(t, 0, len(used))
 }

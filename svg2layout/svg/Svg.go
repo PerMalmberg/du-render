@@ -48,18 +48,18 @@ type ShapeArea struct {
 	Height float64 `xml:"height,attr"`
 }
 
-type Span struct {
+type TSpan struct {
 	PositionalShape
 	Text        string `xml:",cdata"`
 	Description Description
-	Syle        string `xml:"style,attr"`
 }
 
 type Text struct {
 	PositionalShape
-	Text        []Span `xml:"tspan"`
+	Span        []TSpan `xml:"tspan"`
 	Description Description
 	Class       string `xml:"class"`
+	Style       string `xml:"style,attr"`
 }
 
 type Rect struct {

@@ -29,14 +29,14 @@
      showgrid="true"
      showguides="true"
      inkscape:zoom="1.2727922"
-     inkscape:cx="270.27193"
+     inkscape:cx="135.5288"
      inkscape:cy="311.12699"
      inkscape:window-width="3440"
      inkscape:window-height="1369"
      inkscape:window-x="1672"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer2">
+     inkscape:current-layer="layer1">
     <inkscape:grid
        type="xygrid"
        id="grid975"
@@ -102,17 +102,21 @@
          sodipodi:role="line"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.03182px;font-family:monospace;-inkscape-font-specification:monospace;fill:#000000;stroke:none;stroke-width:0.180955"
          x="39.758644"
-         y="27.206385"
-         id="tspan10778">Speed: 6789km/h</tspan><tspan
+         y="27.383213"
+         id="tspan10778">Speed: <tspan
+   style="font-style:normal;font-variant:normal;font-weight:300;font-stretch:normal;font-family:Montserrat;-inkscape-font-specification:'Montserrat Light'"
+   id="tspan406">6789km/h</tspan></tspan><tspan
          sodipodi:role="line"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.03182px;font-family:monospace;-inkscape-font-specification:monospace;fill:#000000;stroke:none;stroke-width:0.180955"
          x="39.758644"
-         y="34.746159"
-         id="tspan10782">Dist:  156,0m</tspan><tspan
+         y="35.099815"
+         id="tspan10782">Dist:  <tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Montserrat;-inkscape-font-specification:'Montserrat Bold'"
+   id="tspan423">156,0m</tspan></tspan><tspan
          sodipodi:role="line"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.03182px;font-family:monospace;-inkscape-font-specification:monospace;fill:#000000;stroke:none;stroke-width:0.180955"
          x="39.758644"
-         y="42.285934"
+         y="42.639591"
          id="tspan3218" /></text>
     <rect
        style="opacity:1"
