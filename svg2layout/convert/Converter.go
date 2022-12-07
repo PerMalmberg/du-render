@@ -61,12 +61,16 @@ func (c *converter) openFiles() (out *os.File, inp []*os.File, err error) {
 	return
 }
 
-func (c *converter) createFonts(image *svg.Svg) {
+func (c *converter) createFonts(image *svg.Svg) error {
 	for _, layer := range image.Layer {
 		for _, component := range layer.Shape {
 			if text, ok := component.Value.(svg.Text); ok {
 				defaultFont, _ := c.fonts.GetFont(text.Style)
 				for _, span := range text.Span {
+					if len(span.Span) > 0 {
+						return fmt.Errorf("nested text spans not supported")
+					}
+
 					var selectedFont string
 					selectedFont, substituted := c.fonts.GetFont(span.Style)
 					if selectedFont != defaultFont && !substituted {
@@ -79,6 +83,20 @@ func (c *converter) createFonts(image *svg.Svg) {
 			}
 		}
 	}
+
+	return nil
+}
+
+func (c *converter) createStyles(image *svg.Svg) {
+
+	// Create styles from css
+	/* for _, style := range image.Defs.Style {
+		style.Text
+	} */
+
+	// Loop components
+	// Create styles based on the style data
+	// Merge styles
 }
 
 func (c *converter) Convert() (err error) {
@@ -115,9 +133,9 @@ func (c *converter) Convert() (err error) {
 		c.createFonts(image)
 	}
 
-	for name, _ := range images {
+	for name, image := range images {
 		fmt.Printf("Creating styles from image %v\n", name)
-
+		c.createStyles(image)
 	}
 
 	for name, image := range images {

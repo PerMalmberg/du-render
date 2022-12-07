@@ -130,9 +130,10 @@ func (f *fonts) UseFont(name string) {
 	f.used[name] = f.current[name]
 }
 
-func (f *fonts) getFont(family string, bold, light bool, size float64) (name string, substituted bool) {
+func (f *fonts) getFont(family string, bold, light bool, size float64) (key string, substituted bool) {
 	allowed, found := f.allowed[family]
 	substituted = false
+	name := family
 
 	if found {
 		if !bold && !light && allowed.Regular {
@@ -157,17 +158,17 @@ func (f *fonts) getFont(family string, bold, light bool, size float64) (name str
 	}
 
 	fontSize := int(math.Round(size))
-	name = fmt.Sprintf("%s-%d", name, fontSize)
+	key = fmt.Sprintf("%s-%d", name, fontSize)
 
-	_, ok := f.current[name]
+	_, ok := f.current[key]
 
 	if !ok {
 		font := &layout.Font{
 			Font: name,
 			Size: fontSize,
 		}
-		f.current[name] = font
-		fmt.Printf("Created font: %s", name)
+		f.current[key] = font
+		fmt.Printf("Created font: %s", key)
 	}
 
 	return

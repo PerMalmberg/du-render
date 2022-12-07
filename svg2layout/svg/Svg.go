@@ -52,6 +52,7 @@ type TSpan struct {
 	PositionalShape
 	Text        string `xml:",cdata"`
 	Description Description
+	Span        []TSpan `xml:"tspan"`
 }
 
 type Text struct {

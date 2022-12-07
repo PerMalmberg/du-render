@@ -91,7 +91,11 @@ func TestCreateFonts(t *testing.T) {
 	assert.NoError(t, err)
 
 	c := NewConverter("").(*converter)
-	c.createFonts(image)
+	assert.NoError(t, c.createFonts(image))
 	used := c.fonts.GetUsedFonts()
-	assert.Less(t, 0, len(used))
+	assert.EqualValues(t, 1, len(used))
+	usedFont, ok := used["Montserrat-6"]
+	assert.True(t, ok)
+	assert.Equal(t, "Montserrat", usedFont.Font)
+	assert.Equal(t, 6, usedFont.Size)
 }
