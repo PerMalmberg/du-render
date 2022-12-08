@@ -36,10 +36,14 @@ type MixedShape struct {
 	Value interface{}
 }
 
+type StyledShape struct {
+	Style string `xml:"style,attr"`
+	Class string `xml:"class,attr"`
+}
+
 type PositionalShape struct {
-	X     float64 `xml:"x,attr"`
-	Y     float64 `xml:"y,attr"`
-	Style string  `xml:"style,attr"`
+	X float64 `xml:"x,attr"`
+	Y float64 `xml:"y,attr"`
 }
 
 type ShapeArea struct {
@@ -53,30 +57,29 @@ type TSpan struct {
 	Text        string `xml:",cdata"`
 	Description Description
 	Span        []TSpan `xml:"tspan"`
+	StyledShape
 }
 
 type Text struct {
 	PositionalShape
 	Span        []TSpan `xml:"tspan"`
 	Description Description
-	Class       string `xml:"class"`
-	Style       string `xml:"style,attr"`
+	StyledShape
 }
 
 type Rect struct {
 	ShapeArea
 	Description Description
 	PathEffect  string `xml:"path-effect"`
-	Class       string `xml:"class,attr"`
+	StyledShape
 }
 
 type Circle struct {
 	X           float64 `xml:"cx,attr"`
 	Y           float64 `xml:"cy,attr"`
 	Radius      float64 `xml:"r,attr"`
-	Style       string  `xml:"style,attr"`
 	Description Description
-	Class       string `xml:"class"`
+	StyledShape
 }
 
 func (m *MixedShape) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {

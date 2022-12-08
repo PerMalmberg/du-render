@@ -18,9 +18,11 @@ type IConverter interface {
 }
 
 type converter struct {
-	input  []string
-	output string
-	fonts  IFonts
+	input            []string
+	output           string
+	fonts            IFonts
+	result           layout.Layout
+	pageStyleCounter int
 }
 
 func NewConverter(output string, inputs ...string) IConverter {
@@ -28,6 +30,12 @@ func NewConverter(output string, inputs ...string) IConverter {
 		input:  inputs,
 		output: output,
 		fonts:  NewFonts(),
+		result: layout.Layout{
+			Fonts:  map[string]*layout.Font{},
+			Styles: map[string]*layout.Style{},
+			Pages:  map[string]*layout.Page{},
+		},
+		pageStyleCounter: 0,
 	}
 }
 
@@ -87,10 +95,9 @@ func (c *converter) createFonts(image *svg.Svg) error {
 	return nil
 }
 
-func (c *converter) createStyles(image *svg.Svg) (styles map[string]*layout.Style, err error) {
+func (c *converter) createCommonStyles(pageName string, image *svg.Svg) (err error) {
 
 	cssStyleExp := regexp.MustCompile(`\.([a-zA-Z0-9_-]+)\s*{(.*)}`)
-	styles = make(map[string]*layout.Style)
 
 	// Parse styles from CSS
 	for _, s := range image.Defs.Style {
@@ -104,13 +111,9 @@ func (c *converter) createStyles(image *svg.Svg) (styles map[string]*layout.Styl
 				return
 			}
 
-			styles[name] = style
+			c.result.Styles[c.createPageStyleName(pageName, name)] = style
 		}
 	}
-
-	// Loop components
-
-	// Merge styles with same attributes
 
 	return
 }
@@ -130,8 +133,6 @@ func (c *converter) Convert() (err error) {
 		out.Close()
 	}()
 
-	result := layout.Layout{}
-
 	images := make(map[string]*svg.Svg)
 
 	for _, f := range inp {
@@ -149,16 +150,7 @@ func (c *converter) Convert() (err error) {
 		c.createFonts(image)
 	}
 
-	result.Fonts = c.fonts.GetUsedFonts()
-
-	for name, image := range images {
-		fmt.Printf("Creating styles from image %v\n", name)
-		var styles map[string]*layout.Style
-		styles, err = c.createStyles(image)
-		for k, v := range styles {
-			result.Styles[fmt.Sprintf("%s-%s", name, k)] = v
-		}
-	}
+	c.result.Fonts = c.fonts.GetUsedFonts()
 
 	for name, image := range images {
 		fmt.Printf("Converting image %v\n", name)
@@ -169,14 +161,24 @@ func (c *converter) Convert() (err error) {
 			return
 		}
 
-		result.Pages[name] = page
+		c.result.Pages[name] = page
 
 	}
 
 	return
 }
 
+func (c *converter) createPageStyleName(pageName, styleName string) string {
+	return fmt.Sprintf("%s-%s", pageName, styleName)
+}
+
 func (c *converter) translateSvgToPage(pageName string, image *svg.Svg) (page *layout.Page, err error) {
+	if err = c.createCommonStyles(pageName, image); err != nil {
+		return
+	}
+
+	c.pageStyleCounter = 0
+
 	page = &layout.Page{}
 
 	for layerId, layer := range image.Layer {
@@ -196,7 +198,17 @@ func (c *converter) translateSvgToPage(pageName string, image *svg.Svg) (page *l
 					comp.CornerRadius = &radius
 				}
 
-				c.addStyle(pageName, comp, rect.Class)
+				// A component may reference a common style and have local in-line style attributes.
+				local := &layout.Style{}
+				err = local.FromInlineCSS(rect.Style)
+				if err != nil {
+					return
+				}
+
+				err = c.setComponentStyle(local, &comp, &rect.StyledShape, pageName)
+				if err != nil {
+					return
+				}
 
 				c.parseBindings(&comp, rect.Description.Text)
 
@@ -213,7 +225,6 @@ func (c *converter) translateSvgToPage(pageName string, image *svg.Svg) (page *l
 					Radius:  &circle.Radius,
 				}
 
-				c.addStyle(pageName, comp, circle.Class)
 				c.parseBindings(&comp, circle.Description.Text)
 
 				page.Components = append(page.Components, comp)
@@ -221,18 +232,44 @@ func (c *converter) translateSvgToPage(pageName string, image *svg.Svg) (page *l
 		}
 	}
 
+	c.mergeStyles()
+
 	return
 }
 
-func (c *converter) addStyle(pageName string, comp layout.Component, classes string) {
-	// QQQ style based on pageName
-	names := strings.Split(strings.Trim(classes, " "), " ")
-	for _, v := range names {
-		styleName := fmt.Sprintf("%s-%s", pageName, v)
-		comp.Style = &styleName
-		// Only one style supported
-		break
+func (c *converter) mergeStyles() {
+	// Find styles that are equal and replace the use of them on components with a single instance
+}
+
+func (c *converter) setComponentStyle(local *layout.Style, comp *layout.Component, styled *svg.StyledShape, pageName string) (err error) {
+	// Get all common names
+	styleNames := strings.Split(strings.Trim(styled.Class, " "), " ")
+	for i := 0; i < len(styleNames); i++ {
+		if styleNames[i] != "" {
+			styleNames[i] = c.createPageStyleName(pageName, styleNames[i])
+		}
 	}
+
+	// Merge into the local style
+	for _, referencedStyle := range styleNames {
+		if referencedStyle != "" {
+			commonStyle, ok := c.result.Styles[referencedStyle]
+			if !ok {
+				err = fmt.Errorf("unknown referenced style: %s", referencedStyle)
+				return
+			} else {
+				local.MergeInto(commonStyle)
+			}
+		}
+	}
+
+	componentStyleName := fmt.Sprintf("%s-%d", c.createPageStyleName(pageName, comp.Type), c.pageStyleCounter)
+	c.pageStyleCounter++
+	fmt.Printf("Created component style: %s\n", componentStyleName)
+	comp.Style = &componentStyleName
+	c.result.Styles[componentStyleName] = local
+
+	return
 }
 
 func (c *converter) parseBindings(comp *layout.Component, potentialBindings string) {

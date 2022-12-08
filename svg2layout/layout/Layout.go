@@ -100,6 +100,30 @@ func (s *Style) FromInlineCSS(style string) (err error) {
 	return
 }
 
+// MergeInto merges properties of src into the target style
+// when the target doesn't already have the property set.
+func (s *Style) MergeInto(src *Style) {
+	if s.Align == nil {
+		s.Align = src.Align
+	}
+
+	if s.Fill == nil {
+		s.Fill = src.Fill
+	}
+
+	if s.Rotation == nil {
+		s.Rotation = src.Rotation
+	}
+
+	if s.Shadow == nil {
+		s.Shadow = src.Shadow
+	}
+
+	if s.Stroke == nil {
+		s.Stroke = src.Stroke
+	}
+}
+
 func roundToNearest(f float64, decimals int) float64 {
 	p := math.Pow10(decimals)
 	return math.Round(f*p) / p
@@ -123,23 +147,20 @@ func StrokeFromStyle(style string) (cd *Stroke, err error) {
 	}
 
 	// Stroke may be "none", this is probably the case when color is nil.
-	if color == nil {
-		color = &Color{0, 0, 0, 0}
-	}
-
-	distance := float64(0)
-	widthVal := strokeWidthExp.FindStringSubmatch(style)
-	if len(widthVal) == 2 {
-		if distance, err = strconv.ParseFloat(widthVal[1], 32); err != nil {
-			return
+	if color != nil {
+		distance := float64(0)
+		widthVal := strokeWidthExp.FindStringSubmatch(style)
+		if len(widthVal) == 2 {
+			if distance, err = strconv.ParseFloat(widthVal[1], 32); err != nil {
+				return
+			}
+			cd = &Stroke{
+				ColorAndDistance: ColorAndDistance{
+					Color:    *color,
+					Distance: distance,
+				},
+			}
 		}
-	}
-
-	cd = &Stroke{
-		ColorAndDistance: ColorAndDistance{
-			Color:    *color,
-			Distance: distance,
-		},
 	}
 
 	return

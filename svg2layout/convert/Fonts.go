@@ -168,7 +168,7 @@ func (f *fonts) getFont(family string, bold, light bool, size float64) (key stri
 			Size: fontSize,
 		}
 		f.current[key] = font
-		fmt.Printf("Created font: %s", key)
+		fmt.Printf("Created font: %s\n", key)
 	}
 
 	return
