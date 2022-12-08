@@ -30,7 +30,7 @@ func TestColor(t *testing.T) {
 func TestFill(t *testing.T) {
 	style := "fill:#28a745;fill-opacity:0.5655;stroke-width:0.132293;stroke-linecap:butt;stroke-linejoin:miter"
 
-	c, err := fillStyle(style)
+	c, err := FillFromStyle(style)
 	assert.NoError(t, err)
 	r, _ := strconv.ParseInt("28", 16, 0)
 	assert.EqualValues(t, r, c.Red)
@@ -44,7 +44,7 @@ func TestFill(t *testing.T) {
 func TestStroke(t *testing.T) {
 	style := "stroke-linejoin:miter;stroke-linecap:butt;stroke-width:3;fill-opacity:0.55045873;fill:#28a745;stroke:#e02c9f;stroke-opacity:1"
 
-	cd, err := stroke(style)
+	cd, err := StrokeFromStyle(style)
 	assert.NoError(t, err)
 	r, _ := strconv.ParseInt("e0", 16, 0)
 	assert.EqualValues(t, r, cd.Color.Red)
@@ -62,5 +62,5 @@ func TestStyleFromInlineCSS(t *testing.T) {
 	assert.NoError(t, s.FromInlineCSS(style))
 	assert.EqualValues(t, 0.550, s.Fill.Alpha)
 	assert.EqualValues(t, 0.2, s.Stroke.Color.Alpha)
-	assert.Nil(t, s.Shadow)
+	assert.Nil(t, s.Shadow) // Not supported in SVG
 }

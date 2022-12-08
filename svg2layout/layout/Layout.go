@@ -83,19 +83,17 @@ type Style struct {
 	Shadow   *Shadow  `json:"shadow,omitempty"`
 }
 
-//var fontStype = regexp.MustCompile(`font-style:(.?);`)
-
 func (s *Style) FromInlineCSS(style string) (err error) {
 	// Extract the different parts from the Text property
 
 	align := "h0,v1" // Left, Top, see RSAlightHor and RSAlignVer
 	s.Align = &align
 
-	if s.Fill, err = fillStyle(style); err != nil {
+	if s.Fill, err = FillFromStyle(style); err != nil {
 		return
 	}
 
-	if s.Stroke, err = stroke(style); err != nil {
+	if s.Stroke, err = StrokeFromStyle(style); err != nil {
 		return
 	}
 
@@ -107,20 +105,26 @@ func roundToNearest(f float64, decimals int) float64 {
 	return math.Round(f*p) / p
 }
 
-func fillStyle(style string) (c *Color, err error) {
+func FillFromStyle(style string) (c *Color, err error) {
 	var fillExp = regexp.MustCompile(`fill:#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})`)
 	var fillOpacityExp = regexp.MustCompile(`fill-opacity:(\d*\.?\d*)`)
 	return hexToColor(style, fillExp, fillOpacityExp)
 }
 
-func stroke(style string) (cd *Stroke, err error) {
+func StrokeFromStyle(style string) (cd *Stroke, err error) {
 	// stroke-linejoin:miter;stroke-linecap:butt;stroke-width:1;fill-opacity:0.55045873;fill:#28a745;stroke:#e02c9f;stroke-opacity:1
 	var strokeExp = regexp.MustCompile(`stroke:#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})`)
 	var strokeOpacityExp = regexp.MustCompile(`stroke-opacity:(\d*\.?\d*)`)
 	var strokeWidthExp = regexp.MustCompile(`stroke-width:(\d*\.?\d*)`)
 	var color *Color
-	if color, err = hexToColor(style, strokeExp, strokeOpacityExp); err != nil || color == nil {
+
+	if color, err = hexToColor(style, strokeExp, strokeOpacityExp); err != nil {
 		return
+	}
+
+	// Stroke may be "none", this is probably the case when color is nil.
+	if color == nil {
+		color = &Color{0, 0, 0, 0}
 	}
 
 	distance := float64(0)

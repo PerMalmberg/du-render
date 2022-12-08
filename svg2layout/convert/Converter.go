@@ -87,16 +87,32 @@ func (c *converter) createFonts(image *svg.Svg) error {
 	return nil
 }
 
-func (c *converter) createStyles(image *svg.Svg) {
+func (c *converter) createStyles(image *svg.Svg) (styles map[string]*layout.Style, err error) {
 
-	// Create styles from css
-	/* for _, style := range image.Defs.Style {
-		style.Text
-	} */
+	cssStyleExp := regexp.MustCompile(`\.([a-zA-Z0-9_-]+)\s*{(.*)}`)
+	styles = make(map[string]*layout.Style)
+
+	// Parse styles from CSS
+	for _, s := range image.Defs.Style {
+		css := cssStyleExp.FindAllStringSubmatch(s.Text, -1)
+		for _, v := range css {
+			name := v[1]
+			cssData := v[2]
+			style := &layout.Style{}
+			err = style.FromInlineCSS(cssData)
+			if err != nil {
+				return
+			}
+
+			styles[name] = style
+		}
+	}
 
 	// Loop components
-	// Create styles based on the style data
-	// Merge styles
+
+	// Merge styles with same attributes
+
+	return
 }
 
 func (c *converter) Convert() (err error) {
@@ -133,15 +149,21 @@ func (c *converter) Convert() (err error) {
 		c.createFonts(image)
 	}
 
+	result.Fonts = c.fonts.GetUsedFonts()
+
 	for name, image := range images {
 		fmt.Printf("Creating styles from image %v\n", name)
-		c.createStyles(image)
+		var styles map[string]*layout.Style
+		styles, err = c.createStyles(image)
+		for k, v := range styles {
+			result.Styles[fmt.Sprintf("%s-%s", name, k)] = v
+		}
 	}
 
 	for name, image := range images {
 		fmt.Printf("Converting image %v\n", name)
 		var page *layout.Page
-		page, err = c.translateSvgToPage(image)
+		page, err = c.translateSvgToPage(name, image)
 
 		if err != nil {
 			return
@@ -154,7 +176,7 @@ func (c *converter) Convert() (err error) {
 	return
 }
 
-func (c *converter) translateSvgToPage(image *svg.Svg) (page *layout.Page, err error) {
+func (c *converter) translateSvgToPage(pageName string, image *svg.Svg) (page *layout.Page, err error) {
 	page = &layout.Page{}
 
 	for layerId, layer := range image.Layer {
@@ -174,6 +196,8 @@ func (c *converter) translateSvgToPage(image *svg.Svg) (page *layout.Page, err e
 					comp.CornerRadius = &radius
 				}
 
+				c.addStyle(pageName, comp, rect.Class)
+
 				c.parseBindings(&comp, rect.Description.Text)
 
 				page.Components = append(page.Components, comp)
@@ -189,6 +213,7 @@ func (c *converter) translateSvgToPage(image *svg.Svg) (page *layout.Page, err e
 					Radius:  &circle.Radius,
 				}
 
+				c.addStyle(pageName, comp, circle.Class)
 				c.parseBindings(&comp, circle.Description.Text)
 
 				page.Components = append(page.Components, comp)
@@ -197,6 +222,17 @@ func (c *converter) translateSvgToPage(image *svg.Svg) (page *layout.Page, err e
 	}
 
 	return
+}
+
+func (c *converter) addStyle(pageName string, comp layout.Component, classes string) {
+	// QQQ style based on pageName
+	names := strings.Split(strings.Trim(classes, " "), " ")
+	for _, v := range names {
+		styleName := fmt.Sprintf("%s-%s", pageName, v)
+		comp.Style = &styleName
+		// Only one style supported
+		break
+	}
 }
 
 func (c *converter) parseBindings(comp *layout.Component, potentialBindings string) {

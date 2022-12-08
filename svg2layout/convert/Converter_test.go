@@ -69,7 +69,7 @@ func TestConvertPage(t *testing.T) {
 
 	c := converter{}
 	var page *layout.Page
-	page, err = c.translateSvgToPage(image)
+	page, err = c.translateSvgToPage("pageName", image)
 	assert.NoError(t, err)
 	assert.Equal(t, 4, len(page.Components))
 
@@ -98,4 +98,21 @@ func TestCreateFonts(t *testing.T) {
 	assert.True(t, ok)
 	assert.Equal(t, "Montserrat", usedFont.Font)
 	assert.Equal(t, 6, usedFont.Size)
+}
+
+func TestCreateStyles(t *testing.T) {
+	f, err := os.Open("../test_data/desc.svg")
+	assert.NoError(t, err)
+	defer func() {
+		f.Close()
+	}()
+
+	image, err := ReadFileAsSvg(f)
+	assert.NoError(t, err)
+
+	c := NewConverter("").(*converter)
+	_, err = c.createStyles(image)
+	assert.NoError(t, err)
+	//assert.True(t, c.)
+
 }
