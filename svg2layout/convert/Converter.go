@@ -2,10 +2,12 @@ package convert
 
 import (
 	"bytes"
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
@@ -43,7 +45,8 @@ func NewConverter(output string, inputs ...string) IConverter {
 }
 
 func (c *converter) openFiles() (out *os.File, inp []*os.File, err error) {
-	out, err = os.OpenFile(c.output, os.O_CREATE, 0655)
+	_ = os.Remove(c.output)
+	out, err = os.OpenFile(c.output, os.O_CREATE|os.O_WRONLY, 0700)
 
 	if err != nil {
 		return
@@ -68,6 +71,8 @@ func (c *converter) openFiles() (out *os.File, inp []*os.File, err error) {
 
 		out.Close()
 	}
+
+	fmt.Println("Opened files")
 
 	return
 }
@@ -115,7 +120,7 @@ func (c *converter) createCommonStyles(pageName string, image *svg.Svg) (err err
 			}
 
 			fullName := c.createPageStyleName(pageName, name)
-			fmt.Printf("Created common style: %s", fullName)
+			fmt.Printf("Created common style: %s\n", fullName)
 			c.commonStyles[fullName] = style
 		}
 	}
@@ -147,7 +152,9 @@ func (c *converter) Convert() (err error) {
 			return
 		}
 
-		images[f.Name()] = image
+		name := filepath.Base(filepath.Clean(f.Name()))
+		name = strings.Replace(name, filepath.Ext(f.Name()), "", -1)
+		images[name] = image
 	}
 
 	for name, image := range images {
@@ -165,6 +172,17 @@ func (c *converter) Convert() (err error) {
 	}
 
 	c.replaceStyles()
+
+	var outJson []byte
+	if outJson, err = json.Marshal(c.result); err != nil {
+		return
+	}
+
+	if _, err = out.Write(outJson); err != nil {
+		return
+	}
+
+	fmt.Printf("Wrote output to %s\n", c.output)
 
 	return
 }
