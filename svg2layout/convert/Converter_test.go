@@ -6,7 +6,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/PerMalmberg/du-render/svg2layout/layout"
 	"github.com/PerMalmberg/du-render/svg2layout/svg"
 	"github.com/stretchr/testify/assert"
 )
@@ -68,8 +67,8 @@ func TestConvertPage(t *testing.T) {
 	assert.NoError(t, err)
 
 	c := NewConverter("").(*converter)
-	var page *layout.Page
-	page, err = c.translateSvgToPage("pageName", image)
+	err = c.translateSvgToPage("pageName", image)
+	page := c.result.Pages["pageName"]
 	assert.NoError(t, err)
 	assert.Equal(t, 6, len(page.Components))
 

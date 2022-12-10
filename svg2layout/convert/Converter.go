@@ -159,15 +159,9 @@ func (c *converter) Convert() (err error) {
 
 	for name, image := range images {
 		fmt.Printf("Converting image %v\n", name)
-		var page *layout.Page
-		page, err = c.translateSvgToPage(name, image)
-
-		if err != nil {
+		if err = c.translateSvgToPage(name, image); err != nil {
 			return
 		}
-
-		c.result.Pages[name] = page
-
 	}
 
 	c.replaceStyles()
@@ -179,14 +173,14 @@ func (c *converter) createPageStyleName(pageName, styleName string) string {
 	return fmt.Sprintf("%s-%s", pageName, styleName)
 }
 
-func (c *converter) translateSvgToPage(pageName string, image *svg.Svg) (page *layout.Page, err error) {
+func (c *converter) translateSvgToPage(pageName string, image *svg.Svg) (err error) {
 	if err = c.createCommonStyles(pageName, image); err != nil {
 		return
 	}
 
 	c.pageStyleCounter = 0
 
-	page = &layout.Page{}
+	page := &layout.Page{}
 	c.result.Pages[pageName] = page
 
 	for layerId, layer := range image.Layer {
