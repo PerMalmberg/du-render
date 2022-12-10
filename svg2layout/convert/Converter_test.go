@@ -32,7 +32,7 @@ func TestReadFileAsSvg(t *testing.T) {
 	assert.EqualValues(t, 613, data.Height)
 	assert.Contains(t, data.Defs.Style[0].Text, ".common")
 	assert.Equal(t, 2, len(data.Layer))
-	assert.Equal(t, 4, len(data.Layer[0].Shape))
+	assert.Equal(t, 6, len(data.Layer[0].Shape))
 	assert.Equal(t, 1, len(data.Layer[1].Shape))
 
 	textDescFound := false
@@ -71,13 +71,22 @@ func TestConvertPage(t *testing.T) {
 	var page *layout.Page
 	page, err = c.translateSvgToPage("pageName", image)
 	assert.NoError(t, err)
-	assert.Equal(t, 4, len(page.Components))
+	assert.Equal(t, 6, len(page.Components))
 
 	j, err := json.Marshal(page)
 	assert.NoError(t, err)
 	data := string(j)
 	assert.Contains(t, data, `"type":"circle"`)
 	assert.Contains(t, data, `$vec2(path{gauge/fuel:value}:init{(248,611)}:interval{0.1}:percent{(248,2)})`)
+
+	assert.Equal(t, 5, len(c.result.Styles))
+	assert.NotContains(t, c.result.Styles, "pageName-common")
+	assert.NotContains(t, c.result.Styles, "pageName-pink1")
+	c.replaceStyles()
+	assert.Equal(t, 5, len(c.result.Styles))
+	assert.Contains(t, c.result.Styles, "pageName-common")
+	assert.Contains(t, c.result.Styles, "pageName-pink1")
+
 }
 
 func TestCreateFonts(t *testing.T) {
@@ -98,4 +107,13 @@ func TestCreateFonts(t *testing.T) {
 	assert.True(t, ok)
 	assert.Equal(t, "Montserrat", usedFont.Font)
 	assert.Equal(t, 6, usedFont.Size)
+}
+
+func TestSyleMerging(t *testing.T) {
+	f, err := os.Open("../test_data/desc.svg")
+	assert.NoError(t, err)
+	defer func() {
+		f.Close()
+	}()
+
 }

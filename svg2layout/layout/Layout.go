@@ -124,6 +124,16 @@ func (s *Style) MergeInto(src *Style) {
 	}
 }
 
+func (s *Style) Equals(other *Style) bool {
+	a := (s.Align == nil && other.Align == nil) || (s.Align != nil && other.Align != nil && *s.Align == *other.Align)
+	f := (s.Fill == nil && other.Fill == nil) || (s.Fill != nil && other.Fill != nil && *s.Fill == *other.Fill)
+	r := (s.Rotation == nil && other.Rotation == nil) || (s.Rotation != nil && other.Rotation != nil && *s.Rotation == *other.Rotation)
+	sh := (s.Shadow == nil && other.Shadow == nil) || (s.Shadow != nil && other.Shadow != nil && s.Shadow.ColorAndDistance == other.Shadow.ColorAndDistance)
+	st := (s.Stroke == nil && other.Stroke == nil) || (s.Stroke != nil && other.Stroke != nil && s.Stroke.ColorAndDistance == other.Stroke.ColorAndDistance)
+
+	return a && f && r && sh && st
+}
+
 func roundToNearest(f float64, decimals int) float64 {
 	p := math.Pow10(decimals)
 	return math.Round(f*p) / p
@@ -157,7 +167,7 @@ func StrokeFromStyle(style string) (cd *Stroke, err error) {
 			cd = &Stroke{
 				ColorAndDistance: ColorAndDistance{
 					Color:    *color,
-					Distance: distance,
+					Distance: roundToNearest(distance, 3),
 				},
 			}
 		}

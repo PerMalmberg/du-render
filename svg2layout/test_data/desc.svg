@@ -6,12 +6,26 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
-   <sodipodi:namedview id="namedview7" pagecolor="#ffffff" bordercolor="#000000" borderopacity="0.25" inkscape:showpageshadow="2" inkscape:pageopacity="0.0" inkscape:pagecheckerboard="0" inkscape:deskcolor="#d1d1d1" inkscape:document-units="mm" showgrid="true" showguides="true" inkscape:zoom="3.6" inkscape:cx="224.16667" inkscape:cy="247.5" inkscape:window-width="3440" inkscape:window-height="1369" inkscape:window-x="1672" inkscape:window-y="-8" inkscape:window-maximized="1" inkscape:current-layer="layer1">
+   <sodipodi:namedview id="namedview7" pagecolor="#ffffff" bordercolor="#000000" borderopacity="0.25" inkscape:showpageshadow="2" inkscape:pageopacity="0.0" inkscape:pagecheckerboard="0" inkscape:deskcolor="#d1d1d1" inkscape:document-units="mm" showgrid="true" showguides="true" inkscape:zoom="3.6" inkscape:cx="196.11111" inkscape:cy="203.05556" inkscape:window-width="3440" inkscape:window-height="1369" inkscape:window-x="1672" inkscape:window-y="-8" inkscape:window-maximized="1" inkscape:current-layer="layer1">
       <inkscape:grid type="xygrid" id="grid975" originx="0" originy="0" />
    </sodipodi:namedview>
    <defs id="defs2">
       <inkscape:path-effect effect="fillet_chamfer" id="path-effect3588" is_visible="true" lpeversion="1" nodesatellites_param="F,0,0,1,0,4.4979167,0,1 @ F,0,0,1,0,4.4979167,0,1 @ F,0,0,1,0,4.4979167,0,1 @ F,0,0,1,0,4.4979167,0,1" unit="px" method="auto" mode="F" radius="17" chamfer_steps="1" flexible="false" use_knot_distance="true" apply_no_radius="true" apply_with_radius="true" only_selected="false" hide_knots="false" />
-      <style id="style1153"><![CDATA[.common { fill:#17a2b8;  stroke-width:0.144688; }
+      <style id="style1153"><![CDATA[
+.common {
+  fill:#17a2b8;
+  stroke-width:0.144688;
+}
+.pink1 {
+  fill:#da2db2;
+  stroke:#c10000;
+  stroke-width:0.529167;
+}
+.pink2 {
+  fill:#da2db2;
+  stroke:#c10000;
+  stroke-width:0.529167;
+}
 ]]>      </style>
       <inkscape:path-effect effect="fillet_chamfer" id="path-effect7185" is_visible="true" lpeversion="1" nodesatellites_param="F,0,0,1,0,4.7625,0,6 @ F,0,0,1,0,4.7625,0,6 @ F,0,0,1,0,4.7625,0,6 @ F,0,0,1,0,4.7625,0,6" unit="px" method="auto" mode="F" radius="18" chamfer_steps="6" flexible="false" use_knot_distance="true" apply_no_radius="true" apply_with_radius="true" only_selected="false" hide_knots="false" />
    </defs>
@@ -28,6 +42,8 @@
       <circle style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.180955;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1" id="path4267" cx="116.70733" cy="110.29588" r="3.4196179">
          <desc id="desc14300">circle also has a binding</desc>
       </circle>
+      <rect id="rect302" width="17.197916" height="14.552083" x="9.260417" y="35.71875" class="pink1" />
+      <rect id="rect304" width="17.197916" height="11.90625" x="9.260417" y="55.5625" class="pink2" />
    </g>
    <g inkscape:groupmode="layer" id="layer2" inkscape:label="Layer 2" style="display:inline" transform="translate(-48.978976,21.33931)">
       <rect style="fill:#da2db2;fill-opacity:1;stroke:#2ce05d;stroke-width:0.145;stroke-dasharray:none;stroke-opacity:1" id="rect3567" width="29.104166" height="26.458332" x="191.85397" y="13.056523" d="m 196.35189,13.056523 h 20.10833 a 4.4979167,4.4979167 45 0 1 4.49792,4.497917 v 17.462499 a 4.4979167,4.4979167 135 0 1 -4.49792,4.497916 h -20.10833 a 4.4979167,4.4979167 45 0 1 -4.49792,-4.497916 V 17.55444 a 4.4979167,4.4979167 135 0 1 4.49792,-4.497917 z" inkscape:path-effect="#path-effect3588">
@@ -36,4 +52,3 @@ text:$num(path{gauge/fuel:value100}:init{0}:format{Fuel level: %0.2f})</desc>
       </rect>
    </g>
 </svg>
-	// Create styles based on the style data

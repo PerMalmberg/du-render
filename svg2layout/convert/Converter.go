@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/PerMalmberg/du-render/svg2layout/layout"
@@ -22,6 +23,7 @@ type converter struct {
 	output           string
 	fonts            IFonts
 	result           layout.Layout
+	commonStyles     map[string]*layout.Style
 	pageStyleCounter int
 }
 
@@ -35,6 +37,7 @@ func NewConverter(output string, inputs ...string) IConverter {
 			Styles: map[string]*layout.Style{},
 			Pages:  map[string]*layout.Page{},
 		},
+		commonStyles:     map[string]*layout.Style{},
 		pageStyleCounter: 0,
 	}
 }
@@ -97,7 +100,7 @@ func (c *converter) createFonts(image *svg.Svg) error {
 
 func (c *converter) createCommonStyles(pageName string, image *svg.Svg) (err error) {
 
-	cssStyleExp := regexp.MustCompile(`\.([a-zA-Z0-9_-]+)\s*{(.*)}`)
+	cssStyleExp := regexp.MustCompile(`(?s)\.([a-zA-Z0-9_-]+)\s*{(.*?)}`)
 
 	// Parse styles from CSS
 	for _, s := range image.Defs.Style {
@@ -111,7 +114,9 @@ func (c *converter) createCommonStyles(pageName string, image *svg.Svg) (err err
 				return
 			}
 
-			c.result.Styles[c.createPageStyleName(pageName, name)] = style
+			fullName := c.createPageStyleName(pageName, name)
+			fmt.Printf("Created common style: %s", fullName)
+			c.commonStyles[fullName] = style
 		}
 	}
 
@@ -165,6 +170,8 @@ func (c *converter) Convert() (err error) {
 
 	}
 
+	c.replaceStyles()
+
 	return
 }
 
@@ -180,6 +187,7 @@ func (c *converter) translateSvgToPage(pageName string, image *svg.Svg) (page *l
 	c.pageStyleCounter = 0
 
 	page = &layout.Page{}
+	c.result.Pages[pageName] = page
 
 	for layerId, layer := range image.Layer {
 		for _, mix := range layer.Shape {
@@ -232,13 +240,72 @@ func (c *converter) translateSvgToPage(pageName string, image *svg.Svg) (page *l
 		}
 	}
 
-	c.mergeStyles()
-
 	return
 }
 
-func (c *converter) mergeStyles() {
+func (c *converter) replaceStyles() {
 	// Find styles that are equal and replace the use of them on components with a single instance
+	replacement := make(map[string]*string)
+
+	// Add common styles to local ones ensure they are all merged
+	for name, style := range c.commonStyles {
+		c.result.Styles[name] = style
+	}
+
+	keys := make([]string, 0, len(c.result.Styles))
+	for k := range c.result.Styles {
+		keys = append(keys, k)
+	}
+
+	sort.Slice(keys, func(i, j int) bool {
+		return keys[i] < keys[j]
+	})
+
+	for outerIx := 0; outerIx < len(keys); outerIx++ {
+		for innerIx := 0; innerIx < len(keys); innerIx++ {
+			outerName := keys[outerIx]
+			innerName := keys[innerIx]
+			if outerName == innerName {
+				continue
+			}
+
+			selected, replaced := c.prioritizeCommonStyle(outerName, innerName)
+
+			if _, found := replacement[selected]; found {
+				continue
+			}
+
+			if c.result.Styles[outerName].Equals(c.result.Styles[innerName]) {
+				fmt.Printf("Replacing style %s with %s\n", replaced, selected)
+				replacement[replaced] = &selected
+			}
+		}
+	}
+
+	// Loop components and update styles to use the replacements.
+	for _, page := range c.result.Pages {
+		for _, comp := range page.Components {
+			if comp.Style != nil {
+				if repl, found := replacement[*comp.Style]; found {
+					comp.Style = repl
+				}
+			}
+		}
+	}
+
+	for k := range replacement {
+		delete(c.result.Styles, k)
+		fmt.Printf("Removed style %s\n", k)
+	}
+}
+
+func (c *converter) prioritizeCommonStyle(a, b string) (selected, merged string) {
+	if _, exists := c.commonStyles[a]; exists {
+		return a, b
+	} else if _, exists = c.commonStyles[b]; exists {
+		return b, a
+	}
+	return a, b
 }
 
 func (c *converter) setComponentStyle(local *layout.Style, comp *layout.Component, styled *svg.StyledShape, pageName string) (err error) {
@@ -253,7 +320,7 @@ func (c *converter) setComponentStyle(local *layout.Style, comp *layout.Componen
 	// Merge into the local style
 	for _, referencedStyle := range styleNames {
 		if referencedStyle != "" {
-			commonStyle, ok := c.result.Styles[referencedStyle]
+			commonStyle, ok := c.commonStyles[referencedStyle]
 			if !ok {
 				err = fmt.Errorf("unknown referenced style: %s", referencedStyle)
 				return

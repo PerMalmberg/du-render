@@ -64,3 +64,41 @@ func TestStyleFromInlineCSS(t *testing.T) {
 	assert.EqualValues(t, 0.2, s.Stroke.Color.Alpha)
 	assert.Nil(t, s.Shadow) // Not supported in SVG
 }
+
+func TestSyleComparison(t *testing.T) {
+	s1 := Style{
+		Align:    new(string),
+		Stroke:   &Stroke{},
+		Fill:     &Color{},
+		Rotation: new(float64),
+	}
+
+	s2 := Style{
+		Align:    new(string),
+		Stroke:   &Stroke{},
+		Fill:     &Color{},
+		Rotation: new(float64),
+	}
+
+	assert.Equal(t, s1, s2)
+	*s2.Align = "foo"
+	assert.False(t, s1.Equals(&s2))
+	*s1.Align = "foo"
+	assert.True(t, s1.Equals(&s2))
+	s2.Shadow = &Shadow{}
+	s2.Shadow.Color = Color{
+		Red:   1,
+		Green: 2,
+		Blue:  3,
+		Alpha: 4,
+	}
+	assert.False(t, s1.Equals(&s2))
+	s1.Shadow = &Shadow{}
+	s1.Shadow.Color = Color{
+		Red:   1,
+		Green: 2,
+		Blue:  3,
+		Alpha: 4,
+	}
+	assert.True(t, s1.Equals(&s2))
+}
