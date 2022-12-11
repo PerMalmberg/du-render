@@ -196,7 +196,7 @@ function Layout.New(screen, behaviour, binder, stream)
     end
 
     ---@param layer Layer
-    ---@param data LineJson
+    ---@param data CircleJson
     local function createCircle(layer, data)
         local radius = Binder.GetNumByPath(data, "radius") or 50
         local style = styles[Binder.GetStrByPath(data, "style") or "-"] or missingStyle
@@ -216,7 +216,11 @@ function Layout.New(screen, behaviour, binder, stream)
     ---@param page PageJson
     ---@return boolean
     local function loadPage(page)
-        if not page.components then return false end
+        if not page.components then
+            rs.Log("No components in page")
+            return false
+        end
+
         local res = true
         for _, comp in pairs(page.components) do
             local layer = comp.layer
@@ -237,6 +241,8 @@ function Layout.New(screen, behaviour, binder, stream)
                     ---@cast comp CircleJson
                     res = createCircle(l, comp)
                 end
+            else
+                rs.Log("Invalid layer number '" .. tostring(layer) .. "'")
             end
 
             if not res then return res end
