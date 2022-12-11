@@ -27,17 +27,21 @@ func TestColor(t *testing.T) {
 	assert.Equal(t, `{"color":"r0.700,g1.000,b0.900,a0.500"}`, string(data))
 }
 
+func toDURgb(v int64) float64 {
+	return RoundToNearest(float64(v)/255.0, 3)
+}
+
 func TestFill(t *testing.T) {
 	style := "fill:#28a745;fill-opacity:0.5655;stroke-width:0.132293;stroke-linecap:butt;stroke-linejoin:miter"
 
 	c, err := FillFromStyle(style)
 	assert.NoError(t, err)
 	r, _ := strconv.ParseInt("28", 16, 0)
-	assert.EqualValues(t, r, c.Red)
+	assert.EqualValues(t, toDURgb(r), c.Red)
 	g, _ := strconv.ParseInt("a7", 16, 0)
-	assert.EqualValues(t, g, c.Green)
+	assert.EqualValues(t, toDURgb(g), c.Green)
 	b, _ := strconv.ParseInt("45", 16, 0)
-	assert.EqualValues(t, b, c.Blue)
+	assert.EqualValues(t, toDURgb(b), c.Blue)
 	assert.EqualValues(t, 0.566, c.Alpha)
 }
 
@@ -47,11 +51,11 @@ func TestStroke(t *testing.T) {
 	cd, err := StrokeFromStyle(style)
 	assert.NoError(t, err)
 	r, _ := strconv.ParseInt("e0", 16, 0)
-	assert.EqualValues(t, r, cd.Color.Red)
+	assert.EqualValues(t, toDURgb(r), cd.Color.Red)
 	g, _ := strconv.ParseInt("2c", 16, 0)
-	assert.EqualValues(t, g, cd.Color.Green)
+	assert.EqualValues(t, toDURgb(g), cd.Color.Green)
 	b, _ := strconv.ParseInt("9f", 16, 0)
-	assert.EqualValues(t, b, cd.Color.Blue)
+	assert.EqualValues(t, toDURgb(b), cd.Color.Blue)
 	assert.EqualValues(t, 1, cd.Color.Alpha)
 	assert.EqualValues(t, 3, cd.Distance)
 }

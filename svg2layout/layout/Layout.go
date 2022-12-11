@@ -134,7 +134,7 @@ func (s *Style) Equals(other *Style) bool {
 	return a && f && r && sh && st
 }
 
-func roundToNearest(f float64, decimals int) float64 {
+func RoundToNearest(f float64, decimals int) float64 {
 	p := math.Pow10(decimals)
 	return math.Round(f*p) / p
 }
@@ -167,7 +167,7 @@ func StrokeFromStyle(style string) (cd *Stroke, err error) {
 			cd = &Stroke{
 				ColorAndDistance: ColorAndDistance{
 					Color:    *color,
-					Distance: roundToNearest(distance, 3),
+					Distance: RoundToNearest(distance, 3),
 				},
 			}
 		}
@@ -193,10 +193,13 @@ func hexToColor(style string, fillExp, opacityExp *regexp.Regexp) (c *Color, err
 			return
 		}
 
+		// SVG is 0-255, but DU uses 0-1 (and 1...5 for HDR)
+		div := 255.0
+
 		c = &Color{
-			Red:   roundToNearest(float64(r), 3),
-			Green: roundToNearest(float64(g), 3),
-			Blue:  roundToNearest(float64(b), 3),
+			Red:   RoundToNearest(float64(r)/div, 3),
+			Green: RoundToNearest(float64(g)/div, 3),
+			Blue:  RoundToNearest(float64(b)/div, 3),
 			Alpha: 1,
 		}
 
@@ -208,7 +211,7 @@ func hexToColor(style string, fillExp, opacityExp *regexp.Regexp) (c *Color, err
 			}
 
 			// Round to nearest, three decimal places
-			c.Alpha = roundToNearest(a, 3)
+			c.Alpha = RoundToNearest(a, 3)
 		}
 	}
 
