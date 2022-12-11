@@ -44,10 +44,10 @@ func TestReadFileAsSvg(t *testing.T) {
 			if text, ok := s.Value.(svg.Text); ok {
 				textDescFound = textDescFound || strings.Contains(text.Description.Text, "binding goes here for text")
 			} else if rect, ok := s.Value.(svg.Rect); ok {
-				rectDescFound = rectDescFound || strings.Contains(rect.Description.Text, "pos1:$vec2(path{gauge/fuel:value}:init{(248,611)}:interval{0.1}:percent{(248,2)})")
+				rectDescFound = rectDescFound || strings.Contains(rect.Description.Text, "pos1:$vec2(path{gauge/fuel:value}:init{(987,603)}:interval{0.1}:percent{(987,10)})")
 				commonClassFound = commonClassFound || rect.Class == "common"
 			} else if circle, ok := s.Value.(svg.Circle); ok {
-				circleDescFound = circleDescFound || strings.Contains(circle.Description.Text, "circle also has a binding")
+				circleDescFound = circleDescFound || strings.Contains(circle.Description.Text, "$vec2(path{circle_pos:value}:init{(161,83)}:interval{0.1}")
 			}
 		}
 	}
@@ -77,7 +77,7 @@ func TestConvertPage(t *testing.T) {
 	assert.NoError(t, err)
 	data := string(j)
 	assert.Contains(t, data, `"type":"circle"`)
-	assert.Contains(t, data, `$vec2(path{gauge/fuel:value}:init{(248,611)}:interval{0.1}:percent{(248,2)})`)
+	assert.Contains(t, data, `$vec2(path{gauge/fuel:value}:init{(987,603)}:interval{0.1}:percent{(987,10)})`)
 
 	assert.Equal(t, 7, len(c.result.Styles))
 	assert.NotContains(t, c.result.Styles, "pageName-common")
@@ -103,10 +103,10 @@ func TestCreateFonts(t *testing.T) {
 	assert.NoError(t, c.createFonts(image))
 	used := c.fonts.GetUsedFonts()
 	assert.EqualValues(t, 1, len(used))
-	usedFont, ok := used["Montserrat-4"]
+	usedFont, ok := used["Montserrat-12"]
 	assert.True(t, ok)
 	assert.Equal(t, "Montserrat", usedFont.Font)
-	assert.Equal(t, 4, usedFont.Size)
+	assert.Equal(t, 12, usedFont.Size)
 }
 
 func TestSyleMerging(t *testing.T) {

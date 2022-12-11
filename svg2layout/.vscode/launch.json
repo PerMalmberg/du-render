@@ -9,7 +9,14 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${fileDirname}"
+            "program": "${fileDirname}",
+            "args": [
+                "convert",
+                "--input",
+                "test_data/desc.svg",
+                "--output",
+                "test.json"
+            ]
         }
     ]
 }

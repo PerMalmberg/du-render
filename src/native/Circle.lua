@@ -1,7 +1,7 @@
 local rs = require("native/RenderScript").Instance()
 
 ---@class Circle
----@field Pos Vec2
+---@field Pos1 Vec2
 ---@field Radius number
 ---@field Props Props
 ---@field Render fun()
@@ -18,7 +18,7 @@ Circle.__index = Circle
 function Circle.New(layer, pos, radius, props)
     local s = {
         Layer = layer,
-        Pos = pos,
+        Pos1 = pos,
         Radius = radius,
         Props = props
     }
@@ -26,7 +26,7 @@ function Circle.New(layer, pos, radius, props)
     function s.Render()
         local layerId = s.Layer.Id
         s.Props.Apply(layerId)
-        local x, y = s.Pos:Unpack()
+        local x, y = s.Pos1:Unpack()
         rs.AddCircle(layerId, x, y, s.Radius)
     end
 
@@ -34,7 +34,7 @@ function Circle.New(layer, pos, radius, props)
     ---@param point Vec2
     ---@return boolean
     function s.Hit(point)
-        return (pos - point):Len() <= s.Radius
+        return (s.Pos1 - point):Len() <= s.Radius
     end
 
     return setmetatable(s, Circle)

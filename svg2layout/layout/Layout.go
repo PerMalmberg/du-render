@@ -285,6 +285,26 @@ func (c *Component) getJsonOutput() ([]byte, error) {
 		Text:         c.Text,
 	}
 
+	addMouseInside := func(s string) {
+		if copy.Mouse == nil {
+			copy.Mouse = &Mouse{}
+		}
+
+		copy.Mouse.Inside = MouseInside{
+			SetStyle: s,
+		}
+	}
+
+	addMouseClick := func(cmd string) {
+		if copy.Mouse == nil {
+			copy.Mouse = &Mouse{}
+		}
+
+		copy.Mouse.Click = MouseClick{
+			Command: cmd,
+		}
+	}
+
 	for prop, binding := range c.Bindings {
 		v := binding
 		switch prop {
@@ -296,6 +316,10 @@ func (c *Component) getJsonOutput() ([]byte, error) {
 			copy.Style = &v
 		case "text":
 			copy.Text = &v
+		case "mouse_inside":
+			addMouseInside(v)
+		case "mouse_click":
+			addMouseClick(v)
 		}
 	}
 
