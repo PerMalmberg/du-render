@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -202,6 +203,7 @@ func (c *converter) translateSvgToPage(pageName string, image *svg.Svg) (err err
 	c.result.Pages[pageName] = page
 
 	for layerId, layer := range image.Layer {
+		layerId = layerId + 1
 		for _, mix := range layer.Shape {
 			if rect, ok := mix.Value.(svg.Rect); ok {
 				pos2 := fmt.Sprintf("(%0.3f,%0.3f)", rect.X+rect.Width, rect.Y+rect.Height)
@@ -218,15 +220,7 @@ func (c *converter) translateSvgToPage(pageName string, image *svg.Svg) (err err
 					comp.CornerRadius = &radius
 				}
 
-				// A component may reference a common style and have local in-line style attributes.
-				local := &layout.Style{}
-				err = local.FromInlineCSS(rect.Style)
-				if err != nil {
-					return
-				}
-
-				err = c.setComponentStyle(local, &comp, &rect.StyledShape, pageName)
-				if err != nil {
+				if err = c.processComponentStyle(&comp, &rect.StyledShape, pageName); err != nil {
 					return
 				}
 
@@ -234,8 +228,35 @@ func (c *converter) translateSvgToPage(pageName string, image *svg.Svg) (err err
 
 				page.Components = append(page.Components, comp)
 
-			} else if /*text,*/ _, ok := mix.Value.(svg.Text); ok {
-				// Create from the tspans
+			} else if text, ok := mix.Value.(svg.Text); ok {
+				// Text is in first span. We only support one span per text.
+				if len(text.Span) != 1 {
+					err = errors.New("only a single span may exist in a text")
+					return
+				}
+
+				for _, span := range text.Span {
+					comp := layout.Component{
+						Type:    "text",
+						Layer:   layerId,
+						Visible: true,
+						Pos1:    fmt.Sprintf("(%0.3f,%0.3f)", span.X, span.Y),
+						Text:    &span.Text,
+					}
+
+					font, _ := c.fonts.GetFont(text.Style)
+					comp.Font = &font
+
+					if err = c.processComponentStyle(&comp, &text.StyledShape, pageName); err != nil {
+						return
+					}
+
+					// Bindings taken from top-level text element
+					c.parseBindings(&comp, text.Description.Text)
+
+					page.Components = append(page.Components, comp)
+
+				}
 			} else if circle, ok := mix.Value.(svg.Circle); ok {
 				comp := layout.Component{
 					Type:    "circle",
@@ -245,11 +266,31 @@ func (c *converter) translateSvgToPage(pageName string, image *svg.Svg) (err err
 					Radius:  &circle.Radius,
 				}
 
+				if err = c.processComponentStyle(&comp, &circle.StyledShape, pageName); err != nil {
+					return
+				}
+
 				c.parseBindings(&comp, circle.Description.Text)
 
 				page.Components = append(page.Components, comp)
 			}
 		}
+	}
+
+	return
+}
+
+func (c *converter) processComponentStyle(comp *layout.Component, shape *svg.StyledShape, pageName string) (err error) {
+	// A component may reference a common style and have local in-line style attributes.
+	local := &layout.Style{}
+	err = local.FromInlineCSS(shape.Style)
+	if err != nil {
+		return
+	}
+
+	err = c.setComponentStyle(local, comp, shape, pageName)
+	if err != nil {
+		return
 	}
 
 	return
