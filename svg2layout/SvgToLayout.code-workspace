@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"runOnSave.commands": [
+			{
+				"match": ".+\\.go",
+				"command": "go test ./...",
+				"runIn": "terminal"
+			}
+		]
+	}
+}
