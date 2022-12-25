@@ -40,4 +40,5 @@ dev: test
 	@sed -i '/^\s*---.*$$/d' "./out/development/example/render/main.lua"
 
 release: test
+	@cd svg2layout && go build .
 	@LUA_PATH="$(LUA_PATH)" du-lua build --copy=release/main
