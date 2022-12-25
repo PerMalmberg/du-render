@@ -56,6 +56,10 @@ func (c *converter) openFiles() (out *os.File, inp []*os.File, err error) {
 	inp = []*os.File{}
 
 	for _, curr := range c.input {
+		if _, err = os.Stat(curr); os.IsNotExist(err) {
+			break
+		}
+
 		f, err := os.Open(curr)
 		if err != nil {
 			break

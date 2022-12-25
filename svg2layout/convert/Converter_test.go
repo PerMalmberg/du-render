@@ -13,9 +13,9 @@ import (
 func TestOpenFiles(t *testing.T) {
 	c := NewConverter("./test_out", "./a", "./b").(*converter)
 	output, input, err := c.openFiles()
-	assert.NoError(t, err)
+	assert.Error(t, err)
 	assert.NotNil(t, output)
-	assert.NotNil(t, input)
+	assert.Len(t, input, 0)
 	os.Remove("./test_out")
 }
 
