@@ -25,9 +25,12 @@ clean: clean_cov clean_report
 	@rm -rf out
 
 test: clean
+	@echo Runnings unit tests on du-render
 	@LUA_PATH="$(LUA_PATH)" busted .
 	@luacov
 	@$(CLEAN_COV)
+	@echo Running tests on svg2layout
+	@cd svg2layout && go test ./...
 
 dev: test
 	@LUA_PATH="$(LUA_PATH)" du-lua build --copy=development/main
