@@ -158,4 +158,4 @@ The Layout Engine supports data bindings using the following syntax:
   - <operator> can be
     - `mul` - multiplies the inital value with modifier
     - `div` - divides the inital value with modifier
-- `format{}` - specifies a Lua format string, such as `my value: %f` or `string: %s` for numbers and strings respectively.
+- `format{}` - specifies a Lua format string, such as `my value: %f` or `string: %s` for numbers and strings respectively. Vec2 does not support format strings.

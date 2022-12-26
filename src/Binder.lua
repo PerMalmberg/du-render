@@ -122,6 +122,18 @@ function Binder.New()
     local opDiv = "op{div}"
     local percentPat = "percent{(.-)}"
 
+    ---@param targetObject table
+    ---@param targetProperty string
+    ---@param format string
+    ---@param initVal any
+    local function applyInitValue(targetObject, targetProperty, format, initVal)
+        if format then
+            targetObject[targetProperty] = string.format(format, initVal)
+        else
+            targetObject[targetProperty] = initVal
+        end
+    end
+
     ---Attempts to create a binding from the expression into the target object
     ---@param bindExpression string
     ---@param targetObject table Object to set properties on
@@ -174,6 +186,7 @@ function Binder.New()
                 end
             end
 
+            -- Vec2 doesn't support format strings
             targetObject[targetProperty] = initVal
 
             local p = s.Path(path)
@@ -182,7 +195,7 @@ function Binder.New()
         else
             if isString then
                 local p = s.Path(path)
-                targetObject[targetProperty] = init
+                applyInitValue(targetObject, targetProperty, format, init)
                 p.Text(targetObject, targetProperty, key, format or "%s", interval)
             elseif isNum then
                 local initVal = tonumber(init)
@@ -200,7 +213,7 @@ function Binder.New()
                     end
                 end
 
-                targetObject[targetProperty] = initVal
+                applyInitValue(targetObject, targetProperty, format, initVal)
 
                 local p = s.Path(path)
                 p.Number(targetObject, targetProperty, key, format, interval,

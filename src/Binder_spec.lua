@@ -102,7 +102,7 @@ describe("Binder", function()
         local target = {}
         assert.True(b.CreateBinding("$str(path{path/to/data:key}:format{My command: '%s'}:interval{0.5}:init{init value}:op{mul})"
             , target, "Prop"))
-        assert.Equal("init value", target.Prop)
+        assert.Equal("My command: 'init value'", target.Prop)
 
         b.MergeData({ path = { to = { data = { key = "string value" } } } })
         b.Render()
