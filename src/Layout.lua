@@ -12,7 +12,7 @@ local ColorAndDistance = require("native/ColorAndDistance")
 ---@alias NamedFonts table<string, {font:string, size:FontHandle}>
 ---@alias NamedStyles table<string,Style>
 ---@alias BaseCompJson {type:string, layer:integer}
----@alias MouseJson { click: { command:string }, mouse_inside: { set_style:string }}
+---@alias MouseJson { click: { command:string }, inside: { set_style:string }}
 ---@alias PageJson {components:BaseCompJson[]}
 ---@alias NamedPagesJson table<string,PageJson>
 ---@alias LayoutJson { fonts:NamedFonts, styles:table<string,Props>, pages:table<string, PageJson> }
@@ -93,30 +93,48 @@ function Layout.New(screen, behaviour, binder, stream)
 
     ---Binds mouse actions
     ---@param object Text|Box|Line|Circle
-    ---@param baseStyle Style
     ---@param data BoxJson|TextJson|LineJson|CircleJson
-    local function bindMouse(object, baseStyle, data)
+    local function bindStyles(object, data)
         local bindData = {
-            ---@type Props|nil
-            baseStyle = baseStyle,
-            ---@type Props|nil
+            ---@type string
+            style = "",
+            ---@type string|nil
             insideStyle = nil,
             ---@type string|nil
             clickCommand = nil
         }
 
-        local inside = Binder.GetStrByPath(data, "mouse/inside/set_style")
-        if inside then
-            bindData.insideStyle = styles[inside] or missingStyle
+        local style = Binder.GetStrByPath(data, "style") or "-"
+        if not binder.CreateBinding(style, bindData, "style") then
+            -- Assume style is just a style name
+            bindData.style = style
+        end
+
+        local insideStyle = Binder.GetStrByPath(data, "mouse/inside/set_style")
+        if insideStyle then
+            if not binder.CreateBinding(insideStyle, bindData, "insideStyle") then
+                -- Assume style is just a name
+                bindData.insideStyle = insideStyle
+            end
         end
 
         behaviour.OnMouseInsideOrOutside(object, function(element, event)
             if event == MouseState.MouseInside and bindData.insideStyle then
-                object.Props = bindData.insideStyle
+                object.Props = styles[bindData.insideStyle] or missingStyle
             else
-                object.Props = bindData.baseStyle
+                object.Props = styles[bindData.style] or missingStyle
             end
         end)
+    end
+
+    ---Binds mouse actions
+    ---@param object Text|Box|Line|Circle
+    ---@param data BoxJson|TextJson|LineJson|CircleJson
+    local function bindClick(object, data)
+        local bindData = {
+            ---@type string|nil
+            clickCommand = nil
+        }
 
         local cmd = Binder.GetStrByPath(data, "mouse/click/command")
 
@@ -140,16 +158,15 @@ function Layout.New(screen, behaviour, binder, stream)
     local function createBox(layer, data)
         local corner = Binder.GetNumByPath(data, "corner_radius") or 0
 
-        local style = styles[Binder.GetStrByPath(data, "style") or "-"] or missingStyle
-
-        local box = layer.Box(Vec2.New(), Vec2.New(), corner, style)
+        local box = layer.Box(Vec2.New(), Vec2.New(), corner)
 
         if not (bindPos(data.pos1, box, "Pos1", "box")
             and bindPos(data.pos2, box, "Pos2", "box")) then
             return false
         end
 
-        bindMouse(box, style, data)
+        bindStyles(box, data)
+        bindClick(box, data)
 
         return true
     end
@@ -158,12 +175,10 @@ function Layout.New(screen, behaviour, binder, stream)
     ---@param data TextJson
     ---@return boolean
     local function createText(layer, data)
-        local style = styles[Binder.GetStrByPath(data, "style") or "-"] or missingStyle
-
         local fontName = Binder.GetStrByPath(data, "font") or "-"
         local textFont = fonts[fontName] or missingFont
 
-        local text = layer.Text("", Vec2.New(), textFont, style)
+        local text = layer.Text("", Vec2.New(), textFont)
 
         if not bindPos(data.pos1, text, "Pos1", "text") then
             return false
@@ -173,7 +188,8 @@ function Layout.New(screen, behaviour, binder, stream)
             text.Text = data.text
         end
 
-        bindMouse(text, style, data)
+        bindStyles(text, data)
+        bindClick(text, data)
 
         return true
     end
@@ -181,16 +197,15 @@ function Layout.New(screen, behaviour, binder, stream)
     ---@param layer Layer
     ---@param data LineJson
     local function createLine(layer, data)
-        local style = styles[Binder.GetStrByPath(data, "style") or "-"] or missingStyle
-
-        local line = layer.Line(Vec2.New(), Vec2.New(), style)
+        local line = layer.Line(Vec2.New(), Vec2.New())
 
         if not (bindPos(data.pos1, line, "Pos1", "line")
             and bindPos(data.pos2, line, "Pos2", "line")) then
             return false
         end
 
-        bindMouse(line, style, data)
+        bindStyles(line, data)
+        bindClick(line, data)
 
         return true
     end
@@ -199,15 +214,15 @@ function Layout.New(screen, behaviour, binder, stream)
     ---@param data CircleJson
     local function createCircle(layer, data)
         local radius = Binder.GetNumByPath(data, "radius") or 50
-        local style = styles[Binder.GetStrByPath(data, "style") or "-"] or missingStyle
 
-        local circle = layer.Circle(Vec2.New(), radius, style)
+        local circle = layer.Circle(Vec2.New(), radius)
 
         if not bindPos(data.pos1, circle, "Pos1", "circle") then
             return false
         end
 
-        bindMouse(circle, style, data)
+        bindStyles(circle, data)
+        bindClick(circle, data)
 
         return true
     end

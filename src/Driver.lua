@@ -33,7 +33,7 @@ function Driver.Instance()
 
             if screen_layout then
                 if not loader.SetLayout(screen_layout) then
-                    logMessage("Could not load layout")
+                    rs.Log("Could not load layout")
                 end
             elseif activate_page then
                 loader.Activate(activate_page)

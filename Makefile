@@ -24,7 +24,7 @@ clean_report:
 clean: clean_cov clean_report
 	@rm -rf out
 
-test: clean
+test: clean minify_layout
 	@echo Runnings unit tests on du-render
 	@LUA_PATH="$(LUA_PATH)" busted .
 	@luacov
@@ -32,9 +32,12 @@ test: clean
 	@echo Running tests on svg2layout
 	@cd svg2layout && go test ./...
 
+minify_layout:
+	@echo Minifying layout
+	@jq -c . ./src/test_layouts/layout.json > ./src/test_layouts/layout_min.json
+
 dev: test
 	@LUA_PATH="$(LUA_PATH)" du-lua build --copy=development/main
-	@jq -c . ./src/test_layouts/layout.json > ./src/test_layouts/layout_min.json
 	@# Modify file inline. Actual regex is '/^\s*---.*$/d' but $ must be doubled in make file
 	@sed -i '/^\s*---.*$$/d' "./out/development/example/stream/screen.lua"
 	@sed -i '/^\s*---.*$$/d' "./out/development/example/render/main.lua"

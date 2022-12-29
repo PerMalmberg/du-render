@@ -14,6 +14,30 @@
         }
     },
     "styles": {
+        "circle_style0": {
+            "stroke": {
+                "color": "r0,g0,b1,a1",
+                "distance": 2
+            }
+        },
+        "circle_style1": {
+            "stroke": {
+                "color": "r0,g1,b1,a1",
+                "distance": 5
+            }
+        },
+        "circle_style_hover0": {
+            "stroke": {
+                "color": "r1,g1,b1,a1",
+                "distance": 10
+            }
+        },
+        "circle_style_hover1": {
+            "stroke": {
+                "color": "r1,g1,b0,a1",
+                "distance": 2
+            }
+        },
         "line_style": {
             "stroke": {
                 "color": "r1,g0.843,b0,a1",
@@ -178,9 +202,14 @@
                     "type": "circle",
                     "layer": 2,
                     "visible": true,
-                    "pos1": "(200,200)",
-                    "style": "line_style",
-                    "radius": 25
+                    "pos1": "(400,200)",
+                    "style": "$str(path{circle/style:key}:init{circle_style2})",
+                    "radius": 25,
+                    "mouse": {
+                        "inside": {
+                            "set_style": "$str(path{circle/style:hover}:init{circle_style_hover1})"
+                        }
+                    }
                 }
             ]
         }

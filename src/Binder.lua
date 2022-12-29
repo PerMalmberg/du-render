@@ -140,7 +140,7 @@ function Binder.New()
     ---@param targetProperty string Name of property of target object
     ---@return boolean
     function s.CreateBinding(bindExpression, targetObject, targetProperty)
-        if not (bindExpression and targetObject) then return false end
+        if not (bindExpression and targetObject and targetProperty) then return false end
 
         local isString = bindExpression:match(stringPat) ~= nil
         local isNum = not isString and bindExpression:match(numPat) ~= nil

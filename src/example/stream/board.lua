@@ -25,10 +25,19 @@ end
 
 local stream = Stream.New(screen, onData, 1, onTimeout)
 
+local toggle = 1
+
 local function onUpdate()
     local now = time()
     if now - t > 0.3 then
         t = now
+
+        if toggle == 1 then
+            toggle = 0
+        else
+            toggle = 1
+        end
+
         local value = math.abs(math.sin(t / 10))
         if not stream.WaitingToSend() then
             stream.Write(json.encode(
@@ -44,6 +53,12 @@ local function onUpdate()
                             data = {
                                 key = "from board"
                             }
+                        }
+                    },
+                    circle = {
+                        style = {
+                            key = string.format("circle_style%d", toggle),
+                            hover = string.format("circle_style_hover%d", toggle),
                         }
                     }
                 }))
