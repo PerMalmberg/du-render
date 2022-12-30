@@ -161,3 +161,20 @@ The Layout Engine supports data bindings using the following syntax:
 - `format{}` - specifies a Lua format string, such as `my value: %f` or `string: %s` for numbers and strings respectively. Vec2 does not support format strings.
 
 Also styles can be bound to data using `$str()`; make sure to include an `init{}` with a default style.
+
+### Replication
+
+Components can be replicated in X and Y in the desired steps. To do so, add the following to the component data:
+
+```json
+ "replicate": {
+    "x_step": 50,
+    "y_step": 50,
+    "x_count": 3,
+    "y_count": 3
+}
+```
+
+This example would cause a 3x3 replication with a step size of 50 on the respective axes.
+
+It is also possible to place a `[#]` in an string value, such as styles and data bindings, to change it to the current replication count, starting at 1.
