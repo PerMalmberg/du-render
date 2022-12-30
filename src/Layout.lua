@@ -6,21 +6,23 @@ local Color            = require("native/Color")
 local json             = require("dkjson")
 local Binder           = require("Binder")
 local ColorAndDistance = require("native/ColorAndDistance")
+local DeepCopy         = require("DeepCopy")
 
 -- These are Json structures for the layout
 ---@alias Style PropsTableStruct
 ---@alias NamedFonts table<string, {font:string, size:FontHandle}>
 ---@alias NamedStyles table<string,Style>
----@alias BaseCompJson {type:string, layer:integer}
+---@alias ReplicateJson {x_step:number, y_step:number, x_count:integer, y_count:number}
+---@alias BaseCompJson {type:string, layer:integer, replicate:ReplicateJson}
 ---@alias MouseJson { click: { command:string }, inside: { set_style:string }}
 ---@alias PageJson {components:BaseCompJson[]}
 ---@alias NamedPagesJson table<string,PageJson>
 ---@alias LayoutJson { fonts:NamedFonts, styles:table<string,Props>, pages:table<string, PageJson> }
 
----@alias BoxJson {pos1:string, pos2:string, corner_radius:number, style:string, mouse:MouseJson}
----@alias TextJson {pos1:string, style:string, font:string, text:string, mouse:MouseJson}
----@alias LineJson {pos1:string, pos2:string, style:string, mouse:MouseJson, mouse:MouseJson}
----@alias CircleJson {pos1:string, radius:number, style:string, mouse:MouseJson, mouse:MouseJson}
+---@alias BoxJson {pos1:string, pos2:string, corner_radius:number, style:string, mouse:MouseJson, type:string, layer:integer, replicate:ReplicateJson}
+---@alias TextJson {pos1:string, style:string, font:string, text:string, mouse:MouseJson, type:string, layer:integer, replicate:ReplicateJson}
+---@alias LineJson {pos1:string, pos2:string, style:string, mouse:MouseJson, mouse:MouseJson, type:string, layer:integer, replicate:ReplicateJson}
+---@alias CircleJson {pos1:string, radius:number, style:string, mouse:MouseJson, mouse:MouseJson, type:string, layer:integer, replicate:ReplicateJson}
 
 ---@alias Page Layer[]
 ---@alias Pages table<string,Page>
@@ -227,6 +229,71 @@ function Layout.New(screen, behaviour, binder, stream)
         return true
     end
 
+    ---@param comp BaseCompJson
+    ---@return boolean
+    local function createComponent(comp)
+        local res = false
+        local layer = comp.layer
+        local t = comp.type
+
+        if type(layer) == "number" then
+            local l = screen.Layer(layer)
+            if t == "box" then
+                ---@cast comp BoxJson
+                res = createBox(l, comp)
+            elseif t == "text" then
+                ---@cast comp TextJson
+                res = createText(l, comp)
+            elseif t == "line" then
+                ---@cast comp LineJson
+                res = createLine(l, comp)
+            elseif t == "circle" then
+                ---@cast comp CircleJson
+                res = createCircle(l, comp)
+            end
+        else
+            rs.Log("Invalid layer number '" .. tostring(layer) .. "'")
+        end
+
+        return res
+    end
+
+    ---@param c table
+    ---@param count integer
+    local function replaceReplicationCount(c, count)
+        for key, value in pairs(c) do
+            ---@cast key string
+            if type(value) == "table" then
+                replaceReplicationCount(value, count)
+            elseif type(value) == "string" then
+                ---@cast value string
+                c[key] = value:gsub("%[%#%]", tostring(count))
+            end
+        end
+    end
+
+    ---@param comp table
+    ---@param addX number
+    ---@param addY number
+    ---@param count integer
+    local function applyReplication(comp, addX, addY, count)
+        local i = 1
+        local done = false
+        while not done do
+            local name = string.format("pos%d", i)
+            i = i + 1
+
+            local p = Vec2.FromString(comp[name])
+            if p then
+                comp[name] = (p + Vec2.New(addX, addY)):ToString()
+            else
+                done = true
+            end
+        end
+
+        replaceReplicationCount(comp, count)
+    end
+
     ---Loads the page
     ---@param page PageJson
     ---@return boolean
@@ -238,28 +305,27 @@ function Layout.New(screen, behaviour, binder, stream)
 
         local res = true
         for _, comp in pairs(page.components) do
-            local layer = comp.layer
-            local t = comp.type
 
-            if type(layer) == "number" then
-                local l = screen.Layer(layer)
-                if t == "box" then
-                    ---@cast comp BoxJson
-                    res = createBox(l, comp)
-                elseif t == "text" then
-                    ---@cast comp TextJson
-                    res = createText(l, comp)
-                elseif t == "line" then
-                    ---@cast comp LineJson
-                    res = createLine(l, comp)
-                elseif t == "circle" then
-                    ---@cast comp CircleJson
-                    res = createCircle(l, comp)
+            local rep = comp.replicate or {}
+            local addX = 0
+            local addY = 0
+            local count = 1
+
+            -- Replicate components row by row
+            for y = 1, rep.y_count or 1, 1 do
+                for x = 1, rep.x_count or 1 do
+                    local compCopy = DeepCopy(comp)
+                    applyReplication(compCopy, addX, addY, count)
+                    res = createComponent(compCopy)
+                    if not res then break end
+
+                    addX = addX + (rep.x_step or 0)
+                    count = count + 1
                 end
-            else
-                rs.Log("Invalid layer number '" .. tostring(layer) .. "'")
-            end
 
+                addY = addY + (rep.y_step or 0)
+                addX = 0
+            end
             if not res then return res end
         end
 

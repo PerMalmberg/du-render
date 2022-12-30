@@ -33,7 +33,7 @@ local function onUpdate()
         t = now
 
         if toggle == 1 then
-            toggle = 0
+            toggle = 2
         else
             toggle = 1
         end
@@ -57,8 +57,7 @@ local function onUpdate()
                     },
                     circle = {
                         style = {
-                            key = string.format("circle_style%d", toggle),
-                            hover = string.format("circle_style_hover%d", toggle),
+                            hover = string.format("circle_style_hover_%d", toggle),
                         }
                     }
                 }))

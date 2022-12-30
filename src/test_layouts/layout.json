@@ -14,28 +14,70 @@
         }
     },
     "styles": {
-        "circle_style0": {
+        "circle_style_1": {
             "stroke": {
-                "color": "r0,g0,b1,a1",
+                "color": "r1,g1,b1,a1",
+                "distance": 1
+            }
+        },
+        "circle_style_2": {
+            "stroke": {
+                "color": "r1,g1,b1,a1",
                 "distance": 2
             }
         },
-        "circle_style1": {
+        "circle_style_3": {
             "stroke": {
-                "color": "r0,g1,b1,a1",
+                "color": "r1,g1,b1,a1",
+                "distance": 3
+            }
+        },
+        "circle_style_4": {
+            "stroke": {
+                "color": "r1,g1,b1,a1",
+                "distance": 4
+            }
+        },
+        "circle_style_5": {
+            "stroke": {
+                "color": "r1,g1,b1,a1",
                 "distance": 5
             }
         },
-        "circle_style_hover0": {
+        "circle_style_6": {
             "stroke": {
                 "color": "r1,g1,b1,a1",
-                "distance": 10
+                "distance": 6
             }
         },
-        "circle_style_hover1": {
+        "circle_style_7": {
             "stroke": {
-                "color": "r1,g1,b0,a1",
-                "distance": 2
+                "color": "r1,g1,b1,a1",
+                "distance": 7
+            }
+        },
+        "circle_style_8": {
+            "stroke": {
+                "color": "r1,g1,b1,a1",
+                "distance": 8
+            }
+        },
+        "circle_style_9": {
+            "stroke": {
+                "color": "r1,g1,b1,a1",
+                "distance": 9
+            }
+        },
+        "circle_style_hover_1": {
+            "stroke": {
+                "color": "r1,g0,b0,a1",
+                "distance": 5
+            }
+        },
+        "circle_style_hover_2": {
+            "stroke": {
+                "color": "r0,g1,b0,a1",
+                "distance": 5
             }
         },
         "line_style": {
@@ -203,12 +245,18 @@
                     "layer": 2,
                     "visible": true,
                     "pos1": "(400,200)",
-                    "style": "$str(path{circle/style:key}:init{circle_style2})",
+                    "style": "circle_style_[#]",
                     "radius": 25,
                     "mouse": {
                         "inside": {
-                            "set_style": "$str(path{circle/style:hover}:init{circle_style_hover1})"
+                            "set_style": "$str(path{circle/style:hover}:init{circle_style_hover_1})"
                         }
+                    },
+                    "replicate": {
+                        "x_step": 50,
+                        "y_step": 50,
+                        "x_count": 3,
+                        "y_count": 3
                     }
                 }
             ]
