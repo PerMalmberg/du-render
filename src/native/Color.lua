@@ -1,9 +1,17 @@
 local max = math.max
 local min = math.min
+local format = string.format
 
 local clamp = function(v, lower, upper)
     return min(max(v, lower), upper)
 end
+
+---@param hex string #00...FF
+---@return number
+local function hexToDec(hex)
+    return tonumber("0x" .. hex) / 255
+end
+
 ---@class Color
 ---@field ToString fun():string
 ---@field FromString fun(s:string|nil):Color
@@ -88,6 +96,12 @@ function Color.FromString(s)
     a = tonumber(a)
     if r and g and b and a then
         return Color.New(r, g, b, a)
+    end
+
+    -- check hex values
+    r, g, b, a = s:match("^%s*#%s*(%x%x)(%x%x)(%x%x)(%x%x)%s*$")
+    if r and g and b and a then
+        return Color.New(hexToDec(r), hexToDec(g), hexToDec(b), hexToDec(a))
     end
 
     return Color.Transparent()
