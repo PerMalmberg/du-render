@@ -146,7 +146,7 @@ function Stream.New(interface, onDataReceived, timeout, timeoutCallback)
         local validPacket = count and cmd
         if validPacket then
             cmd = tonumber(cmd)
-            count = tonumber(count)
+            count = tonumber(count) or 0
             validPacket = validPacket and cmd and count
         end
 
