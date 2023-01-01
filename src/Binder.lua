@@ -30,12 +30,12 @@ function Binder.New()
     local binderData = {}
 
     ---Creates a BindPath
-    ---@param path string The json-path in the data to the object holding the data to bind to, such as "a/b" or just "" for the root object, Only a-z, A-Z and _ are allowed.
+    ---@param path string The json-path in the data to the object holding the data to bind to, such as "a/b" or just "" for the root object, Only a-z, A-Z, 0-9 and _ are allowed.
     ---@return BindPath
     function s.Path(path)
         -- Build a tree for the paths
         local curr = tree
-        for nodeName in string.gmatch(path, "[a-zA-Z_]+") do
+        for nodeName in string.gmatch(path, "[a-zA-Z0-9_]+") do
             if not curr.Sub[nodeName] then
                 curr.Sub[nodeName] = BindPathTree.New()
             end
