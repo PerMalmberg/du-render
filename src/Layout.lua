@@ -278,16 +278,45 @@ function Layout.New(screen, behaviour, binder, stream)
     ---@param count integer
     local function applyReplication(comp, addX, addY, count)
         local i = 1
-        local done = false
-        while not done do
+
+        ---@param v Vec2
+        ---@return string
+        local function addToVec(v)
+            return (v + Vec2.New(addX, addY)):ToString()
+        end
+
+        while true do
             local name = string.format("pos%d", i)
             i = i + 1
 
-            local p = Vec2.FromString(comp[name])
+            ---@type string|nil
+            local val = comp[name]
+            if not val then
+                break
+            end
+
+            local p = Vec2.FromString(val)
+
             if p then
-                comp[name] = (p + Vec2.New(addX, addY)):ToString()
+                comp[name] = addToVec(p)
             else
-                done = true
+                local init = val:match(Binder.InitPat)
+                if init then
+                    p = Vec2.FromString(init)
+                    if p then
+                        val = val:gsub("init{%(.-%)}", "init{" .. addToVec(p) .. "}")
+                    end
+                end
+
+                local percent = val:match(Binder.PercentPat)
+                if percent then
+                    p = Vec2.FromString(percent)
+                    if p then
+                        val = val:gsub("percent{%(.-%)}", "percent{" .. addToVec(p) .. "}")
+                    end
+                end
+
+                comp[name] = val
             end
         end
 

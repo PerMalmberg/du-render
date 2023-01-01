@@ -12,11 +12,15 @@ local Vec2 = require("native/Vec2")
 ---@field Clear fun()
 ---@field CreateBinding fun(bindExpression:string, targetObject:table, targetProperty:string):boolean
 ---@field private getByPath fun(sourceObject:table, path:string):any|nil
-
+---@field InitPat string
+---@field PercentPat string
 
 local Binder = {}
 Binder.__index = {}
 local DEFAULT_UPDATE_INTERVAL = 0.5
+
+Binder.InitPat = "init{(.-)}"
+Binder.PercentPat = "percent{(.-)}"
 
 ---Creates a new Binder
 ---@return Binder
@@ -117,10 +121,8 @@ function Binder.New()
     local pathPat = "path{([^%s:{}]-):([^%s:{}]-)}"
     local formatPat = "format{([%s%S]-)}"
     local intervalPat = "interval{(%d*%.?%d+)}"
-    local initPat = "init{(.-)}"
     local opMul = "op{mul}"
     local opDiv = "op{div}"
-    local percentPat = "percent{(.-)}"
 
     ---@param targetObject table
     ---@param targetProperty string
@@ -152,7 +154,7 @@ function Binder.New()
 
         local format = bindExpression:match(formatPat)
         local interval = tonumber(bindExpression:match(intervalPat)) or DEFAULT_UPDATE_INTERVAL
-        local init = bindExpression:match(initPat)
+        local init = bindExpression:match(Binder.InitPat)
 
         if not init then
             rs.Log("'init' missing in expression " .. bindExpression)
@@ -168,7 +170,7 @@ function Binder.New()
 
         local isMul = bindExpression:match(opMul) ~= nil
         local isDiv = bindExpression:match(opDiv) ~= nil
-        local precent = bindExpression:match(percentPat)
+        local precent = bindExpression:match(Binder.PercentPat)
 
         if isVec2 then
             local initVal = Vec2.FromString(init)

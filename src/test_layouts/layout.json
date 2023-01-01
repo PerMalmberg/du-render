@@ -229,7 +229,13 @@
                     "visible": true,
                     "pos1": "$vec2(path{gauge/fuel:value}:init{(248,611)}:interval{0.1}:percent{(248,2)})",
                     "pos2": "$vec2(path{gauge/fuel:value}:init{(255,611)}:interval{0.1}:percent{(255,2)})",
-                    "style": "line_style"
+                    "style": "line_style",
+                    "replicate": {
+                        "x_step": 200,
+                        "y_step": 0,
+                        "x_count": 2,
+                        "y_count": 1
+                    }
                 },
                 {
                     "type": "text",
