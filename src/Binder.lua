@@ -72,6 +72,10 @@ function Binder.New()
                 for _, bind in pairs(branch.Bind) do
                     bind.ProcessText(key, value)
                 end
+            elseif t == "boolean" then
+                for _, bind in pairs(branch.Bind) do
+                    bind.ProcessBoolean(key, value)
+                end
             end
         end
     end
@@ -118,6 +122,7 @@ function Binder.New()
     local stringPat = "$str%((.-)%)"
     local numPat = "$num%((.-)%)"
     local vec2Pat = "$vec2%((.-)%)"
+    local boolPat = "$bool%((.-)%)"
     local pathPat = "path{([^%s:{}]-):([^%s:{}]-)}"
     local formatPat = "format{([%s%S]-)}"
     local intervalPat = "interval{(%d*%.?%d+)}"
@@ -126,7 +131,7 @@ function Binder.New()
 
     ---@param targetObject table
     ---@param targetProperty string
-    ---@param format string
+    ---@param format string|nil
     ---@param initVal any
     local function applyInitValue(targetObject, targetProperty, format, initVal)
         if format then
@@ -134,6 +139,18 @@ function Binder.New()
         else
             targetObject[targetProperty] = initVal
         end
+    end
+
+    ---@param str string
+    ---@return string
+    local function trim(str)
+        return str and str:match('^%s*(.*%S)') or ""
+    end
+
+    ---@param str string
+    local function toBoolean(str)
+        str = trim(str)
+        return str == "true" or str == "1"
     end
 
     ---Attempts to create a binding from the expression into the target object
@@ -147,8 +164,9 @@ function Binder.New()
         local isString = bindExpression:match(stringPat) ~= nil
         local isNum = not isString and bindExpression:match(numPat) ~= nil
         local isVec2 = not isNum and bindExpression:match(vec2Pat) ~= nil
+        local isBool = not isVec2 and bindExpression:match(boolPat) ~= nil
 
-        if not (isString or isNum or isVec2) then
+        if not (isString or isNum or isVec2 or isBool) then
             return false
         end
 
@@ -194,33 +212,36 @@ function Binder.New()
             local p = s.Path(path)
             p.Vec2(targetObject, targetProperty, key, interval, BinderModifier.New(isMul, isDiv, precentVal, initVal))
 
-        else
-            if isString then
-                local p = s.Path(path)
-                applyInitValue(targetObject, targetProperty, format, init)
-                p.Text(targetObject, targetProperty, key, format or "%s", interval)
-            elseif isNum then
-                local initVal = tonumber(init)
-                if not initVal then
-                    rs.Log("Initial value '" .. init .. "' not a number in expression " .. bindExpression)
+        elseif isString then
+            local p = s.Path(path)
+            applyInitValue(targetObject, targetProperty, format, init)
+            p.Text(targetObject, targetProperty, key, format or "%s", interval)
+        elseif isBool then
+            local p = s.Path(path)
+            applyInitValue(targetObject, targetProperty, nil, toBoolean(init))
+            p.Boolean(targetObject, targetProperty, key, interval)
+        elseif isNum then
+            local initVal = tonumber(init)
+            if not initVal then
+                rs.Log("Initial value '" .. init .. "' not a number in expression " .. bindExpression)
+                return false
+            end
+
+            local precentVal
+            if precent then
+                precentVal = tonumber(precent)
+                if not precentVal then
+                    rs.Log("Percent value '" .. precent .. "' not a number in expression " .. bindExpression)
                     return false
                 end
-
-                local precentVal
-                if precent then
-                    precentVal = tonumber(precent)
-                    if not precentVal then
-                        rs.Log("Percent value '" .. precent .. "' not a number in expression " .. bindExpression)
-                        return false
-                    end
-                end
-
-                applyInitValue(targetObject, targetProperty, format, initVal)
-
-                local p = s.Path(path)
-                p.Number(targetObject, targetProperty, key, format, interval,
-                    BinderModifier.New(isMul, isDiv, precentVal, initVal))
             end
+
+            applyInitValue(targetObject, targetProperty, format, initVal)
+
+            local p = s.Path(path)
+            p.Number(targetObject, targetProperty, key, format, interval,
+                BinderModifier.New(isMul, isDiv, precentVal, initVal))
+
         end
 
         return true

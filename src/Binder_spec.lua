@@ -280,6 +280,20 @@ describe("Binder", function()
             , target, "Prop"))
     end)
 
+    it("Can bind boolean", function()
+        local b = Binder.New()
+        local target = {}
+        assert.True(b.CreateBinding("$bool(path{path/to:value}:init{true}:interval{0})", target, "Prop"))
+        assert.True(target.Prop)
+
+        b.MergeData({ path = { to = { value = false } } })
+        b.Render()
+        assert.False(target.Prop)
+        b.MergeData({ path = { to = { value = true } } })
+        b.Render()
+        assert.True(target.Prop)
+    end)
+
     it("Can get a number in a tree", function()
         local a = { b = { c = { d = 5 } } }
         local aa = { b = { c = { d = "foo" } } }

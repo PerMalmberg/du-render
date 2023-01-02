@@ -149,7 +149,8 @@ The Layout Engine supports data bindings using the following syntax:
 - `<type>` can be
   - `num` - a number, expects values to be numbers
   - `str` - string, expects values to be strings
-  - `vec2` - 2D vector, expects values in format `(x,y)`
+  - `vec2` - 2D vector, expects values in format `(x,y)`. When providing values, use a `Vec2` to contain the values.
+  - `boolean` - a boolean, expects values to be booleans
 - `path{path/to:value}` specifies the path in the incoming data structure where the `value` is to be found.
 - `init{<value>}` specifies the initial value to use.
 - `percent{<value>}` specifies the value to use when the incoming value is 1, i.e. this makes the actual value interpolated between the initial value and the specified in this tag.

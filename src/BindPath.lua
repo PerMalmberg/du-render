@@ -5,6 +5,7 @@ local getTime = require("native/RenderScript").Instance().GetTime
 
 ---@class BindPath
 ---@field New fun(parts:string[]):BindPath
+---@field Boolean fun(o:table, propertyName:string, valueName:string, interval?:number)
 ---@field Text fun(o:table, propertyName:string, valueName:string, format?:string, interval?:number, modifier?:fun(t:string):string)
 ---@field Number fun(o:table, propertyName:string, valueName:string, format?:string, interval?:number, modifier?:BinderModifier|SimpleModifier)
 ---@field Color fun(o:table, propertyName:string, valueName:string, interval?:number, modifier?:fun(c:Color):Color)
@@ -13,10 +14,12 @@ local getTime = require("native/RenderScript").Instance().GetTime
 ---@field ProcessVec2 fun(propertyName:string, value:Vec2)
 ---@field ProcessText fun(propertyName:string, value:string)
 ---@field ProcessColor fun(propertyName:string, value:string)
+---@field ProcessBoolean fun(valueName:string, value:boolean)
 
 ---@alias genericModifier fun(any):any
 ---@alias BoundText {obj:table, propertyName:string, valueName:string, updateInterval:number, format:string, modifier:genericModifier, lastUpdate:number}
 ---@alias BoundNumber {obj:table, propertyName:string, valueName:string, updateInterval:number, format:string, modifier:BinderModifier, lastUpdate:number}
+---@alias BoundBoolean {obj:table, propertyName:string, valueName:string, updateInterval:number, lastUpdate:number}
 
 local BindPath = {}
 BindPath.__index = BindPath
@@ -34,6 +37,22 @@ function BindPath.New(updateInterval)
     local boundNumber = {} ---@type BoundNumber[]
     local boundColor = {} ---@type BoundText[]
     local boundVec2 = {} ---@type BoundText[]
+    local boundBoolean = {} ---@type BoundBoolean[]
+
+    ---Binds a boolean property
+    ---@param obj table
+    ---@param propertyName string
+    ---@param valueName string
+    ---@param interval? number
+    function s.Boolean(obj, propertyName, valueName, interval)
+        table.insert(boundBoolean, {
+            obj = obj,
+            propertyName = propertyName,
+            valueName = valueName,
+            lastUpdate = 0,
+            updateInterval = interval or updateInterval
+        })
+    end
 
     ---Binds a text property
     ---@param obj table
@@ -129,6 +148,18 @@ function BindPath.New(updateInterval)
         for _, bind in ipairs(boundVec2) do
             if bind.valueName == valueName and now - bind.lastUpdate >= bind.updateInterval then
                 bind.obj[bind.propertyName] = bind.modifier(value)
+                bind.lastUpdate = now
+            end
+        end
+    end
+
+    ---@param valueName string
+    ---@param value boolean
+    function s.ProcessBoolean(valueName, value)
+        local now = getTime()
+        for _, bind in ipairs(boundBoolean) do
+            if bind.valueName == valueName and now - bind.lastUpdate >= bind.updateInterval then
+                bind.obj[bind.propertyName] = value
                 bind.lastUpdate = now
             end
         end
