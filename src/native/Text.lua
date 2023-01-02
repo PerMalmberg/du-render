@@ -13,6 +13,7 @@ local Vec2 = require("native/Vec2")
 ---@field Bounds fun():number, number
 ---@field Width fun():number
 ---@field Height fun():number
+---@field Visible boolean
 ---@field Render fun()
 ---@field Hit fun(point:Vec2):boolean
 
@@ -32,7 +33,8 @@ function Text.New(text, pos, layer, font, props)
         Pos1 = pos,
         Font = font,
         Props = props,
-        Layer = layer
+        Layer = layer,
+        Visible = true,
     }
 
     ---Returns the width and height, in pixels the text occupies.

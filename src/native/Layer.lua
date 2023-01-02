@@ -148,7 +148,7 @@ function Layer.New()
         rs.SetLayerScale(s.Id, s.Scale:Unpack())
 
         for _, comp in ipairs(s.Components) do
-            if comp.Props.Visible then
+            if comp.Visible then
                 comp.Render()
             end
         end

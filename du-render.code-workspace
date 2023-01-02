@@ -11,6 +11,8 @@
 				"command": "make test",
 				"runIn": "terminal"
 			}
-		]
+		],
+		"editor.formatOnSave": true,
+		"files.autoSave": "onFocusChange"
 	}
 }

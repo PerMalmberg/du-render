@@ -4,6 +4,7 @@ local rs = require("native/RenderScript").Instance()
 ---@field Pos1 Vec2
 ---@field Radius number
 ---@field Props Props
+---@field Visible boolean
 ---@field Render fun()
 ---@field Hit fun(point:Vec2):boolean
 
@@ -20,7 +21,8 @@ function Circle.New(layer, pos, radius, props)
         Layer = layer,
         Pos1 = pos,
         Radius = radius,
-        Props = props
+        Props = props,
+        Visible = true
     }
 
     function s.Render()

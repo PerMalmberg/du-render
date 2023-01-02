@@ -4,6 +4,7 @@ local rs = require("native/RenderScript").Instance()
 ---@field Pos1 Vec2
 ---@field Pos2 Vec2
 ---@field Props Props
+---@field Visible boolean
 ---@field Render fun()
 
 local Line = {}
@@ -19,7 +20,8 @@ function Line.New(layer, a, b, props)
         Layer = layer,
         Pos1 = a,
         Pos2 = b,
-        Props = props
+        Props = props,
+        Visible = true
     }
 
     function s.Render()

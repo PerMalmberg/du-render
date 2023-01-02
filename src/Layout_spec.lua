@@ -1,9 +1,13 @@
+local env = require("environment")
+env.Prepare()
+local rs   = require("native/RenderScript").Instance()
+rs.GetTime = getTime
+
 local Layout    = require("Layout")
 local Screen    = require("native/Screen")
 local Behaviour = require("Behaviour")
 local Binder    = require("Binder")
 local json      = require("dkjson")
-local rs        = require("native/RenderScript").Instance()
 local TextAlign = require("native/TextAlign")
 local Color     = require("native/Color")
 
@@ -34,26 +38,30 @@ local fakeStream = { setScriptInput = function() end, clearScriptOutput = functi
     getScriptOutput = function() return "" end }
 
 describe("Layout", function()
-    local c, s, screen, behavior, binder
+
+    local layout ---@type Layout
+    local screen ---@type Screen
+    local behavior ---@type Behaviour
+    local binder ---@type Binder
 
     before_each(function()
         screen = Screen.New()
         behavior = Behaviour.New()
         binder = Binder.New()
-        c = Layout.New(screen, behavior, binder, fakeStream)
-        s = loadFile("src/test_layouts/layout.json")
-        assert.True(c.SetLayout(json.decode(s)))
+        layout = Layout.New(screen, behavior, binder, fakeStream)
+        local s = loadFile("src/test_layouts/layout.json")
+        assert.True(layout.SetLayout(json.decode(s)))
     end)
 
     it("Can load fonts", function()
-        local play10 = c.Fonts()["Play10"]
+        local play10 = layout.Fonts()["Play10"]
         assert.is_not_nil(play10)
-        local montserrat100 = c.Fonts()["Montserrat100"]
+        local montserrat100 = layout.Fonts()["Montserrat100"]
         assert.is_not_nil(montserrat100)
     end)
 
     it("Can load styles", function()
-        local styles = c.Styles()
+        local styles = layout.Styles()
         local testStyle = styles["blue_green_border"]
         assert.is_not_nil(testStyle)
 
@@ -70,14 +78,37 @@ describe("Layout", function()
 
 
     it("Can activate a page", function()
-        assert.False(c.Activate("does not exist"))
+        assert.False(layout.Activate("does not exist"))
         local layers, comps = screen.CountParts()
         assert.are_equal(0, layers)
         assert.are_equal(0, comps)
 
-        assert.True(c.Activate("firstpage"))
+        assert.True(layout.Activate("firstpage"))
         layers, comps = screen.CountParts()
         assert.are_equal(3, layers)
         assert.are_equal(17, comps)
+    end)
+
+    it("Can activate a page with hidden items", function()
+        assert.True(layout.Activate("page_with_hidden"))
+        local layers, comps = screen.CountParts()
+        assert.are_equal(2, layers)
+        assert.are_equal(2, comps)
+
+        layers, comps = screen.CountParts(true)
+        assert.are_equal(2, layers)
+        assert.are_equal(1, comps)
+
+        binder.MergeData({ visible = true })
+        binder.Render()
+        layers, comps = screen.CountParts(true)
+        assert.are_equal(2, layers)
+        assert.are_equal(2, comps)
+
+        binder.MergeData({ visible = false })
+        binder.Render()
+        layers, comps = screen.CountParts(true)
+        assert.are_equal(2, layers)
+        assert.are_equal(1, comps)
     end)
 end)

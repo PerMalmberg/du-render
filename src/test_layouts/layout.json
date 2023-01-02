@@ -266,6 +266,28 @@
                     }
                 }
             ]
+        },
+        "page_with_hidden": {
+            "components": [
+                {
+                    "type": "box",
+                    "layer": 1,
+                    "visible": "$bool(path{:visible}:init{false}:interval{0})",
+                    "pos1": "(1,1)",
+                    "pos2": "(100,100)",
+                    "corner_radius": 2,
+                    "style": "blue_green_border"
+                },
+                {
+                    "type": "box",
+                    "layer": 2,
+                    "visible": true,
+                    "pos1": "(100,100)",
+                    "pos2": "(150,150)",
+                    "corner_radius": 2,
+                    "style": "blue_green_border"
+                }
+            ]
         }
     }
 }

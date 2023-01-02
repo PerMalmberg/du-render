@@ -15,11 +15,13 @@ local Font = require("native/Font")
 ---@field Released fun():boolean
 ---@field DetermineHitElement fun():table
 ---@field Clear fun()
----@field CountParts fun():integer, integer
+---@field CountParts fun(onlyVisible:boolean?):integer, integer
 
 local Screen = {}
 Screen.__index = Screen
 
+---Creates a new Screen
+---@return Screen
 function Screen.New()
     local s = {}
     local layers = {} ---@type Layer[]
@@ -149,10 +151,22 @@ function Screen.New()
         return nil
     end
 
-    function s.CountParts()
+    function s.CountParts(onlyVisible)
+        if onlyVisible == nil then
+            onlyVisible = false
+        end
+
         local comps = 0
         for _, layer in ipairs(layers) do
-            comps = comps + #layer.Components
+            if onlyVisible then
+                for _, comp in ipairs(layer.Components) do
+                    if comp.Visible then
+                        comps = comps + 1
+                    end
+                end
+            else
+                comps = comps + #layer.Components
+            end
         end
 
         return #layers, comps

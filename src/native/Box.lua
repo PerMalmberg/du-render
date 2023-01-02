@@ -4,6 +4,7 @@ local rs = require("native/RenderScript").Instance()
 ---@field Pos1 Vec2
 ---@field Pos2 Vec2
 ---@field Props Props
+---@field Visible boolean
 ---@field Render fun()
 ---@field Hit fun(point:Vec2):boolean
 
@@ -22,7 +23,8 @@ function Box.New(layer, pos1, pos2, cornerRadius, props)
         Pos1 = pos1,
         Pos2 = pos2,
         CornerRadius = cornerRadius,
-        Props = props
+        Props = props,
+        Visible = true
     }
 
     function s.Render()

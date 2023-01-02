@@ -19,10 +19,10 @@ local DeepCopy         = require("DeepCopy")
 ---@alias NamedPagesJson table<string,PageJson>
 ---@alias LayoutJson { fonts:NamedFonts, styles:table<string,Props>, pages:table<string, PageJson> }
 
----@alias BoxJson {pos1:string, pos2:string, corner_radius:number, style:string, mouse:MouseJson, type:string, layer:integer, replicate:ReplicateJson}
----@alias TextJson {pos1:string, style:string, font:string, text:string, mouse:MouseJson, type:string, layer:integer, replicate:ReplicateJson}
----@alias LineJson {pos1:string, pos2:string, style:string, mouse:MouseJson, mouse:MouseJson, type:string, layer:integer, replicate:ReplicateJson}
----@alias CircleJson {pos1:string, radius:number, style:string, mouse:MouseJson, mouse:MouseJson, type:string, layer:integer, replicate:ReplicateJson}
+---@alias BoxJson {pos1:string, pos2:string, corner_radius:number, style:string, mouse:MouseJson, type:string, layer:integer, visible:string|boolean, replicate:ReplicateJson}
+---@alias TextJson {pos1:string, style:string, font:string, text:string, mouse:MouseJson, type:string, layer:integer, visible:string|boolean, replicate:ReplicateJson}
+---@alias LineJson {pos1:string, pos2:string, style:string, mouse:MouseJson, mouse:MouseJson, type:string, layer:integer, visible:string|boolean, replicate:ReplicateJson}
+---@alias CircleJson {pos1:string, radius:number, style:string, mouse:MouseJson, mouse:MouseJson, type:string, layer:integer, visible:string|boolean, replicate:ReplicateJson}
 
 ---@alias Page Layer[]
 ---@alias Pages table<string,Page>
@@ -154,6 +154,34 @@ function Layout.New(screen, behaviour, binder, stream)
         end
     end
 
+    ---@param object Text|Box|Line|Circle
+    ---@param data BoxJson|TextJson|LineJson|CircleJson
+    local function bindVisibility(object, data)
+        local t = type(data.visible)
+        if t == "boolean" then
+            local b = data.visible
+            ---@cast b boolean
+            object.Visible = b
+        elseif t == "string" then
+            local b = data.visible
+            ---@cast b string
+            if not binder.CreateBinding(b, object, "Visible") then
+                return false
+            end
+        else
+            rs.Log("Invalid data type for visibility binding: " .. t)
+        end
+        return true
+    end
+
+    ---@param object Text|Box|Line|Circle
+    ---@param data BoxJson|TextJson|LineJson|CircleJson
+    local function applyBindings(object, data)
+        bindStyles(object, data)
+        bindClick(object, data)
+        bindVisibility(object, data)
+    end
+
     ---@param layer Layer
     ---@param data BoxJson
     ---@return boolean
@@ -167,8 +195,7 @@ function Layout.New(screen, behaviour, binder, stream)
             return false
         end
 
-        bindStyles(box, data)
-        bindClick(box, data)
+        applyBindings(box, data)
 
         return true
     end
@@ -190,8 +217,7 @@ function Layout.New(screen, behaviour, binder, stream)
             text.Text = data.text
         end
 
-        bindStyles(text, data)
-        bindClick(text, data)
+        applyBindings(text, data)
 
         return true
     end
@@ -206,8 +232,7 @@ function Layout.New(screen, behaviour, binder, stream)
             return false
         end
 
-        bindStyles(line, data)
-        bindClick(line, data)
+        applyBindings(line, data)
 
         return true
     end
@@ -223,8 +248,7 @@ function Layout.New(screen, behaviour, binder, stream)
             return false
         end
 
-        bindStyles(circle, data)
-        bindClick(circle, data)
+        applyBindings(circle, data)
 
         return true
     end
