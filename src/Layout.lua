@@ -168,7 +168,7 @@ function Layout.New(screen, behaviour, binder, stream)
             if not binder.CreateBinding(b, object, "Visible") then
                 return false
             end
-        else
+        elseif t ~= "nil" then
             rs.Log("Invalid data type for visibility binding: " .. t)
         end
         return true

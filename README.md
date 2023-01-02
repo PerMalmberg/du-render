@@ -139,6 +139,12 @@ Each page has one or more components with its respective properties.
 
 Each type has a `type` which can be on of `box`, `text`, `line` or `circle`.
 All positions/dimensions are in pixels.
+These attributes can be bound:
+* visible
+* pos1...posN
+* style
+* mouse/click/command
+* mouse/inside/set_style
 
 ### Data Bindings
 
