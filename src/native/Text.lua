@@ -66,6 +66,7 @@ function Text.New(text, pos, layer, font, props)
     ---@param point Vec2
     ---@return boolean
     function s.Hit(point)
+        ---QQQ TODO: Alignment affects the position of the string so we must take care of that here.
         local max = s.Pos1 + s.Bounds()
         return point.x >= s.Pos1.x and point.x <= max.x
             and point.y >= s.Pos1.y and point.y <= max.y

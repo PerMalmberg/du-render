@@ -162,10 +162,12 @@ function Layer.New()
     ---@param cursor Vec2
     ---@return table|nil
     function s.DetermineHitElement(cursor)
-        for _, component in ipairs(s.Components) do
-            if type(component.Hit) == "function" then
-                if component.Hit(cursor) then
-                    return component
+        -- Components are drawn bottom up so find the top most one by searching backwards.
+        for i = #s.Components, 1, -1 do
+            local comp = s.Components[i]
+            if type(comp.Hit) == "function" then
+                if comp.Hit(cursor) then
+                    return comp
                 end
             end
         end
