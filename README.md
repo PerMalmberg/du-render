@@ -111,6 +111,10 @@ Colors support values 0.0...5.0 in the `r`, `g` and `b` components, as well as 0
 
 `distance` is in pixels
 
+`visible` determines if an item is visible
+
+`hitable` determines if an item takes part in hit detection. An item must also be visible to take part.
+
 If a style is missing, the engine will create a default one using crimosn as the color scheme.
 
 ### Components
@@ -122,6 +126,7 @@ Each page has one or more components with its respective properties.
   "type": "box",
   "layer": 1,
   "visible": true,
+  "hitable": true
   "pos1": "(1,1)",
   "pos2": "(100,100)",
   "corner_radius": 2,
@@ -141,6 +146,7 @@ Each type has a `type` which can be on of `box`, `text`, `line` or `circle`.
 All positions/dimensions are in pixels.
 These attributes can be bound:
 * visible
+* hitable
 * pos1...posN
 * style
 * mouse/click/command

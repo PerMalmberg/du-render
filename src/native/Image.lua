@@ -17,6 +17,8 @@ local Vec2 = require("native/Vec2")
 ---@field Height fun():number
 ---@field Render fun()
 ---@field Hit fun(point:Vec2):boolean
+---@field Visible boolean
+---@field Hitable boolean
 
 local Image = {}
 Image.__index = Image
@@ -34,7 +36,9 @@ function Image.New(url, pos, dimensions, layer, props)
         Pos = pos,
         Dimensions = dimensions,
         Props = props,
-        Layer = layer
+        Layer = layer,
+        Visible = true,
+        Hitable = true
     }
 
     ---Returns true if the image is loaded
@@ -78,7 +82,7 @@ function Image.New(url, pos, dimensions, layer, props)
     ---@return boolean
     function s.Hit(point)
         local max = s.Pos + s.Dimensions
-        return point.x >= s.Pos.x and point.x <= max.x
+        return s.Hitable and s.Visible and point.x >= s.Pos.x and point.x <= max.x
             and point.y >= s.Pos.y and point.y <= max.y
     end
 

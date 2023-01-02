@@ -5,6 +5,7 @@ local rs = require("native/RenderScript").Instance()
 ---@field Pos2 Vec2
 ---@field Props Props
 ---@field Visible boolean
+---@field Hitable boolean
 ---@field Render fun()
 ---@field Hit fun(point:Vec2):boolean
 
@@ -24,7 +25,8 @@ function Box.New(layer, pos1, pos2, cornerRadius, props)
         Pos2 = pos2,
         CornerRadius = cornerRadius,
         Props = props,
-        Visible = true
+        Visible = true,
+        Hitable = true
     }
 
     function s.Render()
@@ -48,7 +50,8 @@ function Box.New(layer, pos1, pos2, cornerRadius, props)
     function s.Hit(point)
         local min = s.Pos1
         local max = s.Pos2
-        return point.x >= min.x and point.x <= max.x
+        return s.Hitable and s.Visible
+            and point.x >= min.x and point.x <= max.x
             and point.y >= min.y and point.y <= max.y
     end
 

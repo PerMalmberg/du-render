@@ -5,6 +5,7 @@ local rs = require("native/RenderScript").Instance()
 ---@field Radius number
 ---@field Props Props
 ---@field Visible boolean
+---@field Hitable boolean
 ---@field Render fun()
 ---@field Hit fun(point:Vec2):boolean
 
@@ -22,7 +23,8 @@ function Circle.New(layer, pos, radius, props)
         Pos1 = pos,
         Radius = radius,
         Props = props,
-        Visible = true
+        Visible = true,
+        Hitable = true
     }
 
     function s.Render()
@@ -36,7 +38,7 @@ function Circle.New(layer, pos, radius, props)
     ---@param point Vec2
     ---@return boolean
     function s.Hit(point)
-        return (s.Pos1 - point):Len() <= s.Radius
+        return s.Hitable and s.Visible and (s.Pos1 - point):Len() <= s.Radius
     end
 
     return setmetatable(s, Circle)

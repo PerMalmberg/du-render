@@ -4,6 +4,8 @@ local rs = require("native/RenderScript").Instance()
 ---@field Pos1 Vec2
 ---@field Pos2 Vec2
 ---@field Pos3 Vec2
+---@field Visible boolean
+---@field Hitable boolean
 ---@field Props Props
 ---@field Render fun()
 ---@field Hit fun(point:Vec2):boolean
@@ -23,7 +25,9 @@ function Triangle.New(layer, a, b, c, props)
         Pos1 = a,
         Pos2 = b,
         Pos3 = c,
-        Props = props
+        Props = props,
+        Visible = true,
+        Hitable = true
     }
 
     function s.Render()
@@ -47,7 +51,7 @@ function Triangle.New(layer, a, b, c, props)
 
         local w1 = (s.Pos1.x * s1 + s4 * s2 - point.x * s1) / (s3 * s2 - (s.Pos2.x - s.Pos1.x) * s1);
         local w2 = (s4 - w1 * s3) / s1;
-        return w1 >= 0 and w2 >= 0 and (w1 + w2) <= 1;
+        return s.Hitable and s.Visible and w1 >= 0 and w2 >= 0 and (w1 + w2) <= 1;
     end
 
     return setmetatable(s, Triangle)

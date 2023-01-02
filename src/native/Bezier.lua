@@ -5,6 +5,7 @@ local rs = require("native/RenderScript").Instance()
 ---@field Pos2 Vec2
 ---@field Pos3 Vec2
 ---@field Props Props
+---@field Visible Props
 ---@field Render fun()
 
 local Bezier = {}
@@ -22,7 +23,8 @@ function Bezier.New(layer, a, b, c, props)
         Pos1 = a,
         Pos2 = b,
         Pos3 = c,
-        Props = props
+        Props = props,
+        Visible = true
     }
 
     function s.Render()

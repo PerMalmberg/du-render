@@ -14,6 +14,7 @@ local Vec2 = require("native/Vec2")
 ---@field Width fun():number
 ---@field Height fun():number
 ---@field Visible boolean
+---@field Hitable boolean
 ---@field Render fun()
 ---@field Hit fun(point:Vec2):boolean
 
@@ -35,6 +36,7 @@ function Text.New(text, pos, layer, font, props)
         Props = props,
         Layer = layer,
         Visible = true,
+        Hitable = true
     }
 
     ---Returns the width and height, in pixels the text occupies.
@@ -68,7 +70,8 @@ function Text.New(text, pos, layer, font, props)
     function s.Hit(point)
         ---QQQ TODO: Alignment affects the position of the string so we must take care of that here.
         local max = s.Pos1 + s.Bounds()
-        return point.x >= s.Pos1.x and point.x <= max.x
+        return s.Hitable and s.Visible
+            and point.x >= s.Pos1.x and point.x <= max.x
             and point.y >= s.Pos1.y and point.y <= max.y
     end
 

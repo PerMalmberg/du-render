@@ -5,6 +5,7 @@ local rs = require("native/RenderScript").Instance()
 ---@field Pos2 Vec2
 ---@field Pos3 Vec2
 ---@field PosD Vec2
+---@field Visible boolean
 ---@field Props Props
 ---@field Render fun()
 
@@ -25,7 +26,9 @@ function Quad.New(layer, a, b, c, d, props)
         Pos2 = b,
         Pos3 = c,
         PosD = d,
-        Props = props
+        Props = props,
+        Visible = true,
+        Hitable = true
     }
 
     function s.Render()

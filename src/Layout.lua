@@ -13,16 +13,17 @@ local DeepCopy         = require("DeepCopy")
 ---@alias NamedFonts table<string, {font:string, size:FontHandle}>
 ---@alias NamedStyles table<string,Style>
 ---@alias ReplicateJson {x_step:number, y_step:number, x_count:integer, y_count:number}
----@alias BaseCompJson {type:string, layer:integer, replicate:ReplicateJson}
+---@alias StringOrBool string|boolean
+---@alias BaseCompJson {type:string, layer:integer, hitable:StringOrBool, replicate:ReplicateJson}
 ---@alias MouseJson { click: { command:string }, inside: { set_style:string }}
 ---@alias PageJson {components:BaseCompJson[]}
 ---@alias NamedPagesJson table<string,PageJson>
 ---@alias LayoutJson { fonts:NamedFonts, styles:table<string,Props>, pages:table<string, PageJson> }
 
----@alias BoxJson {pos1:string, pos2:string, corner_radius:number, style:string, mouse:MouseJson, type:string, layer:integer, visible:string|boolean, replicate:ReplicateJson}
----@alias TextJson {pos1:string, style:string, font:string, text:string, mouse:MouseJson, type:string, layer:integer, visible:string|boolean, replicate:ReplicateJson}
----@alias LineJson {pos1:string, pos2:string, style:string, mouse:MouseJson, mouse:MouseJson, type:string, layer:integer, visible:string|boolean, replicate:ReplicateJson}
----@alias CircleJson {pos1:string, radius:number, style:string, mouse:MouseJson, mouse:MouseJson, type:string, layer:integer, visible:string|boolean, replicate:ReplicateJson}
+---@alias BoxJson {pos1:string, pos2:string, corner_radius:number, style:string, mouse:MouseJson, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateJson}
+---@alias TextJson {pos1:string, style:string, font:string, text:string, mouse:MouseJson, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateJson}
+---@alias LineJson {pos1:string, pos2:string, style:string, mouse:MouseJson, mouse:MouseJson, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateJson}
+---@alias CircleJson {pos1:string, radius:number, style:string, mouse:MouseJson, mouse:MouseJson, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateJson}
 
 ---@alias Page Layer[]
 ---@alias Pages table<string,Page>
@@ -170,6 +171,28 @@ function Layout.New(screen, behaviour, binder, stream)
             end
         elseif t ~= "nil" then
             rs.Log("Invalid data type for visibility binding: " .. t)
+            return false
+        end
+        return true
+    end
+
+    ---@param object Text|Box|Line|Circle
+    ---@param data BoxJson|TextJson|LineJson|CircleJson
+    local function bindHitable(object, data)
+        local t = type(data.hitable)
+        if t == "boolean" then
+            local b = data.hitable
+            ---@cast b boolean
+            object.Hitable = b
+        elseif t == "string" then
+            local b = data.hitable
+            ---@cast b string
+            if not binder.CreateBinding(b, object, "Hitable") then
+                return false
+            end
+        elseif t ~= "nil" then
+            rs.Log("Invalid data type for hitable binding: " .. t)
+            return false
         end
         return true
     end
@@ -180,11 +203,12 @@ function Layout.New(screen, behaviour, binder, stream)
         bindStyles(object, data)
         bindClick(object, data)
         bindVisibility(object, data)
+        bindHitable(object, data)
     end
 
     ---@param layer Layer
     ---@param data BoxJson
-    ---@return boolean
+    ---@return Box|nil
     local function createBox(layer, data)
         local corner = Binder.GetNumByPath(data, "corner_radius") or 0
 
@@ -192,17 +216,17 @@ function Layout.New(screen, behaviour, binder, stream)
 
         if not (bindPos(data.pos1, box, "Pos1", "box")
             and bindPos(data.pos2, box, "Pos2", "box")) then
-            return false
+            return nil
         end
 
         applyBindings(box, data)
 
-        return true
+        return box
     end
 
     ---@param layer Layer
     ---@param data TextJson
-    ---@return boolean
+    ---@return Text|nil
     local function createText(layer, data)
         local fontName = Binder.GetStrByPath(data, "font") or "-"
         local textFont = fonts[fontName] or missingFont
@@ -210,7 +234,7 @@ function Layout.New(screen, behaviour, binder, stream)
         local text = layer.Text("", Vec2.New(), textFont)
 
         if not bindPos(data.pos1, text, "Pos1", "text") then
-            return false
+            return nil
         end
 
         if not binder.CreateBinding(data.text, text, "Text") then
@@ -219,44 +243,46 @@ function Layout.New(screen, behaviour, binder, stream)
 
         applyBindings(text, data)
 
-        return true
+        return text
     end
 
     ---@param layer Layer
     ---@param data LineJson
+    ---@return Line|nil
     local function createLine(layer, data)
         local line = layer.Line(Vec2.New(), Vec2.New())
 
         if not (bindPos(data.pos1, line, "Pos1", "line")
             and bindPos(data.pos2, line, "Pos2", "line")) then
-            return false
+            return nil
         end
 
         applyBindings(line, data)
 
-        return true
+        return line
     end
 
     ---@param layer Layer
     ---@param data CircleJson
+    ---@return Circle|nil
     local function createCircle(layer, data)
         local radius = Binder.GetNumByPath(data, "radius") or 50
 
         local circle = layer.Circle(Vec2.New(), radius)
 
         if not bindPos(data.pos1, circle, "Pos1", "circle") then
-            return false
+            return nil
         end
 
         applyBindings(circle, data)
 
-        return true
+        return circle
     end
 
     ---@param comp BaseCompJson
     ---@return boolean
     local function createComponent(comp)
-        local res = false
+        local res = nil ---@type Box|Circle|Line|Image|Text|nil
         local layer = comp.layer
         local t = comp.type
 
@@ -279,7 +305,7 @@ function Layout.New(screen, behaviour, binder, stream)
             rs.Log("Invalid layer number '" .. tostring(layer) .. "'")
         end
 
-        return res
+        return res ~= nil
     end
 
     ---@param c table
