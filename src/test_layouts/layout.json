@@ -264,6 +264,19 @@
                         "x_count": 3,
                         "y_count": 3
                     }
+                },
+                {
+                    "type": "text",
+                    "layer": 3,
+                    "pos1": "(800,500)",
+                    "text": "other page...",
+                    "style": "text_style",
+                    "font": "Play",
+                    "mouse": {
+                        "click": {
+                            "command": "activatepage{page_with_hidden}"
+                        }
+                    }
                 }
             ]
         },
@@ -286,6 +299,19 @@
                     "pos2": "(150,150)",
                     "corner_radius": 2,
                     "style": "blue_green_border"
+                },
+                {
+                    "type": "text",
+                    "layer": 3,
+                    "pos1": "(800,500)",
+                    "text": "first page...",
+                    "style": "text_style",
+                    "font": "Play",
+                    "mouse": {
+                        "click": {
+                            "command": "activatepage{firstpage}"
+                        }
+                    }
                 }
             ]
         }

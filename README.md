@@ -191,3 +191,7 @@ Components can be replicated in X and Y in the desired steps. To do so, add the 
 This example would cause a 3x3 replication with a step size of 50 on the respective axes.
 
 It is also possible to place a `[#]` in an string value, such as styles and data bindings, to change it to the current replication count, starting at 1.
+
+### Local page activation
+
+By entering a value into the `mouse/click/command` key, in the format `activatepage{page_name}`, a component can activate another page.

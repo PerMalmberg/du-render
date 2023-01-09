@@ -53,6 +53,7 @@ function Layout.New(screen, behaviour, binder, stream)
     local missingStyle = Props.New(crimson, 0, ColorAndDistance.New(Color.Transparent(), 0),
         ColorAndDistance.New(crimson, 1))
     local missingFont = Font.Get(FontName.RobotoMono, 10)
+    local activatePagePat = "activatepage{%s*(.-)%s*}"
 
     ---Loads fonts
     ---@param fontData NamedFonts
@@ -149,7 +150,12 @@ function Layout.New(screen, behaviour, binder, stream)
             behaviour.OnMouseClick(object, function(element, event)
                 local c = bindData.clickCommand
                 if c ~= nil and string.len(c) > 0 then
-                    stream.Write(json.encode({ mouse_click = c }))
+                    local page = c:match(activatePagePat)
+                    if page then
+                        s.Activate(page)
+                    else
+                        stream.Write(json.encode({ mouse_click = c }))
+                    end
                 end
             end)
         end
@@ -434,6 +440,8 @@ function Layout.New(screen, behaviour, binder, stream)
 
             if p then
                 return loadPage(p)
+            else
+                rs.Log("No page by name " .. pageName)
             end
         end
 
