@@ -195,3 +195,7 @@ It is also possible to place a `[#]` in an string value, such as styles and data
 ### Local page activation
 
 By entering a value into the `mouse/click/command` key, in the format `activatepage{page_name}`, a component can activate another page.
+
+## Offline layout
+
+The Driver supports displaying a layout when in offline mode. Pass it a valid layout in the form of a json-string with the `SetOfflineLayout` function.

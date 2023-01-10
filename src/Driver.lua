@@ -8,6 +8,7 @@ local rs     = require("native/RenderScript").Instance()
 ---@field Tick fun()
 ---@field Render fun(frames:integer, displayStats:boolean)
 ---@field Animate fun(displayStats?:boolean)
+---@field SetOfflineLayout fun(layout:string)
 
 local Driver = {}
 Driver.__index = Driver
@@ -18,6 +19,7 @@ function Driver.Instance()
     end
 
     local s = {}
+    local offlineLayout = nil ---@type table|nil
 
     local screen   = require("native/Screen").New()
     local binder   = Binder.New()
@@ -48,11 +50,16 @@ function Driver.Instance()
             screen.Clear()
             binder.Clear()
             behavior.Clear()
-            local l = screen.Layer(1)
-            local msg = "No communication!"
-            local font = Font.Get(FontName.Play, 30)
-            local text = l.Text(msg, screen.Bounds() / 2 - (rs.GetTextBounds(font, msg) / 2), font, Props.New())
-            text.Props.Fill = Color.New(1, 0, 0)
+
+            if offlineLayout == nil or not (loader.SetLayout(offlineLayout) and loader.Activate("offline")) then
+                local l = screen.Layer(1)
+                local msg = "No communication!"
+                local font = Font.Get(FontName.Play, 30)
+                local text = l.Text(msg, screen.Bounds() / 2 - (rs.GetTextBounds(font, msg) / 2), font, Props.New())
+                text.Props.Fill = Color.New(1, 0, 0)
+            else
+                rs.Log("Could not load offline layout or activate the page")
+            end
         end
     end
 
@@ -73,6 +80,15 @@ function Driver.Instance()
     ---@param displayStats? boolean
     function s.Animate(displayStats)
         s.Render(1, displayStats or false)
+    end
+
+    ---Sets the layout to use when there is no communication
+    ---@param layout string
+    function s.SetOfflineLayout(layout)
+        offlineLayout = json.decode(layout)
+        if not offlineLayout then
+            rs.Log("Could not decode offline layout")
+        end
     end
 
     _ENV.DriverSingelton = setmetatable(s, Driver)
