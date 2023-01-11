@@ -1,7 +1,10 @@
 local env = require("environment")
 env.Prepare()
-local rs   = require("native/RenderScript").Instance()
-rs.GetTime = getTime
+local rs     = require("native/RenderScript").Instance()
+rs.GetTime   = getTime
+rs.LoadImage = function()
+    return 123
+end
 
 local Layout    = require("Layout")
 local Screen    = require("native/Screen")
@@ -85,8 +88,8 @@ describe("Layout", function()
 
         assert.True(layout.Activate("firstpage"))
         layers, comps = screen.CountParts()
-        assert.are_equal(3, layers)
-        assert.are_equal(18, comps)
+        assert.are_equal(4, layers)
+        assert.are_equal(19, comps)
     end)
 
     it("Can activate a page with hidden items", function()

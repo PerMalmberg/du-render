@@ -19,7 +19,7 @@ local Props = require("native/Props")
 ---@field Rotation number
 ---@field Scale Vec2
 ---@field Text fun(text:string, pos:Vec2, font:LoadedFont, props:Props?):Text
----@field Image fun(url:string, pos:Vec2, props:Props):Image
+---@field Image fun(url:string, pos:Vec2, dimensions:Vec2, props:Props?):Image
 ---@field Box fun(pos1:Vec2, pos2:Vec2, cornerRadius:number, props:Props?):Box
 ---@field Bezier fun(a:Vec2, b:Vec2, c:Vec2, props:Props?):Bezier
 ---@field Line fun(a:Vec2, b:Vec2, props:Props?):Line

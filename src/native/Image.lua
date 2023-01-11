@@ -32,7 +32,6 @@ Image.__index = Image
 ---@return Image
 function Image.New(url, pos, dimensions, layer, props)
     local s = {
-        Id = rs.LoadImage(url),
         Pos = pos,
         Dimensions = dimensions,
         Props = props,
@@ -66,15 +65,17 @@ function Image.New(url, pos, dimensions, layer, props)
 
     ---Renders the text
     function s.Render()
-        local loaded = rs.IsImageLoaded(s.Id)
-        if loaded and s.Dimensions == Vec2.New() then
+        local id = rs.LoadImage(url)
+        local loaded = rs.IsImageLoaded(id)
+
+        if loaded and s.Dimensions == Vec2.zero then
             -- Set default size if not already set
-            s.Dimensions = Vec2.New(rs.GetImageSize(s.Id))
+            s.Dimensions = Vec2.New(rs.GetImageSize(id))
         end
 
         local layerId = s.Layer.Id
         s.Props.Apply(layerId)
-        rs.AddImage(s.Layer.Id, s.Id, s.Pos.x, s.Pos.y, s.Dimensions:Unpack())
+        rs.AddImage(s.Layer.Id, id, s.Pos.x, s.Pos.y, s.Dimensions:Unpack())
     end
 
     --Determines if the position is within the element

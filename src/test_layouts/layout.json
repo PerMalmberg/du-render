@@ -149,6 +149,13 @@
         "fuel_text": {
             "align": "h0,v1",
             "fill": "r0.4,g0,b0,a1"
+        },
+        "image": {
+            "fill": "#ff0000ff",
+            "stroke": {
+                "distance": 2,
+                "color": "#ffffff"
+            }
         }
     },
     "pages": {
@@ -266,8 +273,16 @@
                     }
                 },
                 {
-                    "type": "text",
+                    "type": "image",
                     "layer": 3,
+                    "pos1": "(600,300)",
+                    "dimensions": "(600,300)",
+                    "url": "assets.prod.novaquark.com/94617/35a7afe8-f911-4513-b9b4-e5b1ef20216d.png",
+                    "style": "image"
+                },
+                {
+                    "type": "text",
+                    "layer": 4,
                     "pos1": "(800,500)",
                     "text": "other page...",
                     "style": "text_style",

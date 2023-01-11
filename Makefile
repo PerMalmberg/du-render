@@ -42,6 +42,8 @@ dev: minify_layout test
 	@sed -i '/^\s*---.*$$/d' "./out/development/example/stream/screen.lua"
 	@sed -i '/^\s*---.*$$/d' "./out/development/example/render/main.lua"
 
-release: minify_layout test
+release_no_test: minify_layout
 	@cd svg2layout && go build .
 	@LUA_PATH="$(LUA_PATH)" du-lua build --copy=release/main
+
+release: test release_no_test

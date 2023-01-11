@@ -24,6 +24,7 @@ local DeepCopy         = require("DeepCopy")
 ---@alias TextJson {pos1:string, style:string, font:string, text:string, mouse:MouseJson, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateJson}
 ---@alias LineJson {pos1:string, pos2:string, style:string, mouse:MouseJson, mouse:MouseJson, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateJson}
 ---@alias CircleJson {pos1:string, radius:number, style:string, mouse:MouseJson, mouse:MouseJson, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateJson}
+---@alias ImageJson {pos1:string, dimensions:string, url:string, mouse:MouseJson, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateJson}
 
 ---@alias Page Layer[]
 ---@alias Pages table<string,Page>
@@ -78,7 +79,7 @@ function Layout.New(screen, behaviour, binder, stream)
     end
 
     ---@param pos string
-    ---@param object Box|Line|Text|Circle
+    ---@param object Box|Line|Text|Circle|Image
     ---@param prop string
     ---@param componentType string
     ---@return boolean
@@ -96,8 +97,8 @@ function Layout.New(screen, behaviour, binder, stream)
     end
 
     ---Binds mouse actions
-    ---@param object Text|Box|Line|Circle
-    ---@param data BoxJson|TextJson|LineJson|CircleJson
+    ---@param object Text|Box|Line|Circle|Image
+    ---@param data BoxJson|TextJson|LineJson|CircleJson|ImageJson
     local function bindStyles(object, data)
         local bindData = {
             ---@type string
@@ -132,8 +133,8 @@ function Layout.New(screen, behaviour, binder, stream)
     end
 
     ---Binds mouse actions
-    ---@param object Text|Box|Line|Circle
-    ---@param data BoxJson|TextJson|LineJson|CircleJson
+    ---@param object Text|Box|Line|Circle|Image
+    ---@param data BoxJson|TextJson|LineJson|CircleJson|ImageJson
     local function bindClick(object, data)
         local bindData = {
             ---@type string|nil
@@ -161,8 +162,8 @@ function Layout.New(screen, behaviour, binder, stream)
         end
     end
 
-    ---@param object Text|Box|Line|Circle
-    ---@param data BoxJson|TextJson|LineJson|CircleJson
+    ---@param object Text|Box|Line|Circle|Image
+    ---@param data BoxJson|TextJson|LineJson|CircleJson|ImageJson
     local function bindVisibility(object, data)
         local t = type(data.visible)
         if t == "boolean" then
@@ -182,8 +183,8 @@ function Layout.New(screen, behaviour, binder, stream)
         return true
     end
 
-    ---@param object Text|Box|Line|Circle
-    ---@param data BoxJson|TextJson|LineJson|CircleJson
+    ---@param object Text|Box|Line|Circle|Image
+    ---@param data BoxJson|TextJson|LineJson|CircleJson|ImageJson
     local function bindHitable(object, data)
         local t = type(data.hitable)
         if t == "boolean" then
@@ -203,8 +204,8 @@ function Layout.New(screen, behaviour, binder, stream)
         return true
     end
 
-    ---@param object Text|Box|Line|Circle
-    ---@param data BoxJson|TextJson|LineJson|CircleJson
+    ---@param object Text|Box|Line|Circle|Image
+    ---@param data BoxJson|TextJson|LineJson|CircleJson|ImageJson
     local function applyBindings(object, data)
         bindStyles(object, data)
         bindClick(object, data)
@@ -281,8 +282,24 @@ function Layout.New(screen, behaviour, binder, stream)
         end
 
         applyBindings(circle, data)
-
         return circle
+    end
+
+    ---@param layer Layer
+    ---@param data ImageJson
+    ---@return Image|nil
+    local function createImage(layer, data)
+        local url = Binder.GetStrByPath(data, "url")
+
+        local image = layer.Image(url or "", Vec2.zero, Vec2.zero)
+
+        if not (bindPos(data.pos1, image, "Pos", "image") and
+            bindPos(data.dimensions or tostring(Vec2.zero), image, "Dimensions", "image")) then
+            return nil
+        end
+
+        applyBindings(image, data)
+        return image
     end
 
     ---@param comp BaseCompJson
@@ -290,7 +307,7 @@ function Layout.New(screen, behaviour, binder, stream)
     local function createComponent(comp)
         local res = nil ---@type Box|Circle|Line|Image|Text|nil
         local layer = comp.layer
-        local t = comp.type
+        local t = tostring(comp.type)
 
         if type(layer) == "number" then
             local l = screen.Layer(layer)
@@ -306,9 +323,16 @@ function Layout.New(screen, behaviour, binder, stream)
             elseif t == "circle" then
                 ---@cast comp CircleJson
                 res = createCircle(l, comp)
+            elseif t == "image" then
+                ---@cast comp ImageJson
+                res = createImage(l, comp)
             end
         else
-            rs.Log("Invalid layer number '" .. tostring(layer) .. "'")
+            rs.Log("Invalid layer number '" .. tostring(layer) .. "', type " .. t)
+        end
+
+        if res == nil then
+            rs.Log("Could not create component for type " .. t)
         end
 
         return res ~= nil

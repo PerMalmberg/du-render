@@ -51,13 +51,13 @@ function Driver.Instance()
             binder.Clear()
             behavior.Clear()
 
-            if offlineLayout == nil or not (loader.SetLayout(offlineLayout) and loader.Activate("offline")) then
+            if offlineLayout == nil then
                 local l = screen.Layer(1)
                 local msg = "No communication!"
                 local font = Font.Get(FontName.Play, 30)
                 local text = l.Text(msg, screen.Bounds() / 2 - (rs.GetTextBounds(font, msg) / 2), font, Props.New())
                 text.Props.Fill = Color.New(1, 0, 0)
-            else
+            elseif not (loader.SetLayout(offlineLayout) and loader.Activate("offline")) then
                 rs.Log("Could not load offline layout or activate the page")
             end
         end
