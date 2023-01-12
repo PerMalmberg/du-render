@@ -126,7 +126,7 @@ Each page has one or more components with its respective properties.
   "type": "box",
   "layer": 1,
   "visible": true,
-  "hitable": true
+  "hitable": true,
   "pos1": "(1,1)",
   "pos2": "(100,100)",
   "corner_radius": 2,
@@ -142,7 +142,7 @@ Each page has one or more components with its respective properties.
 }
 ```
 
-Each type has a `type` which can be on of `box`, `text`, `line` or `circle`.
+Each type has a `type` which can be on of `box`, `text`, `line`, `circle` or `image`.
 All positions/dimensions are in pixels.
 These attributes can be bound:
 * visible
@@ -151,6 +151,7 @@ These attributes can be bound:
 * style
 * mouse/click/command
 * mouse/inside/set_style
+* dimensions
 
 ### Data Bindings
 
