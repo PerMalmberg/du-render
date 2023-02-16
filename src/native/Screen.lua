@@ -16,6 +16,7 @@ local Font = require("native/Font")
 ---@field DetermineHitElement fun():table
 ---@field Clear fun()
 ---@field CountParts fun(onlyVisible:boolean?):integer, integer
+---@field TimeSinceStart fun():number
 
 local Screen = {}
 Screen.__index = Screen

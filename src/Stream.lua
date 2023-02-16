@@ -1,12 +1,14 @@
+local serializer = require("Serializer")
+
 ---@alias CommQueue { queue:string[], waitingForReply:boolean, seq:integer }
 ---@alias ScreenLink {setScriptInput:fun(string), clearScriptOutput:fun(), getScriptOutput:fun():string}
 ---@alias Renderer {setOutput:fun(string), getInput:fun():string}
 ---@alias StreamData {output:CommQueue, input:CommQueue, lastReceived:number}
 
 ---@class Stream
----@field New fun(interface:ScreenLink|Renderer, onDataReceived:fun(string), timeout:number, timeoutCallback:fun(isTimedOut:boolean, stream:Stream)):Stream
+---@field New fun(interface:ScreenLink|Renderer, onDataReceived:fun(table), timeout:number, timeoutCallback:fun(isTimedOut:boolean, stream:Stream)):Stream
 ---@field Tick fun()
----@field Write fun(data:string)
+---@field Write fun(data:table|string)
 ---@field WaitingToSend fun():boolean
 
 --[[
@@ -19,7 +21,6 @@
     - cmd is a two digit integer indicating what to do with the data
     - payload is the actual payload, if any
 ]]
-
 local headerSize = 1 -- #
     + 2 -- remaining_chucks
     + 1 -- |
@@ -42,7 +43,7 @@ Stream.__index = Stream
 
 ---Create a new Stream
 ---@param interface ScreenLink|Renderer Either a link to a screen or _ENV when in RenderScript
----@param onDataReceived fun(string) Callback for when data is received
+---@param onDataReceived fun(table) Callback for when data is received
 ---@param timeout number The amount of time to wait for a reply before considering the connection broken.
 ---@param timeoutCallback fun(isTimedOut:boolean, steam:Stream) The function to call on a timeout event. The parameter indicates if the comms are timedout or not.
 ---@return Stream
@@ -96,7 +97,19 @@ function Stream.New(interface, onDataReceived, timeout, timeoutCallback)
     local function completeTransmission(count)
         if count == 0 then
             local queue = input.queue
-            onDataReceived(queue[#queue])
+
+            local deserialized
+            -- Screens retain their input though sessions so in order to not choke on old data
+            -- from before when we used Json as a format we guard against errors when deserializing the data.
+            local success = xpcall(function()
+                deserialized = serializer.Deserialize(queue[#queue])
+            end, function(err)
+                logMessage(err)
+            end)
+
+            if success and deserialized then
+                onDataReceived(deserialized)
+            end
             -- Last part, begin new data
             queue[1] = ""
         end
@@ -230,9 +243,9 @@ function Stream.New(interface, onDataReceived, timeout, timeoutCallback)
     end
 
     ---Write the data to the stream
-    ---@param data string
-    function s.Write(data)
-        data = data or ""
+    ---@param dataToSend table|string
+    function s.Write(dataToSend)
+        local data = serializer.Serialize(dataToSend)
         local blockCount = math.ceil(data:len() / blockSize) - 1
 
         while data:len() > blockSize - headerSize do

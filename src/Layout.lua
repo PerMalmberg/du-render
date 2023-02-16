@@ -3,40 +3,39 @@ local Props            = require("native/Props")
 local Vec2             = require("native/Vec2")
 local rs               = require("native/RenderScript").Instance()
 local Color            = require("native/Color")
-local json             = require("dkjson")
 local Binder           = require("Binder")
 local ColorAndDistance = require("native/ColorAndDistance")
 local DeepCopy         = require("DeepCopy")
 
--- These are Json structures for the layout
+-- These are Lua structures for the layout
 ---@alias Style PropsTableStruct
 ---@alias NamedFonts table<string, {font:string, size:FontHandle}>
 ---@alias NamedStyles table<string,Style>
----@alias ReplicateJson {x_step:number, y_step:number, x_count:integer, y_count:number}
+---@alias ReplicateStruct {x_step:number, y_step:number, x_count:integer, y_count:number}
 ---@alias StringOrBool string|boolean
----@alias BaseCompJson {type:string, layer:integer, hitable:StringOrBool, replicate:ReplicateJson}
----@alias MouseJson { click: { command:string }, inside: { set_style:string }}
----@alias PageJson {components:BaseCompJson[]}
----@alias NamedPagesJson table<string,PageJson>
----@alias LayoutJson { fonts:NamedFonts, styles:table<string,Props>, pages:table<string, PageJson> }
+---@alias BaseCompStruct {type:string, layer:integer, hitable:StringOrBool, replicate:ReplicateStruct}
+---@alias MouseStruct { click: { command:string }, inside: { set_style:string }}
+---@alias PageStruct {components:BaseCompStruct[]}
+---@alias NamedPagesStruct table<string,PageStruct>
+---@alias LayoutStruct { fonts:NamedFonts, styles:table<string,Props>, pages:table<string, PageStruct> }
 
----@alias BoxJson {pos1:string, pos2:string, corner_radius:number, style:string, mouse:MouseJson, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateJson}
----@alias TextJson {pos1:string, style:string, font:string, text:string, mouse:MouseJson, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateJson}
----@alias LineJson {pos1:string, pos2:string, style:string, mouse:MouseJson, mouse:MouseJson, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateJson}
----@alias CircleJson {pos1:string, radius:number, style:string, mouse:MouseJson, mouse:MouseJson, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateJson}
----@alias ImageJson {pos1:string, dimensions:string, url:string, mouse:MouseJson, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateJson}
+---@alias BoxStruct {pos1:string, pos2:string, corner_radius:number, style:string, mouse:MouseStruct, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateStruct}
+---@alias TextStruct {pos1:string, style:string, font:string, text:string, mouse:MouseStruct, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateStruct}
+---@alias LineStruct {pos1:string, pos2:string, style:string, mouse:MouseStruct, mouse:MouseStruct, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateStruct}
+---@alias CircleStruct {pos1:string, radius:number, style:string, mouse:MouseStruct, mouse:MouseStruct, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateStruct}
+---@alias ImageStruct {pos1:string, dimensions:string, url:string, mouse:MouseStruct, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateStruct}
 
 ---@alias Page Layer[]
 ---@alias Pages table<string,Page>
 
 ---@class Layout
----@field SetLayout fun(layout:Layout):boolean
+---@field SetLayout fun(layout:LayoutStruct):boolean
 ---@field Styles fun():table<string,Props>
 ---@field Fonts fun():table<string,FontHandle>
 ---@field Activate fun(page:string):boolean
 
-local Layout = {}
-Layout.__index = Layout
+local Layout           = {}
+Layout.__index         = Layout
 
 ---@param screen Screen
 ---@param behaviour Behaviour
@@ -48,7 +47,7 @@ function Layout.New(screen, behaviour, binder, stream)
 
     local fonts = {} ---@type table<string,LoadedFont>
     local styles = {} ---@type table<string,Props>
-    local layoutData = {} ---@type LayoutJson
+    local layoutData = {} ---@type LayoutStruct
     -- Use a crimson color for missing styles
     local crimson = Color.New(0.862745098, 0.078431373, 0.235294118)
     local missingStyle = Props.New(crimson, 0, ColorAndDistance.New(Color.Transparent(), 0),
@@ -98,7 +97,7 @@ function Layout.New(screen, behaviour, binder, stream)
 
     ---Binds mouse actions
     ---@param object Text|Box|Line|Circle|Image
-    ---@param data BoxJson|TextJson|LineJson|CircleJson|ImageJson
+    ---@param data BoxStruct|TextStruct|LineStruct|CircleStruct|ImageStruct
     local function bindStyles(object, data)
         local bindData = {
             ---@type string
@@ -134,7 +133,7 @@ function Layout.New(screen, behaviour, binder, stream)
 
     ---Binds mouse actions
     ---@param object Text|Box|Line|Circle|Image
-    ---@param data BoxJson|TextJson|LineJson|CircleJson|ImageJson
+    ---@param data BoxStruct|TextStruct|LineStruct|CircleStruct|ImageStruct
     local function bindClick(object, data)
         local bindData = {
             ---@type string|nil
@@ -155,7 +154,7 @@ function Layout.New(screen, behaviour, binder, stream)
                     if page then
                         s.Activate(page)
                     else
-                        stream.Write(json.encode({ mouse_click = c }))
+                        stream.Write({ mouse_click = c })
                     end
                 end
             end)
@@ -163,7 +162,7 @@ function Layout.New(screen, behaviour, binder, stream)
     end
 
     ---@param object Text|Box|Line|Circle|Image
-    ---@param data BoxJson|TextJson|LineJson|CircleJson|ImageJson
+    ---@param data BoxStruct|TextStruct|LineStruct|CircleStruct|ImageStruct
     local function bindVisibility(object, data)
         local t = type(data.visible)
         if t == "boolean" then
@@ -184,7 +183,7 @@ function Layout.New(screen, behaviour, binder, stream)
     end
 
     ---@param object Text|Box|Line|Circle|Image
-    ---@param data BoxJson|TextJson|LineJson|CircleJson|ImageJson
+    ---@param data BoxStruct|TextStruct|LineStruct|CircleStruct|ImageStruct
     local function bindHitable(object, data)
         local t = type(data.hitable)
         if t == "boolean" then
@@ -205,7 +204,7 @@ function Layout.New(screen, behaviour, binder, stream)
     end
 
     ---@param object Text|Box|Line|Circle|Image
-    ---@param data BoxJson|TextJson|LineJson|CircleJson|ImageJson
+    ---@param data BoxStruct|TextStruct|LineStruct|CircleStruct|ImageStruct
     local function applyBindings(object, data)
         bindStyles(object, data)
         bindClick(object, data)
@@ -214,7 +213,7 @@ function Layout.New(screen, behaviour, binder, stream)
     end
 
     ---@param layer Layer
-    ---@param data BoxJson
+    ---@param data BoxStruct
     ---@return Box|nil
     local function createBox(layer, data)
         local corner = Binder.GetNumByPath(data, "corner_radius") or 0
@@ -232,7 +231,7 @@ function Layout.New(screen, behaviour, binder, stream)
     end
 
     ---@param layer Layer
-    ---@param data TextJson
+    ---@param data TextStruct
     ---@return Text|nil
     local function createText(layer, data)
         local fontName = Binder.GetStrByPath(data, "font") or "-"
@@ -254,7 +253,7 @@ function Layout.New(screen, behaviour, binder, stream)
     end
 
     ---@param layer Layer
-    ---@param data LineJson
+    ---@param data LineStruct
     ---@return Line|nil
     local function createLine(layer, data)
         local line = layer.Line(Vec2.New(), Vec2.New())
@@ -270,7 +269,7 @@ function Layout.New(screen, behaviour, binder, stream)
     end
 
     ---@param layer Layer
-    ---@param data CircleJson
+    ---@param data CircleStruct
     ---@return Circle|nil
     local function createCircle(layer, data)
         local radius = Binder.GetNumByPath(data, "radius") or 50
@@ -286,7 +285,7 @@ function Layout.New(screen, behaviour, binder, stream)
     end
 
     ---@param layer Layer
-    ---@param data ImageJson
+    ---@param data ImageStruct
     ---@return Image|nil
     local function createImage(layer, data)
         local url = Binder.GetStrByPath(data, "url")
@@ -302,7 +301,7 @@ function Layout.New(screen, behaviour, binder, stream)
         return image
     end
 
-    ---@param comp BaseCompJson
+    ---@param comp BaseCompStruct
     ---@return boolean
     local function createComponent(comp)
         local res = nil ---@type Box|Circle|Line|Image|Text|nil
@@ -312,19 +311,19 @@ function Layout.New(screen, behaviour, binder, stream)
         if type(layer) == "number" then
             local l = screen.Layer(layer)
             if t == "box" then
-                ---@cast comp BoxJson
+                ---@cast comp BoxStruct
                 res = createBox(l, comp)
             elseif t == "text" then
-                ---@cast comp TextJson
+                ---@cast comp TextStruct
                 res = createText(l, comp)
             elseif t == "line" then
-                ---@cast comp LineJson
+                ---@cast comp LineStruct
                 res = createLine(l, comp)
             elseif t == "circle" then
-                ---@cast comp CircleJson
+                ---@cast comp CircleStruct
                 res = createCircle(l, comp)
             elseif t == "image" then
-                ---@cast comp ImageJson
+                ---@cast comp ImageStruct
                 res = createImage(l, comp)
             end
         else
@@ -404,7 +403,7 @@ function Layout.New(screen, behaviour, binder, stream)
     end
 
     ---Loads the page
-    ---@param page PageJson
+    ---@param page PageStruct
     ---@return boolean
     local function loadPage(page)
         if not page.components then
@@ -414,7 +413,6 @@ function Layout.New(screen, behaviour, binder, stream)
 
         local res = true
         for _, comp in pairs(page.components) do
-
             local rep = comp.replicate or {}
             local addX = 0
             local addY = 0
@@ -442,7 +440,7 @@ function Layout.New(screen, behaviour, binder, stream)
     end
 
     ---Sets the layout and loads fonts and styles
-    ---@param layout LayoutJson
+    ---@param layout LayoutStruct
     ---@return boolean
     function s.SetLayout(layout)
         layoutData = layout

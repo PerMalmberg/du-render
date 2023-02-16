@@ -1,16 +1,18 @@
-local Binder = require("Binder")
-local Font   = require("native/Font")
-local Props  = require("native/Props")
-local Color  = require("native/Color")
-local rs     = require("native/RenderScript").Instance()
+local Binder   = require("Binder")
+local Font     = require("native/Font")
+local Props    = require("native/Props")
+local Color    = require("native/Color")
+local Stream   = require("Stream")
+local Layout   = require("Layout")
+local rs       = require("native/RenderScript").Instance()
 
 ---@class Driver
 ---@field Tick fun()
 ---@field Render fun(frames:integer, displayStats:boolean)
 ---@field Animate fun(displayStats?:boolean)
----@field SetOfflineLayout fun(layout:string)
+---@field SetOfflineLayout fun(layout:string|table)
 
-local Driver = {}
+local Driver   = {}
 Driver.__index = Driver
 
 function Driver.Instance()
@@ -18,30 +20,26 @@ function Driver.Instance()
         return _ENV.DriverSingelton
     end
 
-    local s = {}
-    local offlineLayout = nil ---@type table|nil
+    local s               = {}
+    local offlineLayout   = nil ---@type table|nil
 
-    local screen   = require("native/Screen").New()
-    local binder   = Binder.New()
-    local behavior = require("Behaviour").New()
-    local json     = require("dkjson")
+    local screen          = require("native/Screen").New()
+    local binder          = Binder.New()
+    local behavior        = require("Behaviour").New()
     local loader ---@type Layout
 
-    local onDataReceived = function(data)
-        local j = json.decode(data)
-        if j then
-            local screen_layout = Binder.GetTblByPath(j, "screen_layout")
-            local activate_page = Binder.GetStrByPath(j, "activate_page")
+    local onDataReceived  = function(data)
+        local screen_layout = Binder.GetTblByPath(data, "screen_layout")
+        local activate_page = Binder.GetStrByPath(data, "activate_page")
 
-            if screen_layout then
-                if not loader.SetLayout(screen_layout) then
-                    rs.Log("Could not load layout")
-                end
-            elseif activate_page then
-                loader.Activate(activate_page)
-            else
-                binder.MergeData(j)
+        if screen_layout then
+            if not loader.SetLayout(screen_layout) then
+                rs.Log("Could not load layout")
             end
+        elseif activate_page then
+            loader.Activate(activate_page)
+        else
+            binder.MergeData(data)
         end
     end
 
@@ -63,8 +61,8 @@ function Driver.Instance()
         end
     end
 
-    local stream = require("Stream").New(_ENV, onDataReceived, 1, timeoutCallback)
-    loader = require("Layout").New(screen, behavior, binder, stream)
+    local stream          = Stream.New(_ENV, onDataReceived, 1, timeoutCallback)
+    loader                = Layout.New(screen, behavior, binder, stream)
 
     ---Call this this to setup a slower update than Animate()
     ---@param frames integer
@@ -83,12 +81,9 @@ function Driver.Instance()
     end
 
     ---Sets the layout to use when there is no communication
-    ---@param layout string
+    ---@param layout table The layout, as Lua table
     function s.SetOfflineLayout(layout)
-        offlineLayout = json.decode(layout)
-        if not offlineLayout then
-            rs.Log("Could not decode offline layout")
-        end
+        offlineLayout = layout
     end
 
     _ENV.DriverSingelton = setmetatable(s, Driver)

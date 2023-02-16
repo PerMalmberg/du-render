@@ -17,7 +17,8 @@ goldenGlow.Align = TextAlign.New(RSAlignHor.Center, RSAlignVer.Middle)
 local font = Font.Get(FontName.Montserrat, h * 0.05)
 
 local layer = screen.Layer(1)
-local background = layer.Image("assets.prod.novaquark.com/40794/9e363a3f-69d3-469e-adeb-3bf6d6d2db5c.jpg", Vec2.New(),
+local background = layer.Image("assets.prod.novaquark.com/40794/9e363a3f-69d3-469e-adeb-3bf6d6d2db5c.jpg", Vec2.zero,
+    Vec2.zero,
     Props.Default())
 background.FillScreen()
 

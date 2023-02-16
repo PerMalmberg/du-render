@@ -114,7 +114,8 @@ describe("Stream", function()
         local screenTimeout = false
         local boardTimeout = false
 
-        local msg = "a much longer message than just some simple text with some digits 1233131212 and funny characters in it | 432422| # 222. Lets see if it works."
+        local msg =
+        "a much longer message than just some simple text with some digits 1233131212 and funny characters in it | 432422| # 222. Lets see if it works."
 
         local screenStream ---@type Stream
         local responseFunc = function(data)
@@ -152,7 +153,8 @@ describe("Stream", function()
         local screenTimeout = false
         local boardTimeout = false
 
-        local msg = [[a much longer message than just some simple text with some digits 1233131212 and funny characters in it | 432422| # 222.
+        local msg =
+        [[a much longer message than just some simple text with some digits 1233131212 and funny characters in it | 432422| # 222.
                     Lets see if it works? We can surely hope, can't we? What if we add some more funny characters to make it even longer?
                     )/%(&(%&¤&#¤&&¤/%&(¤(&/¤()&/(%%/((&/¤%/%#/#¤¤&¤&¤))))))) and then even more keyboard bashing. nghengwtangwnihe wnergeioger
                     gerjlgeraeragegerghearhgrwahgöoegjeargjnelaöighjnaewögerawg  geg ergeag jera jgaerj öae gäae gäaerj gäpear ägajeijg re]]
@@ -194,7 +196,8 @@ describe("Stream", function()
         local screenTimeout = false
         local boardTimeout = false
 
-        local msg = "a much longer message than just some simple text with some digits 1233131212 and funny characters in it | 432422| # 222. Lets see if it works."
+        local msg =
+        "a much longer message than just some simple text with some digits 1233131212 and funny characters in it | 432422| # 222. Lets see if it works."
 
         local screenStream ---@type Stream
         local responseFunc = function(data)
@@ -250,5 +253,37 @@ describe("Stream", function()
 
         assert.is_false(boardTimeout)
         assert.is_false(screenTimeout)
+    end)
+
+    it("Can send structured data", function()
+        local screenRec
+        local boardRec
+        local screenTimeout = false
+        local boardTimeout = false
+
+        local screenStream = Stream.New(DummyRender.New(), function(data)
+            screenRec = data
+        end, 1, function(isTimedOut)
+            screenTimeout = isTimedOut
+        end)
+
+        local boardStream
+        boardStream = Stream.New(ScreenLink.New(), function(data)
+            boardRec = data
+            boardStream.Write({ abc = { def = { v = 123 } } })
+        end, 1, function(isTimedOut)
+            boardTimeout = isTimedOut
+        end)
+
+        screenStream.Write({ foo = "bar" })
+        for i = 1, 5, 1 do
+            boardStream.Tick()
+            screenStream.Tick()
+        end
+
+        assert.are_equal("bar", boardRec.foo)
+        assert.are_equal(123, screenRec.abc.def.v)
+        assert.is_false(screenTimeout)
+        assert.is_false(boardTimeout)
     end)
 end)

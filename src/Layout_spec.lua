@@ -1,33 +1,24 @@
 local env = require("environment")
 env.Prepare()
-local rs     = require("native/RenderScript").Instance()
-rs.GetTime   = getTime
-rs.LoadImage = function()
+local rs         = require("native/RenderScript").Instance()
+rs.GetTime       = getTime
+rs.LoadImage     = function()
     return 123
 end
 
-local Layout    = require("Layout")
-local Screen    = require("native/Screen")
-local Behaviour = require("Behaviour")
-local Binder    = require("Binder")
-local json      = require("dkjson")
-local TextAlign = require("native/TextAlign")
-local Color     = require("native/Color")
+local Layout     = require("Layout")
+local Screen     = require("native/Screen")
+local Behaviour  = require("Behaviour")
+local Binder     = require("Binder")
+local json       = require("dkjson")
+local TextAlign  = require("native/TextAlign")
+local Color      = require("native/Color")
 
-local function loadFile(path)
-    local f = io.open(path)
-    if f == nil then
-        error("Could not load file " .. path)
-    end
-    local s = f:read("a")
-    return s
-end
-
-rs.LoadFont = function(name, size)
+rs.LoadFont      = function(name, size)
     return 1
 end
 
-rs.CreateLayer = function()
+rs.CreateLayer   = function()
     return 1
 end
 
@@ -35,13 +26,17 @@ rs.GetResolution = function()
     return 10, 10
 end
 
-rs.Log = print
+rs.Log           = print
 
-local fakeStream = { setScriptInput = function() end, clearScriptOutput = function() end,
-    getScriptOutput = function() return "" end }
+local fakeStream = {
+    setScriptInput = function()
+    end,
+    clearScriptOutput = function()
+    end,
+    getScriptOutput = function() return "" end
+}
 
 describe("Layout", function()
-
     local layout ---@type Layout
     local screen ---@type Screen
     local behavior ---@type Behaviour
@@ -52,8 +47,8 @@ describe("Layout", function()
         behavior = Behaviour.New()
         binder = Binder.New()
         layout = Layout.New(screen, behavior, binder, fakeStream)
-        local s = loadFile("src/test_layouts/layout.json")
-        assert.True(layout.SetLayout(json.decode(s)))
+        local s = require("test_layouts/layout")
+        assert.True(layout.SetLayout(s))
     end)
 
     it("Can load fonts", function()

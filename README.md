@@ -56,29 +56,29 @@ The Layout Engine support a custom Json-based data format to define screen layou
 
 The base structure looks as follows.
 
-```json
+```lua
 {
-  "fonts": {
+  fonts = {
   },
-  "styles": {
+  styles = {
   },
-  "pages": {
-    "pageName": {
-      "components": []
+  pages: {
+    pageName = {
+      components: {}
     }
   }
 }
 ```
 
-- `pages` contains an arbitrary number of named pages that can be activated as needed and each page contains an arbitrary number of components.
+- `pages` contains an arbitrary number of named pages that can be activated as needed and each page contains an arbitrary number of components. In each page, `components` is a list of components on that page.
 
 ### Fonts
 
 - `fonts` contains zero or up to 8 named font definitions with font name and size.
-  ```json
-    "Play10": {
-      "font": "Play",
-      "size": 10
+  ```lua
+    Play10 = {
+      font = "Play",
+      size: 10
     }
     ```
 
@@ -87,18 +87,18 @@ For each font, `font` must be one of the fonts supported by RenderScript. The si
 ### Styles
 
 - `styles` contains one or more named style definitions referenced by components.
-  ```json
-    "styleName": {
-        "align": "h0,v1",
-        "stroke": {
-            "color": "r0,g1,b0,a1",
-            "distance": 1
+  ```lua
+    styleName = {
+        align: "h0,v1",
+        stroke: {
+            color: "r0,g1,b0,a1",
+            distance: 1
         },
-        "fill": "r0,g0,b1,a1",
-        "rotation": 45,
-        "shadow": {
-            "color": "r0.2,g0,b0,a1",
-            "distance": 2
+        fill: "r0,g0,b1,a1",
+        rotation: 45,
+        shadow: {
+            color: "r0.2,g0,b0,a1",
+            distance: 2
         }
     }
     ```
@@ -121,22 +121,22 @@ If a style is missing, the engine will create a default one using crimosn as the
 
 Each page has one or more components with its respective properties.
 
-```json
+```lua
 {
-  "type": "box",
-  "layer": 1,
-  "visible": true,
-  "hitable": true,
-  "pos1": "(1,1)",
-  "pos2": "(100,100)",
-  "corner_radius": 2,
-  "style": "blue_green_border",
-  "mouse": {
-      "click": {
-          "command": "data sent to controller"
+  type = "box",
+  layer = 1,
+  visible = true,
+  hitable = true,
+  pos1 = "(1,1)",
+  pos2 = "(100,100)",
+  corner_radius = 2,
+  style = "blue_green_border",
+  mouse = {
+      click = {
+          command = "data sent to controller"
       },
-      "inside": {
-          "set_style": "style used when mouse is over the component"
+      inside = {
+          set_style = "style used when mouse is over the component"
       }
   }
 }
@@ -180,12 +180,12 @@ Also styles can be bound to data using `$str()`; make sure to include an `init{}
 
 Components can be replicated in X and Y in the desired steps. To do so, add the following to the component data:
 
-```json
- "replicate": {
-    "x_step": 50,
-    "y_step": 50,
-    "x_count": 3,
-    "y_count": 3
+```lua
+ replicate = {
+    x_step = 50,
+    y_step = 50,
+    x_count = 3,
+    y_count = 3
 }
 ```
 

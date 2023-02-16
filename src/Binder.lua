@@ -100,6 +100,7 @@ function Binder.New()
     ---Merges the given data with the data previously provided
     ---@param data table
     function s.MergeData(data)
+        if not data then return end
         merge(binderData, data)
     end
 
@@ -211,7 +212,6 @@ function Binder.New()
 
             local p = s.Path(path)
             p.Vec2(targetObject, targetProperty, key, interval, BinderModifier.New(isMul, isDiv, precentVal, initVal))
-
         elseif isString then
             local p = s.Path(path)
             applyInitValue(targetObject, targetProperty, format, init)
@@ -241,7 +241,6 @@ function Binder.New()
             local p = s.Path(path)
             p.Number(targetObject, targetProperty, key, format, interval,
                 BinderModifier.New(isMul, isDiv, precentVal, initVal))
-
         end
 
         return true
@@ -263,7 +262,7 @@ function Binder.getByPath(sourceObject, path, desiredType)
         parts[#parts + 1] = nodeName
     end
 
-    if #parts == 0 then return nil end
+    if #parts == 0 or not sourceObject then return nil end
 
     local curr = sourceObject
 
