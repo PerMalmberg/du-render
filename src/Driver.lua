@@ -10,7 +10,7 @@ local rs       = require("native/RenderScript").Instance()
 ---@field Tick fun()
 ---@field Render fun(frames:integer, displayStats:boolean)
 ---@field Animate fun(displayStats?:boolean)
----@field SetOfflineLayout fun(layout:string|table)
+---@field SetOfflineLayout fun(layout:table|nil)
 
 local Driver   = {}
 Driver.__index = Driver
