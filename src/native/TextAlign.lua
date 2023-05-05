@@ -65,7 +65,7 @@ end
 ---@param s string
 function TextAlign.FromString(s)
     if not s then return TextAlign.Default() end
-    local h, v = s:match("^h(%d),v(%d)$")
+    local h, v = s:match("^h%s*(%d)%s*,%s*v%s*(%d)%s*$")
     h = tonumber(h)
     v = tonumber(v)
 
