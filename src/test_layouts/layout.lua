@@ -6,7 +6,7 @@ local layout = {
         },
         Play24 = {
             font = "Play",
-            size = 40
+            size = 24
         },
         Montserrat15 = {
             font = "Montserrat",
@@ -165,25 +165,49 @@ local layout = {
             align = "h0,v0",
             fill = "#ffffffff"
         },
+        ascenderHover = {
+            align = "h0,v0",
+            fill = "#2f6fd0ff"
+        },
         top = {
             align = "h0,v1",
             fill = "#ffffffff"
         },
+        topHover = {
+            align = "h0,v1",
+            fill = "#2f6fd0ff"
+        },
         middle = {
-            align = "h0,v2",
+            align = "h2,v2",
             fill = "#ffffffff"
+        },
+        middleHover = {
+            align = "h2,v2",
+            fill = "#2f6fd0ff"
         },
         baseline = {
             align = "h0,v3",
             fill = "#ffffffff"
         },
+        baselineHover = {
+            align = "h0,v3",
+            fill = "#2f6fd0ff"
+        },
         bottom = {
             align = "h0,v4",
             fill = "#ffffffff"
         },
+        bottomHover = {
+            align = "h0,v4",
+            fill = "#2f6fd0ff"
+        },
         descender = {
             align = "h0,v5",
             fill = "#ffffffff"
+        },
+        descenderHover = {
+            align = "h0,v5",
+            fill = "#2f6fd0ff"
         }
 
     },
@@ -381,23 +405,38 @@ local layout = {
                     style = "ascender",
                     pos1 = "(50,75)",
                     font = "Play24",
-                    text = "Ascender xXjTñ ÅÄÖ"
+                    text = "Ascender xXjTñ ÅÄÖ",
+                    mouse = {
+                        inside = {
+                            set_style = "ascenderHover"
+                        }
+                    }
                 },
                 {
                     type = "text",
                     layer = 1,
                     style = "top",
-                    pos1 = "(50,525)",
+                    pos1 = "(50,125)",
                     font = "Play24",
-                    text = "Top xXjTñ ÅÄÖ"
+                    text = "Top xXjTñ ÅÄÖ",
+                    mouse = {
+                        inside = {
+                            set_style = "topHover"
+                        }
+                    }
                 },
                 {
                     type = "text",
                     layer = 1,
                     style = "middle",
-                    pos1 = "(50,200)",
+                    pos1 = "(800,200)",
                     font = "Play24",
-                    text = "Middle xXjTñ ÅÄÖ"
+                    text = "Middle xXjTñ ÅÄÖ",
+                    mouse = {
+                        inside = {
+                            set_style = "middleHover"
+                        }
+                    }
                 },
                 {
                     type = "text",
@@ -405,7 +444,12 @@ local layout = {
                     style = "baseline",
                     pos1 = "(50,275)",
                     font = "Play24",
-                    text = "Baseline xXjTñ ÅÄÖ"
+                    text = "Baseline xXjTñ ÅÄÖ",
+                    mouse = {
+                        inside = {
+                            set_style = "baselineHover"
+                        }
+                    }
                 },
                 {
                     type = "text",
@@ -413,7 +457,12 @@ local layout = {
                     style = "bottom",
                     pos1 = "(50,350)",
                     font = "Play24",
-                    text = "Bottom xXjTñ ÅÄÖ"
+                    text = "Bottom xXjTñ ÅÄÖ",
+                    mouse = {
+                        inside = {
+                            set_style = "bottomHover"
+                        }
+                    }
                 },
                 {
                     type = "text",
@@ -421,7 +470,12 @@ local layout = {
                     style = "descender",
                     pos1 = "(50,425)",
                     font = "Play24",
-                    text = "Descender xXjTñ ÅÄÖ"
+                    text = "Descender xXjTñ ÅÄÖ",
+                    mouse = {
+                        inside = {
+                            set_style = "descenderHover"
+                        }
+                    }
                 },
             }
         }

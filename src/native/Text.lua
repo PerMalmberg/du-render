@@ -64,12 +64,6 @@ function Text.New(text, pos, layer, font, props)
         local layerId = s.Layer.Id
         s.Props.Apply(layerId)
         rs.AddText(layerId, s.Font.GetID(), s.Text, s.Pos1:Unpack())
-
-        --[[local upperLeft = s.Pos1 + s.GetHitBoxOffset()
-        rs.SetNextFillColor(layerId, 0.3, 0.3, 0.3, 1)
-        rs.AddBox(layerId, upperLeft.x, upperLeft.y, s.Bounds().x, s.Bounds().y)
-        rs.SetNextFillColor(layerId, 1, 0, 0, 1)
-        rs.AddCircle(layerId, s.Pos1.x, s.Pos1.y, 4)]]
     end
 
     ---Gets the hitbox offset, as adjusted by the text alignment.
@@ -85,7 +79,7 @@ function Text.New(text, pos, layer, font, props)
         if horAlign == RSAlignHor.Center then
             xOffset = -s.Bounds().x / 2
         elseif horAlign == RSAlignHor.Right then
-            xOffset = -s.Bounds().x / 2
+            xOffset = -s.Bounds().x
         end
 
         local yOffset = 0
