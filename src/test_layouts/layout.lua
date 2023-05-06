@@ -4,6 +4,10 @@ local layout = {
             font = "Play",
             size = 10
         },
+        Play24 = {
+            font = "Play",
+            size = 40
+        },
         Montserrat15 = {
             font = "Montserrat",
             size = 15
@@ -156,7 +160,32 @@ local layout = {
                 distance = 2,
                 color = "#ffffff"
             }
+        },
+        ascender = {
+            align = "h0,v0",
+            fill = "#ffffffff"
+        },
+        top = {
+            align = "h0,v1",
+            fill = "#ffffffff"
+        },
+        middle = {
+            align = "h0,v2",
+            fill = "#ffffffff"
+        },
+        baseline = {
+            align = "h0,v3",
+            fill = "#ffffffff"
+        },
+        bottom = {
+            align = "h0,v4",
+            fill = "#ffffffff"
+        },
+        descender = {
+            align = "h0,v5",
+            fill = "#ffffffff"
         }
+
     },
     pages = {
         firstpage = {
@@ -171,7 +200,8 @@ local layout = {
                     style = "blue_green_border",
                     mouse = {
                         click = {
-                            command = "$str(path{path/to/data:key}:format{My command: '%s'}:interval{1}:init{init value}:op{mul})"
+                            command =
+                            "$str(path{path/to/data:key}:format{My command: '%s'}:interval{1}:init{init value}:op{mul})"
                         },
                         inside = {
                             set_style = "transparent_red_border"
@@ -286,10 +316,23 @@ local layout = {
                     pos1 = "(800,500)",
                     text = "other page...",
                     style = "text_style",
-                    font = "Play",
+                    font = "Play24",
                     mouse = {
                         click = {
                             command = "activatepage{page_with_hidden}"
+                        }
+                    }
+                },
+                {
+                    type = "text",
+                    pos1 = "(800,540)",
+                    text = "Text page...",
+                    style = "text_style",
+                    layer = 4,
+                    font = "Play24",
+                    mouse = {
+                        click = {
+                            command = "activatepage{textPage}"
                         }
                     }
                 }
@@ -321,13 +364,65 @@ local layout = {
                     pos1 = "(800,500)",
                     text = "first page...",
                     style = "text_style",
-                    font = "Play",
+                    font = "Play10",
                     mouse = {
                         click = {
                             command = "activatepage{firstpage}"
                         }
                     }
                 }
+            }
+        },
+        textPage = {
+            components = {
+                {
+                    type = "text",
+                    layer = 1,
+                    style = "ascender",
+                    pos1 = "(50,75)",
+                    font = "Play24",
+                    text = "Ascender xXjTñ ÅÄÖ"
+                },
+                {
+                    type = "text",
+                    layer = 1,
+                    style = "top",
+                    pos1 = "(50,525)",
+                    font = "Play24",
+                    text = "Top xXjTñ ÅÄÖ"
+                },
+                {
+                    type = "text",
+                    layer = 1,
+                    style = "middle",
+                    pos1 = "(50,200)",
+                    font = "Play24",
+                    text = "Middle xXjTñ ÅÄÖ"
+                },
+                {
+                    type = "text",
+                    layer = 1,
+                    style = "baseline",
+                    pos1 = "(50,275)",
+                    font = "Play24",
+                    text = "Baseline xXjTñ ÅÄÖ"
+                },
+                {
+                    type = "text",
+                    layer = 1,
+                    style = "bottom",
+                    pos1 = "(50,350)",
+                    font = "Play24",
+                    text = "Bottom xXjTñ ÅÄÖ"
+                },
+                {
+                    type = "text",
+                    layer = 1,
+                    style = "descender",
+                    pos1 = "(50,425)",
+                    font = "Play24",
+                    text = "Descender xXjTñ ÅÄÖ"
+                },
             }
         }
     }

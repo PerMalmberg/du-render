@@ -3,7 +3,7 @@ local Vec2       = require("native/Vec2")
 local screen     = library.getLinkByClass("ScreenUnit")
 local time       = system.getUtcTime
 
-local layout     = require("test_layouts/layout_min")
+local layout     = require("test_layouts/layout")
 local layoutSent = false
 local t          = time()
 

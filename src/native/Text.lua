@@ -1,4 +1,5 @@
 local rs = require("native/RenderScript").Instance()
+local abs = math.abs
 local Vec2 = require("native/Vec2")
 
 ---@module "Color"
@@ -15,6 +16,7 @@ local Vec2 = require("native/Vec2")
 ---@field Height fun():number
 ---@field Visible boolean
 ---@field Hitable boolean
+---@field GetHitBoxOffset fun():Vec2
 ---@field Render fun()
 ---@field Hit fun(point:Vec2):boolean
 
@@ -30,7 +32,7 @@ Text.__index = Text
 ---@return Text
 function Text.New(text, pos, layer, font, props)
     local s = {
-        Text = text,
+        Text = text or "",
         Pos1 = pos,
         Font = font,
         Props = props,
@@ -61,18 +63,60 @@ function Text.New(text, pos, layer, font, props)
     function s.Render()
         local layerId = s.Layer.Id
         s.Props.Apply(layerId)
-        rs.AddText(layerId, s.Font.GetID(), s.Text or "", s.Pos1:Unpack())
+        rs.AddText(layerId, s.Font.GetID(), s.Text, s.Pos1:Unpack())
+
+        --[[local upperLeft = s.Pos1 + s.GetHitBoxOffset()
+        rs.SetNextFillColor(layerId, 0.3, 0.3, 0.3, 1)
+        rs.AddBox(layerId, upperLeft.x, upperLeft.y, s.Bounds().x, s.Bounds().y)
+        rs.SetNextFillColor(layerId, 1, 0, 0, 1)
+        rs.AddCircle(layerId, s.Pos1.x, s.Pos1.y, 4)]]
+    end
+
+    ---Gets the hitbox offset, as adjusted by the text alignment.
+    ---@return Vec2
+    function s.GetHitBoxOffset()
+        local fontId = s.Font.GetID()
+        local ascender, descender = rs.GetFontMetrics(fontId)
+        local height = rs.GetFontSize(fontId)
+        local horAlign = s.Props.Align.Hor
+        local verAlign = s.Props.Align.Ver
+
+        local xOffset = 0
+        if horAlign == RSAlignHor.Center then
+            xOffset = -s.Bounds().x / 2
+        elseif horAlign == RSAlignHor.Right then
+            xOffset = -s.Bounds().x / 2
+        end
+
+        local yOffset = 0
+        if verAlign == RSAlignVer.Ascender then
+            yOffset = height - ascender
+        elseif verAlign == RSAlignVer.Top then
+            yOffset = 0
+        elseif verAlign == RSAlignVer.Middle then
+            yOffset = -s.Bounds().y / 2
+        elseif verAlign == RSAlignVer.Baseline then
+            yOffset = -ascender
+        elseif verAlign == RSAlignVer.Bottom then
+            yOffset = -height + descender
+        elseif verAlign == RSAlignVer.Descender then
+            yOffset = -height + descender
+        end
+
+        return Vec2.New(xOffset, yOffset)
     end
 
     --Determines if the position is within the element
     ---@param point Vec2
     ---@return boolean
     function s.Hit(point)
-        ---QQQ TODO: Alignment affects the position of the string so we must take care of that here.
-        local max = s.Pos1 + s.Bounds()
+        -- Alignment affects the position of the string so we must take care of that here.
+        local upperLeft = s.Pos1 + s.GetHitBoxOffset()
+        local lowerRight = upperLeft + s.Bounds()
+
         return s.Hitable and s.Visible
-            and point.x >= s.Pos1.x and point.x <= max.x
-            and point.y >= s.Pos1.y and point.y <= max.y
+            and point.x >= upperLeft.x and point.x <= lowerRight.x
+            and point.y >= upperLeft.y and point.y <= lowerRight.y
     end
 
     return setmetatable(s, Text)
