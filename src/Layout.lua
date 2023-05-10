@@ -23,7 +23,7 @@ local DeepCopy         = require("DeepCopy")
 ---@alias TextStruct {pos1:string, style:string, font:string, text:string, mouse:MouseStruct, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateStruct}
 ---@alias LineStruct {pos1:string, pos2:string, style:string, mouse:MouseStruct, mouse:MouseStruct, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateStruct}
 ---@alias CircleStruct {pos1:string, radius:number, style:string, mouse:MouseStruct, mouse:MouseStruct, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateStruct}
----@alias ImageStruct {pos1:string, dimensions:string, url:string, mouse:MouseStruct, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateStruct}
+---@alias ImageStruct {pos1:string, dimensions:string, sub:string, subDimensions:string, url:string, mouse:MouseStruct, type:string, layer:integer, visible:StringOrBool, hitable:StringOrBool, replicate:ReplicateStruct}
 
 ---@alias Page Layer[]
 ---@alias Pages table<string,Page>
@@ -221,7 +221,7 @@ function Layout.New(screen, behaviour, binder, stream)
         local box = layer.Box(Vec2.New(), Vec2.New(), corner)
 
         if not (bindPos(data.pos1, box, "Pos1", "box")
-            and bindPos(data.pos2, box, "Pos2", "box")) then
+                and bindPos(data.pos2, box, "Pos2", "box")) then
             return nil
         end
 
@@ -259,7 +259,7 @@ function Layout.New(screen, behaviour, binder, stream)
         local line = layer.Line(Vec2.New(), Vec2.New())
 
         if not (bindPos(data.pos1, line, "Pos1", "line")
-            and bindPos(data.pos2, line, "Pos2", "line")) then
+                and bindPos(data.pos2, line, "Pos2", "line")) then
             return nil
         end
 
@@ -293,8 +293,14 @@ function Layout.New(screen, behaviour, binder, stream)
         local image = layer.Image(url or "", Vec2.zero, Vec2.zero)
 
         if not (bindPos(data.pos1, image, "Pos", "image") and
-            bindPos(data.dimensions or tostring(Vec2.zero), image, "Dimensions", "image")) then
+                bindPos(data.dimensions or tostring(Vec2.zero), image, "Dimensions", "image")) then
             return nil
+        end
+
+        if data.sub and data.subDimensions then
+            if not (bindPos(data.sub, image, "Sub", "image") and bindPos(data.subDimensions, image, "SubDimensions", "image")) then
+                return nil
+            end
         end
 
         applyBindings(image, data)

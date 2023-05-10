@@ -155,7 +155,7 @@ local layout = {
             fill = "r0.4,g0,b0,a1"
         },
         image = {
-            fill = "#ff0000ff",
+            fill = "#ffffffff",
             stroke = {
                 distance = 2,
                 color = "#ffffff"
@@ -312,7 +312,7 @@ local layout = {
                     layer = 2,
                     visible = true,
                     pos1 = "(400,200)",
-                    style = "circle_style_{#}",
+                    style = "circle_style_[#]",
                     radius = 25,
                     mouse = {
                         inside = {
@@ -330,8 +330,20 @@ local layout = {
                     type = "image",
                     layer = 3,
                     pos1 = "(600,300)",
-                    dimensions = "(600,300)",
-                    url = "assets.prod.novaquark.com/94617/35a7afe8-f911-4513-b9b4-e5b1ef20216d.png",
+                    dimensions = "(20,20)",
+                    sub = "(0,0)",
+                    subDimensions = "(20,20)",
+                    url = "assets.prod.novaquark.com/94617/4158c26e-9db3-4a28-9468-b84207e44eec.png",
+                    style = "image"
+                },
+                {
+                    type = "image",
+                    layer = 3,
+                    pos1 = "(650,300)",
+                    dimensions = "(20,20)",
+                    sub = "(0,21)",
+                    subDimensions = "(20,20)",
+                    url = "assets.prod.novaquark.com/94617/4158c26e-9db3-4a28-9468-b84207e44eec.png",
                     style = "image"
                 },
                 {

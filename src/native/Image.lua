@@ -9,6 +9,8 @@ local Vec2 = require("native/Vec2")
 ---@field Id ImageHandle
 ---@field Pos Vec2
 ---@field Dimensions Vec2
+---@field Sub Vec2
+---@field SubDimensions Vec2
 ---@field Props Props
 ---@field FillScreen fun()
 ---@field IsLoaded fun():boolean
@@ -29,11 +31,15 @@ Image.__index = Image
 ---@param dimensions Vec2
 ---@param layer Layer
 ---@param props Props
+---@param sub? Vec2
+---@param subDimensions? Vec2
 ---@return Image
-function Image.New(url, pos, dimensions, layer, props)
+function Image.New(url, pos, dimensions, layer, props, sub, subDimensions)
     local s = {
         Pos = pos,
         Dimensions = dimensions,
+        Sub = sub,
+        SubDimensions = subDimensions,
         Props = props,
         Layer = layer,
         Visible = true,
@@ -75,7 +81,12 @@ function Image.New(url, pos, dimensions, layer, props)
 
         local layerId = s.Layer.Id
         s.Props.Apply(layerId)
-        rs.AddImage(s.Layer.Id, id, s.Pos.x, s.Pos.y, s.Dimensions:Unpack())
+        if s.Sub and s.SubDimensions then
+            rs.AddImageSub(s.Layer.Id, id, s.Pos.x, s.Pos.y, s.Dimensions.x, s.Dimensions.y, s.Sub.x, s.Sub.y,
+                s.SubDimensions.x, s.SubDimensions.y)
+        else
+            rs.AddImage(s.Layer.Id, id, s.Pos.x, s.Pos.y, s.Dimensions.x, s.Dimensions.y)
+        end
     end
 
     --Determines if the position is within the element

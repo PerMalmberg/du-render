@@ -83,7 +83,7 @@ describe("Layout", function()
         assert.True(layout.Activate("firstpage"))
         layers, comps = screen.CountParts()
         assert.are_equal(4, layers)
-        assert.are_equal(20, comps)
+        assert.are_equal(21, comps)
     end)
 
     it("Can activate a page with hidden items", function()
