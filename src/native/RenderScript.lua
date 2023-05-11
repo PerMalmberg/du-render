@@ -73,12 +73,16 @@ RenderScript.__index = _ENV
 ---@type Render
 local singelton
 
+
 ---Gets the RenderScript instance
 ---@return Render
 function RenderScript.Instance()
     if singelton then
         return singelton
     end
+
+    local loadedImages = {} ---@type table<string, integer>
+
     --- RenderScript functions are all in the global namespace so bind to them.
     singelton = {
         AddBezier = _ENV.addBezier,
@@ -115,10 +119,24 @@ function RenderScript.Instance()
         end,
         GetTime = _ENV.getTime,
         IsImageLoaded = _ENV.isImageLoaded,
-        LoadImage = _ENV.loadImage,
+        ---@param url string
+        LoadImage = function(url)
+            local existing = loadedImages[url]
+            if existing then
+                return existing
+            else
+                local id = _ENV.loadImage(url)
+                loadedImages[url] = id
+                return id
+            end
+        end,
         LoadFont = _ENV.loadFont,
         Log = _ENV.logMessage,
-        RequestAnimationFrame = _ENV.requestAnimationFrame,
+        ---@param frames integer
+        RequestAnimationFrame = function(frames)
+            _ENV.requestAnimationFrame(frames)
+            loadedImages = {} -- images needs to be reloaded each frame
+        end,
         SetBackgroundColor = _ENV.setBackgroundColor,
         SetDefaultFillColor = _ENV.setDefaultFillColor,
         SetDefaultRotation = _ENV.setDefaultRotation,
