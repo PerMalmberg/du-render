@@ -26,18 +26,18 @@ function Driver.Instance()
     local screen          = require("native/Screen").New()
     local binder          = Binder.New()
     local behavior        = require("Behaviour").New()
-    local loader ---@type Layout
+    local layout ---@type Layout
 
     local onDataReceived  = function(data)
         local screen_layout = Binder.GetTblByPath(data, "screen_layout")
         local activate_page = Binder.GetStrByPath(data, "activate_page")
 
         if screen_layout then
-            if not loader.SetLayout(screen_layout) then
+            if not layout.SetLayout(screen_layout) then
                 rs.Log("Could not load layout")
             end
         elseif activate_page then
-            loader.Activate(activate_page)
+            layout.Activate(activate_page)
         else
             binder.MergeData(data)
         end
@@ -55,14 +55,14 @@ function Driver.Instance()
                 local font = Font.Get(FontName.Play, 30)
                 local text = l.Text(msg, screen.Bounds() / 2 - (rs.GetTextBounds(font, msg) / 2), font, Props.New())
                 text.Props.Fill = Color.New(1, 0, 0)
-            elseif not (loader.SetLayout(offlineLayout) and loader.Activate("offline")) then
+            elseif not (layout.SetLayout(offlineLayout) and layout.Activate("offline")) then
                 rs.Log("Could not load offline layout or activate the page")
             end
         end
     end
 
     local stream          = Stream.New(_ENV, onDataReceived, 1, timeoutCallback)
-    loader                = Layout.New(screen, behavior, binder, stream)
+    layout                = Layout.New(screen, behavior, binder, stream)
 
     ---Call this this to setup a slower update than Animate()
     ---@param frames integer

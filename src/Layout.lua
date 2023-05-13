@@ -453,10 +453,17 @@ function Layout.New(screen, behaviour, binder, stream)
         return loadFonts(layoutData.fonts) and loadStyles(layoutData.styles)
     end
 
+    local function split(str, separator)
+        local sep, fields = separator or ":", {}
+        local pattern = string.format("([^%s]+)", sep)
+        str:gsub(pattern, function(c) fields[#fields + 1] = c end)
+        return fields
+    end
+
     ---Loads controls and data bindings
-    ---@param pageName string The page name to activate
+    ---@param pageNames string The page name to activate. Comma separated list of pages to be shown at the same time
     ---@return boolean
-    function s.Activate(pageName)
+    function s.Activate(pageNames)
         screen.Clear()
         behaviour.Clear()
         binder.Clear()
@@ -464,16 +471,19 @@ function Layout.New(screen, behaviour, binder, stream)
         local pages = layoutData.pages
 
         if pages then
-            local p = pages[pageName]
+            for _, name in ipairs(split(pageNames, ",")) do
+                local p = pages[name]
 
-            if p then
-                return loadPage(p)
-            else
-                rs.Log("No page by name " .. pageName)
+                if not p or not loadPage(p) then
+                    rs.Log("Could not load page by name '" .. name .. "'")
+                    return false
+                end
             end
+        else
+            rs.Log("No pages in layout")
         end
 
-        return false
+        return true
     end
 
     ---Gets the syles
