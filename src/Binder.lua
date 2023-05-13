@@ -154,12 +154,30 @@ function Binder.New()
         return str == "true" or str == "1"
     end
 
-    ---Attempts to create a binding from the expression into the target object
-    ---@param bindExpression string
+    ---Attempts to create bindings from the expression(s) into the target object
+    ---@param bindExpression string The binding expression(s), separated by "||"
     ---@param targetObject table Object to set properties on
     ---@param targetProperty string Name of property of target object
     ---@return boolean
     function s.CreateBinding(bindExpression, targetObject, targetProperty)
+        local bindPatterns = Binder.Split(bindExpression, "||")
+
+        for i, pat in ipairs(bindPatterns) do
+            if not s.createBindingSingle(pat, targetObject, targetProperty, i) then
+                return false
+            end
+        end
+
+        return true
+    end
+
+    ---Attempts to create a binding from the expression into the target object
+    ---@param bindExpression string
+    ---@param targetObject table Object to set properties on
+    ---@param targetProperty string Name of property of target object
+    ---@param expressionOrder number The order in which the expression occurred
+    ---@return boolean
+    function s.createBindingSingle(bindExpression, targetObject, targetProperty, expressionOrder)
         if not (bindExpression and targetObject and targetProperty) then return false end
 
         local isString = bindExpression:match(stringPat) ~= nil
@@ -214,8 +232,13 @@ function Binder.New()
             p.Vec2(targetObject, targetProperty, key, interval, BinderModifier.New(isMul, isDiv, precentVal, initVal))
         elseif isString then
             local p = s.Path(path)
-            applyInitValue(targetObject, targetProperty, format, init)
-            p.Text(targetObject, targetProperty, key, format or "%s", interval)
+            if expressionOrder > 1 then
+                applyInitValue(targetObject, targetProperty,
+                    string.format("%s%s", targetObject[targetProperty] or "", string.format(format, init)))
+            else
+                applyInitValue(targetObject, targetProperty, format, init)
+            end
+            p.Text(targetObject, targetProperty, key, expressionOrder, format or "%s", interval)
         elseif isBool then
             local p = s.Path(path)
             applyInitValue(targetObject, targetProperty, nil, toBoolean(init))
@@ -308,6 +331,17 @@ function Binder.GetTblByPath(sourceObject, path)
     local r = Binder.getByPath(sourceObject, path, "table")
     ---@cast r table|nil
     return r
+end
+
+---Splits a string based on a pattern
+---@param str string String to split
+---@param separator string Pattern
+---@return string[]
+function Binder.Split(str, separator)
+    local sep, fields = separator or ":", {}
+    local pattern = string.format("([^%s]+)", sep)
+    _ = str:gsub(pattern, function(c) fields[#fields + 1] = c end)
+    return fields
 end
 
 return Binder

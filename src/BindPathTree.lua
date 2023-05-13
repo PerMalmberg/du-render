@@ -7,6 +7,7 @@
 local BindPathTree = {}
 BindPathTree.__index = BindPathTree
 
+---@return BindPathTree
 function BindPathTree.New()
     local s = {
         Sub = {}, ---@type table<string,BindPathTree>

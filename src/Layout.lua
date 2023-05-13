@@ -453,13 +453,6 @@ function Layout.New(screen, behaviour, binder, stream)
         return loadFonts(layoutData.fonts) and loadStyles(layoutData.styles)
     end
 
-    local function split(str, separator)
-        local sep, fields = separator or ":", {}
-        local pattern = string.format("([^%s]+)", sep)
-        str:gsub(pattern, function(c) fields[#fields + 1] = c end)
-        return fields
-    end
-
     ---Loads controls and data bindings
     ---@param pageNames string The page name to activate. Comma separated list of pages to be shown at the same time
     ---@return boolean
@@ -471,7 +464,7 @@ function Layout.New(screen, behaviour, binder, stream)
         local pages = layoutData.pages
 
         if pages then
-            for _, name in ipairs(split(pageNames, ",")) do
+            for _, name in ipairs(Binder.Split(pageNames, ",")) do
                 local p = pages[name]
 
                 if not p or not loadPage(p) then

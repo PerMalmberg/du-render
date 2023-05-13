@@ -1,16 +1,15 @@
 local env = require("environment")
 
 env.Prepare()
-local rs   = require("native/RenderScript").Instance()
-rs.GetTime = getTime
-rs.Log     = print
+local rs     = require("native/RenderScript").Instance()
+rs.GetTime   = getTime
+rs.Log       = print
 
 local Binder = require("Binder")
 local Color  = require("native/Color")
 local Vec2   = require("native/Vec2")
 
 describe("Binder", function()
-
     it("Can bind to a text and number", function()
         local b = Binder.New()
         local p1 = b.Path("a/b_c/de")
@@ -29,8 +28,8 @@ describe("Binder", function()
 
         p1.Number(obj5, "Number", "num", "Made into a string %0.1f")
 
-        p2.Text(obj1, "Text", "text", "Format string %s goes here")
-        p2.Text(obj2, "Text", "text")
+        p2.Text(obj1, "Text", "text", 1, "Format string %s goes here")
+        p2.Text(obj2, "Text", "text", 1)
 
         b.MergeData({ a = { b_c = { de = { num = 123.456, f = { text = "a text" } } } } })
         b.Render()
@@ -40,6 +39,21 @@ describe("Binder", function()
         assert.are_equal(246.912, obj3.Number)
         assert.are_equal(123.456, obj4.Number)
         assert.are_equal("Made into a string 123.5", obj5.Number)
+    end)
+
+    it("Can handle multiple string patterns", function()
+        local b = Binder.New()
+        local target = {}
+        assert.True(b.CreateBinding(
+            "$str(path{path/to/data:key}:format{First part: '%s'}:interval{0.5}:init{1})||$str(path{path/to/data:key2}:format{ second part: '%s'}:interval{0.5}:init{2})"
+            , target, "Prop"))
+        assert.Equal("First part: '1' second part: '2'", target.Prop)
+
+        b.MergeData({ path = { to = { data = { key = "one" } } } })
+        b.Render()
+        b.MergeData({ path = { to = { data = { key2 = "two" } } } })
+        b.Render()
+        assert.Equal("First part: 'one' second part: 'two'", target.Prop)
     end)
 
     it("Can bind to a Color", function()
@@ -100,7 +114,8 @@ describe("Binder", function()
     it("Can create string binding from expression", function()
         local b = Binder.New()
         local target = {}
-        assert.True(b.CreateBinding("$str(path{path/to/data:key}:format{My command: '%s'}:interval{0.5}:init{init value}:op{mul})"
+        assert.True(b.CreateBinding(
+            "$str(path{path/to/data:key}:format{My command: '%s'}:interval{0.5}:init{init value}:op{mul})"
             , target, "Prop"))
         assert.Equal("My command: 'init value'", target.Prop)
 
@@ -123,7 +138,7 @@ describe("Binder", function()
         local b = Binder.New()
         local target = {}
         assert.True(b.CreateBinding("$str(path{path/to/data:key}:init{init value}:op{mul})"
-            , target, "Prop"))
+        , target, "Prop"))
         assert.Equal("init value", target.Prop)
 
         b.MergeData({ path = { to = { data = { key = "string value" } } } })
@@ -135,7 +150,7 @@ describe("Binder", function()
         local b = Binder.New()
         local target = {}
         assert.True(b.CreateBinding("$vec2(path{path:vec2}:init{(4.5,6.7)}:interval{0})"
-            , target, "Prop"))
+        , target, "Prop"))
         assert.Equal(Vec2.New(4.5, 6.7), target.Prop)
         b.MergeData({ path = { vec2 = { x = 2, y = 3 } } })
         b.Render()
@@ -146,7 +161,7 @@ describe("Binder", function()
         local b = Binder.New()
         local target = {}
         assert.True(b.CreateBinding("$vec2(path{path:vec2}:init{(4.5,6.7)}:interval{0})"
-            , target, "Prop"))
+        , target, "Prop"))
         assert.Equal(Vec2.New(4.5, 6.7), target.Prop)
         b.MergeData({ path = { vec2 = "(-2,-3)" } })
         b.Render()
@@ -157,14 +172,14 @@ describe("Binder", function()
         local b = Binder.New()
         local target = {}
         assert.False(b.CreateBinding("$vec2(path{path:vec2}:init{(X,X)}:interval{0})"
-            , target, "Prop"))
+        , target, "Prop"))
     end)
 
     it("Can create multiplying Vec2 bindings, number version", function()
         local b = Binder.New()
         local target = {}
         assert.True(b.CreateBinding("$vec2(path{path:vec2}:init{(4.5,6.7)}:interval{0}:op{mul})"
-            , target, "Prop"))
+        , target, "Prop"))
         assert.Equal(Vec2.New(4.5, 6.7), target.Prop)
         b.MergeData({ path = { vec2 = { x = 2, y = 3 } } })
         b.Render()
@@ -175,7 +190,7 @@ describe("Binder", function()
         local b = Binder.New()
         local target = {}
         assert.True(b.CreateBinding("$vec2(path{path:vec2}:init{(4.5,6.7)}:interval{0}:op{mul})"
-            , target, "Prop"))
+        , target, "Prop"))
         assert.Equal(Vec2.New(4.5, 6.7), target.Prop)
         b.MergeData({ path = { vec2 = "(2,3)" } })
         b.Render()
@@ -186,7 +201,7 @@ describe("Binder", function()
         local b = Binder.New()
         local target = {}
         assert.True(b.CreateBinding("$vec2(path{path:vec2}:init{(4.5,6.7)}:interval{0}:op{div})"
-            , target, "Prop"))
+        , target, "Prop"))
         assert.Equal(Vec2.New(4.5, 6.7), target.Prop)
         b.MergeData({ path = { vec2 = { x = 2, y = 3 } } })
         b.Render()
@@ -197,7 +212,7 @@ describe("Binder", function()
         local b = Binder.New()
         local target = {}
         assert.True(b.CreateBinding("$vec2(path{path:vec2}:init{(4.5,6.7)}:interval{0}:op{div})"
-            , target, "Prop"))
+        , target, "Prop"))
         assert.Equal(Vec2.New(4.5, 6.7), target.Prop)
         b.MergeData({ path = { vec2 = "(2,3)" } })
         b.Render()
@@ -208,23 +223,23 @@ describe("Binder", function()
         local b = Binder.New()
         local target = {}
         assert.False(b.CreateBinding("$vec2(path{path:vec2}:interval{0}:op{mul})"
-            , target, "Prop"))
+        , target, "Prop"))
     end)
 
     it("Handles missing path or key", function()
         local b = Binder.New()
         local target = {}
         assert.False(b.CreateBinding("$vec2(path{path}:init{(4.5,6.7)}:interval{0}:op{mul})"
-            , target, "Prop"))
+        , target, "Prop"))
         assert.False(b.CreateBinding("$vec2(init{(4.5,6.7)}:interval{0}:op{mul})"
-            , target, "Prop"))
+        , target, "Prop"))
     end)
 
     it("Can create number bindnig", function()
         local b = Binder.New()
         local target = {}
         assert.True(b.CreateBinding("$num(path{path:number}:init{12.34}:interval{0})"
-            , target, "Prop"))
+        , target, "Prop"))
         assert.Equal(12.34, target.Prop)
         b.MergeData({ path = { number = 78.9 } })
         b.Render()
@@ -235,14 +250,14 @@ describe("Binder", function()
         local b = Binder.New()
         local target = {}
         assert.False(b.CreateBinding("$num(path{path:number}:init{X}:interval{0})"
-            , target, "Prop"))
+        , target, "Prop"))
     end)
 
     it("Can do percent binding for Vec2", function()
         local b = Binder.New()
         local target = {}
         assert.True(b.CreateBinding("$vec2(path{path:vec2}:init{(0,0)}:interval{0}:percent{(10,10)})"
-            , target, "Prop"))
+        , target, "Prop"))
         assert.Equal(Vec2.New(0, 0), target.Prop)
         b.MergeData({ path = { vec2 = "(0.5,0.5)" } })
         b.Render()
@@ -259,14 +274,14 @@ describe("Binder", function()
         local b = Binder.New()
         local target = {}
         assert.False(b.CreateBinding("$vec2(path{path:vec2}:init{(0,0)}:interval{0}:percent{(foo)})"
-            , target, "Prop"))
+        , target, "Prop"))
     end)
 
     it("Can do percent binding for number", function()
         local b = Binder.New()
         local target = {}
         assert.True(b.CreateBinding("$num(path{:num}:init{0}:interval{0}:percent{-10})"
-            , target, "Prop"))
+        , target, "Prop"))
         assert.Equal(0, target.Prop)
         b.MergeData({ num = 1 })
         b.Render()
@@ -277,7 +292,7 @@ describe("Binder", function()
         local b = Binder.New()
         local target = {}
         assert.False(b.CreateBinding("$num(path{:num}:init{0}:interval{0}:percent{foo})"
-            , target, "Prop"))
+        , target, "Prop"))
     end)
 
     it("Can bind boolean", function()
