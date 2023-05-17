@@ -189,7 +189,7 @@ Components can be replicated in X and Y in the desired steps. To do so, add the 
 }
 ```
 
-This example would cause a 3x3 replication with a step size of 50 on the respective axes.
+This example would cause a 3x3 replication with a step size of 50 on the respective axes, row by row. If you wish to components added by colum instead, set `column_mode` to true in the replicate section.
 
 It is also possible to place a `[#]` in an string value, such as styles and data bindings, to change it to the current replication count, starting at 1.
 

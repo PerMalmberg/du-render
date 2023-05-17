@@ -11,7 +11,7 @@ local DeepCopy         = require("DeepCopy")
 ---@alias Style PropsTableStruct
 ---@alias NamedFonts table<string, {font:string, size:FontHandle}>
 ---@alias NamedStyles table<string,Style>
----@alias ReplicateStruct {x_step:number, y_step:number, x_count:integer, y_count:number}
+---@alias ReplicateStruct {x_step:number, y_step:number, x_count:integer, y_count:number, column_mode:boolean}
 ---@alias StringOrBool string|boolean
 ---@alias BaseCompStruct {type:string, layer:integer, hitable:StringOrBool, replicate:ReplicateStruct}
 ---@alias MouseStruct { click: { command:string }, inside: { set_style:string }}
@@ -420,25 +420,66 @@ function Layout.New(screen, behaviour, binder, stream)
         local res = true
         for _, comp in pairs(page.components) do
             local rep = comp.replicate or {}
+
+            rep.x_count = rep.x_count or 1
+            rep.y_count = rep.y_count or 1
+            rep.x_step = rep.x_step or 0
+            rep.y_step = rep.y_step or 0
+
             local addX = 0
             local addY = 0
-            local count = 1
 
-            -- Replicate components row by row
-            for y = 1, rep.y_count or 1, 1 do
-                for x = 1, rep.x_count or 1 do
-                    local compCopy = DeepCopy(comp)
-                    applyReplication(compCopy, addX, addY, count)
-                    res = createComponent(compCopy)
-                    if not res then break end
+            ---@param count number
+            ---@return number
+            local xInc = function(count)
+                local x = addX
 
-                    addX = addX + (rep.x_step or 0)
-                    count = count + 1
+                if rep.x_step > 0 then
+                    if rep.column_mode then
+                        if count % rep.y_count == 0 then
+                            addX = addX + rep.x_step
+                        end
+                    else
+                        if count % rep.x_count == 0 then
+                            addX = 0
+                        else
+                            addX = addX + rep.x_step
+                        end
+                    end
                 end
 
-                addY = addY + (rep.y_step or 0)
-                addX = 0
+                return x
             end
+
+            ---@param count number
+            ---@return number
+            local yInx = function(count)
+                local y = addY
+
+                if rep.y_step > 0 then
+                    if rep.column_mode then
+                        if count % rep.y_count == 0 then
+                            addY = 0
+                        else
+                            addY = addY + rep.y_step
+                        end
+                    else
+                        if count % rep.x_count == 0 then
+                            addY = addY + rep.y_step
+                        end
+                    end
+                end
+
+                return y
+            end
+
+            for i = 1, rep.x_count * rep.y_count do
+                local copy = DeepCopy(comp)
+                applyReplication(copy, xInc(i), yInx(i), i)
+                res = createComponent(copy)
+                if not res then break end
+            end
+
             if not res then return res end
         end
 

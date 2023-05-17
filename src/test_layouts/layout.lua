@@ -150,6 +150,10 @@ local layout = {
             },
             fill = "r0.1,g0.1,b0.1,a1"
         },
+        column_text_style = {
+            align = "h1,v1",
+            fill = "#ffffffff"
+        },
         fuel_text = {
             align = "h0,v1",
             fill = "r0.4,g0,b0,a1"
@@ -324,6 +328,27 @@ local layout = {
                         y_step = 50,
                         x_count = 3,
                         y_count = 3
+                    }
+                },
+                {
+                    type = "text",
+                    layer = 2,
+                    visible = true,
+                    pos1 = "(400,200)",
+                    font = "Play10",
+                    style = "column_text_style",
+                    text = "[#]",
+                    mouse = {
+                        inside = {
+                            set_style = "$str(path{circle/style:hover}:init{circle_style_hover_1})"
+                        }
+                    },
+                    replicate = {
+                        x_step = 50,
+                        y_step = 50,
+                        x_count = 3,
+                        y_count = 3,
+                        column_mode = true
                     }
                 },
                 {
