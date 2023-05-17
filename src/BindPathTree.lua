@@ -1,6 +1,7 @@
 ---@module "BindPath"
 
 ---@class BindPathTree
+---@field New fun(name:string):BindPathTree
 ---@field Sub table<string,BindPathTree>
 ---@field Bind BindPath[]
 

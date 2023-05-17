@@ -28,8 +28,8 @@ describe("Binder", function()
 
         p1.Number(obj5, "Number", "num", "Made into a string %0.1f")
 
-        p2.Text(obj1, "Text", "text", 1, "Format string %s goes here")
-        p2.Text(obj2, "Text", "text", 1)
+        p2.Text(obj1, "Text", "text", "Format string %s goes here")
+        p2.Text(obj2, "Text", "text")
 
         b.MergeData({ a = { b_c = { de = { num = 123.456, f = { text = "a text" } } } } })
         b.Render()
@@ -39,21 +39,6 @@ describe("Binder", function()
         assert.are_equal(246.912, obj3.Number)
         assert.are_equal(123.456, obj4.Number)
         assert.are_equal("Made into a string 123.5", obj5.Number)
-    end)
-
-    it("Can handle multiple string patterns", function()
-        local b = Binder.New()
-        local target = {}
-        assert.True(b.CreateBinding(
-            "$str(path{path/to/data:key}:format{First part: '%s'}:interval{0.5}:init{1})|$str(path{path/to/data:key2}:format{ second part: '%s'}:interval{0.5}:init{2})"
-            , target, "Prop"))
-        assert.Equal("First part: '1' second part: '2'", target.Prop)
-
-        b.MergeData({ path = { to = { data = { key = "one" } } } })
-        b.Render()
-        b.MergeData({ path = { to = { data = { key2 = "two" } } } })
-        b.Render()
-        assert.Equal("First part: 'one' second part: 'two'", target.Prop)
     end)
 
     it("Can bind to a Color", function()

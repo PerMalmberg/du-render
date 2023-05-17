@@ -6,7 +6,7 @@ local getTime    = require("native/RenderScript").Instance().GetTime
 ---@class BindPath
 ---@field New fun(parts:string[]):BindPath
 ---@field Boolean fun(o:table, propertyName:string, valueName:string, interval?:number)
----@field Text fun(o:table, propertyName:string, valueName:string, concatOrder:number, format?:string, interval?:number, modifier?:fun(t:string):string)
+---@field Text fun(o:table, propertyName:string, valueName:string, format?:string, interval?:number, modifier?:fun(t:string):string)
 ---@field Number fun(o:table, propertyName:string, valueName:string, format?:string, interval?:number, modifier?:BinderModifier|SimpleModifier)
 ---@field Color fun(o:table, propertyName:string, valueName:string, interval?:number, modifier?:fun(c:Color):Color)
 ---@field Vec2 fun(o:table, propertyName:string, valueName:string, interval?:number, modifier?:BinderModifier|SimpleModifier)
@@ -17,7 +17,7 @@ local getTime    = require("native/RenderScript").Instance().GetTime
 ---@field ProcessBoolean fun(valueName:string, value:boolean)
 
 ---@alias genericModifier fun(any):any
----@alias BoundText {obj:table, propertyName:string, valueName:string, concatOrder:number, updateInterval:number, format:string, modifier:genericModifier, lastUpdate:number}
+---@alias BoundText {obj:table, propertyName:string, valueName:string, updateInterval:number, format:string, modifier:genericModifier, lastUpdate:number}
 ---@alias BoundNumber {obj:table, propertyName:string, valueName:string, updateInterval:number, format:string, modifier:BinderModifier, lastUpdate:number}
 ---@alias BoundBoolean {obj:table, propertyName:string, valueName:string, updateInterval:number, lastUpdate:number}
 
@@ -58,16 +58,14 @@ function BindPath.New(updateInterval)
     ---@param obj table
     ---@param propertyName string
     ---@param valueName string
-    ---@param concatOrder number
     ---@param format? string
     ---@param interval? number
     ---@param modifier? fun(t:string):string
-    function s.Text(obj, propertyName, valueName, concatOrder, format, interval, modifier)
+    function s.Text(obj, propertyName, valueName, format, interval, modifier)
         table.insert(boundText, {
             obj = obj,
             propertyName = propertyName,
             valueName = valueName,
-            concatOrder = concatOrder,
             format = format or "%s",
             lastUpdate = 0,
             updateInterval = interval or updateInterval,
@@ -173,12 +171,7 @@ function BindPath.New(updateInterval)
         local now = getTime()
         for _, bind in ipairs(boundText) do
             if bind.valueName == valueName and now - bind.lastUpdate >= bind.updateInterval then
-                local prior = ""
-                if bind.concatOrder > 1 then
-                    prior = bind.obj[bind.propertyName] or ""
-                end
-                bind.obj[bind.propertyName] = string.format("%s%s", prior,
-                    string.format(bind.format, tostring(bind.modifier(value))))
+                bind.obj[bind.propertyName] = string.format(bind.format, tostring(bind.modifier(value)))
                 bind.lastUpdate = now
             end
         end
