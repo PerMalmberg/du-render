@@ -43,7 +43,7 @@ function Binder.New()
         end
 
         local p = BindPath.New(DEFAULT_UPDATE_INTERVAL)
-        table.insert(curr.Bind, p)
+        curr.Bind[#curr.Bind + 1] = p
         return p
     end
 
@@ -54,7 +54,7 @@ function Binder.New()
         for key, value in pairs(data) do
             local t = type(value)
             if Vec2.IsVec2(value) then
-                for _, bind in pairs(branch.Bind) do
+                for _, bind in ipairs(branch.Bind) do
                     bind.ProcessVec2(key, Vec2.New(value))
                 end
             elseif t == "table" then
@@ -64,16 +64,16 @@ function Binder.New()
                     apply(value, p)
                 end
             elseif t == "number" then
-                for _, bind in pairs(branch.Bind) do
+                for _, bind in ipairs(branch.Bind) do
                     bind.ProcessNumber(key, value)
                 end
             elseif t == "string" then
                 -- Multi-values, such as Vec2 are handled by this too.
-                for _, bind in pairs(branch.Bind) do
+                for _, bind in ipairs(branch.Bind) do
                     bind.ProcessText(key, value)
                 end
             elseif t == "boolean" then
-                for _, bind in pairs(branch.Bind) do
+                for _, bind in ipairs(branch.Bind) do
                     bind.ProcessBoolean(key, value)
                 end
             end
@@ -155,12 +155,12 @@ function Binder.New()
     end
 
     ---Attempts to create bindings from the expression(s) into the target object
-    ---@param bindExpression string The binding expression(s), separated by "||"
+    ---@param bindExpression string The binding expression(s), separated by "|"
     ---@param targetObject table Object to set properties on
     ---@param targetProperty string Name of property of target object
     ---@return boolean
     function s.CreateBinding(bindExpression, targetObject, targetProperty)
-        local bindPatterns = Binder.Split(bindExpression, "||")
+        local bindPatterns = Binder.Split(bindExpression, "|")
 
         for i, pat in ipairs(bindPatterns) do
             if not s.createBindingSingle(pat, targetObject, targetProperty, i) then

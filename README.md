@@ -161,7 +161,7 @@ The Layout Engine supports data bindings using the following syntax:
 
 - `<type>` can be
   - `num` - a number, expects values to be numbers
-  - `str` - string, expects values to be strings. These expressions can be repeated multiple times, separated by `||` and will be concatenated to the final result.
+  - `str` - string, expects values to be strings. These expressions can be repeated multiple times, separated by `|` and will be concatenated to the final result.
   - `vec2` - 2D vector, expects values in format `(x,y)`. When providing values, use a `Vec2` to contain the values.
   - `boolean` - a boolean, expects values to be booleans
 - `path{path/to:value}` specifies the path in the incoming data structure where the `value` is to be found.

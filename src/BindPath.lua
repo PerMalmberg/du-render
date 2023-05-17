@@ -167,6 +167,8 @@ function BindPath.New(updateInterval)
         end
     end
 
+    ---@param valueName string
+    ---@param value string
     function s.ProcessText(valueName, value)
         local now = getTime()
         for _, bind in ipairs(boundText) do

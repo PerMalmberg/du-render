@@ -45,7 +45,7 @@ describe("Binder", function()
         local b = Binder.New()
         local target = {}
         assert.True(b.CreateBinding(
-            "$str(path{path/to/data:key}:format{First part: '%s'}:interval{0.5}:init{1})||$str(path{path/to/data:key2}:format{ second part: '%s'}:interval{0.5}:init{2})"
+            "$str(path{path/to/data:key}:format{First part: '%s'}:interval{0.5}:init{1})|$str(path{path/to/data:key2}:format{ second part: '%s'}:interval{0.5}:init{2})"
             , target, "Prop"))
         assert.Equal("First part: '1' second part: '2'", target.Prop)
 
