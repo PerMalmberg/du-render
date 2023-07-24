@@ -7,6 +7,8 @@ local Binder           = require("Binder")
 local ColorAndDistance = require("native/ColorAndDistance")
 local DeepCopy         = require("DeepCopy")
 
+---@module "Stream"
+
 -- These are Lua structures for the layout
 ---@alias Style PropsTableStruct
 ---@alias NamedFonts table<string, {font:string, size:FontHandle}>

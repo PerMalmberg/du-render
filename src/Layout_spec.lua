@@ -29,11 +29,12 @@ end
 rs.Log           = print
 
 local fakeStream = {
-    setScriptInput = function()
+    Write = function()
     end,
-    clearScriptOutput = function()
+    WaitingToSend = function()
+        return false
     end,
-    getScriptOutput = function() return "" end
+    Tick = function() end
 }
 
 describe("Layout", function()

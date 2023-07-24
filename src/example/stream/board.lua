@@ -1,27 +1,49 @@
-local Stream     = require("Stream")
-local Vec2       = require("native/Vec2")
-local screen     = library.getLinkByClass("ScreenUnit")
-local time       = system.getUtcTime
+local Stream       = require("Stream")
+local ScreenDevice = require("device/ScreenDevice")
+local Vec2         = require("native/Vec2")
+local screen       = library.getLinkByClass("ScreenUnit")
+local time         = system.getUtcTime
 
-local layout     = require("test_layouts/layout")
-local layoutSent = false
-local t          = time()
+local layout       = require("test_layouts/layout")
+local layoutSent   = false
+local t            = time()
 
-local function onData(data)
-    system.print("From board: " .. data)
-end
+local BoardSide    = {}
+BoardSide.__index  = BoardSide
 
-local function onTimeout(isTimedOut, stream)
-    if isTimedOut then
-        layoutSent = false
-    elseif not layoutSent then
-        stream.Write({ screen_layout = layout })
-        stream.Write({ activate_page = "firstpage" })
-        layoutSent = true
+function BoardSide.New()
+    local s = {
+        stream = nil ---@type Stream
+    }
+
+    function s.OnData(data)
+        if type(data) == "table" then
+            for k, v in pairs(data) do
+                system.print("From screen: " .. data)
+            end
+        elseif type(data) == "string" then
+            system.print(data)
+        end
     end
+
+    function s.OnTimeout(isTimedOut, stream)
+        if isTimedOut then
+            layoutSent = false
+        elseif not layoutSent then
+            s.stream.Write({ screen_layout = layout })
+            s.stream.Write({ activate_page = "firstpage" })
+            layoutSent = true
+        end
+    end
+
+    function s.RegisterStream(stream)
+        s.stream = stream
+    end
+
+    return setmetatable(s, BoardSide)
 end
 
-local stream = Stream.New(screen, onData, 1, onTimeout)
+local stream = Stream.New(ScreenDevice.New(screen), BoardSide.New(), 1)
 
 local toggle = 1
 

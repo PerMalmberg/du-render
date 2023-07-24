@@ -3,6 +3,8 @@ CLEAN_COV=if [ -e luacov.report.out ]; then rm luacov.report.out; fi; if [ -e lu
 PWD=$(shell pwd)
 
 LUA_PATH := ./src/?.lua
+LUA_PATH := $(LUA_PATH);$(PWD)/external/du-stream/src/?.lua
+LUA_PATH := $(LUA_PATH);$(PWD)/external/du-stream/external/du-serializer/?.lua
 LUA_PATH := $(LUA_PATH);$(PWD)/external/du-unit-testing/src/?.lua
 LUA_PATH := $(LUA_PATH);$(PWD)/external/du-unit-testing/src/mocks/?.lua
 LUA_PATH := $(LUA_PATH);$(PWD)/external/du-unit-testing/external/du-luac/lua/?.lua
@@ -26,7 +28,7 @@ clean: clean_cov clean_report
 
 test: clean
 	@echo Runnings unit tests on du-render
-	@LUA_PATH="$(LUA_PATH)" busted .
+	@LUA_PATH="$(LUA_PATH)" busted . --exclude-pattern=".*serializer.*" --exclude-pattern=".*Stream_spec.*"
 	@luacov
 	@$(CLEAN_COV)
 	@echo Running tests on svg2layout

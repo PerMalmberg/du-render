@@ -1,10 +1,11 @@
-local Binder   = require("Binder")
-local Font     = require("native/Font")
-local Props    = require("native/Props")
-local Color    = require("native/Color")
-local Stream   = require("Stream")
-local Layout   = require("Layout")
-local rs       = require("native/RenderScript").Instance()
+local Binder       = require("Binder")
+local Font         = require("native/Font")
+local Props        = require("native/Props")
+local Color        = require("native/Color")
+local Stream       = require("Stream")
+local Layout       = require("Layout")
+local rs           = require("native/RenderScript").Instance()
+local RenderDevice = require("device/RenderScriptDevice")
 
 ---@class Driver
 ---@field Tick fun()
@@ -12,23 +13,23 @@ local rs       = require("native/RenderScript").Instance()
 ---@field Animate fun(displayStats?:boolean)
 ---@field SetOfflineLayout fun(layout:table|nil)
 
-local Driver   = {}
-Driver.__index = Driver
+local Driver       = {}
+Driver.__index     = Driver
 
 function Driver.Instance()
     if _ENV.DriverSingelton then
         return _ENV.DriverSingelton
     end
 
-    local s               = {}
-    local offlineLayout   = nil ---@type table|nil
+    local s             = {}
+    local offlineLayout = nil ---@type table|nil
 
-    local screen          = require("native/Screen").New()
-    local binder          = Binder.New()
-    local behavior        = require("Behaviour").New()
+    local screen        = require("native/Screen").New()
+    local binder        = Binder.New()
+    local behavior      = require("Behaviour").New()
     local layout ---@type Layout
 
-    local onDataReceived  = function(data)
+    function s.OnData(data)
         local screen_layout = Binder.GetTblByPath(data, "screen_layout")
         local activate_page = Binder.GetStrByPath(data, "activate_page")
 
@@ -43,7 +44,7 @@ function Driver.Instance()
         end
     end
 
-    local timeoutCallback = function(isTimedOut, stream)
+    function s.OnTimeout(isTimedOut, stream)
         if isTimedOut then
             screen.Clear()
             binder.Clear()
@@ -61,8 +62,12 @@ function Driver.Instance()
         end
     end
 
-    local stream          = Stream.New(_ENV, onDataReceived, 1, timeoutCallback)
-    layout                = Layout.New(screen, behavior, binder, stream)
+    function s.RegisterStream(stream)
+
+    end
+
+    local stream = Stream.New(RenderDevice.New(), s, 1)
+    layout       = Layout.New(screen, behavior, binder, stream)
 
     ---Call this this to setup a slower update than Animate()
     ---@param frames integer

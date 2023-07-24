@@ -13,6 +13,22 @@
 			}
 		],
 		"editor.formatOnSave": true,
-		"files.autoSave": "onFocusChange"
+		"files.autoSave": "onFocusChange",
+		"Lua.completion.requireSeparator": "/",
+		"Lua.workspace.library": [
+			"external/du-stream/",
+			"${3rd}/luassert/library",
+			"${3rd}/busted/library"
+		],
+		"Lua.runtime.path": [
+			"?.lua",
+			"?/init.lua",
+			"src/?.lua"
+		],
+		"Lua.diagnostics.globals": [
+			"system",
+			"library",
+			"logMessage"
+		]
 	}
 }
